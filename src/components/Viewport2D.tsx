@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { clamp, D2R, f2, fastFor, fmtN, TAU } from '../core/geometry';
+import { clamp, D2R, f2, fmtN, TAU } from '../core/geometry';
 import type { AnalysisResult, FastenerSummary, HoleInfo, Point2D, SpacerState } from '../core/types';
 import { CounterboreIcon, CountersinkIcon, DiameterIcon } from './CadIcons';
 

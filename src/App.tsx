@@ -152,6 +152,7 @@ export default function App() {
   const vp2dRef = useRef<Viewport2DHandle>(null);
   const viewCubeRef = useRef<ViewCubeHandle>(null);
   const stateRef = useRef(state);
+  // eslint-disable-next-line react-hooks/refs -- latest-value ref must be current during render so handlers never see stale state
   stateRef.current = state;
   const toastIdRef = useRef(1);
   const toastTimersRef = useRef<Map<number, number>>(new Map());
@@ -245,10 +246,12 @@ export default function App() {
   }, []);
 
   const uiRef = useRef(ui);
+  // eslint-disable-next-line react-hooks/refs -- latest-value ref must be current during render so handlers never see stale state
   uiRef.current = ui;
 
   const [holesCustomized, setHolesCustomized] = useState(false);
   const holesCustomizedRef = useRef(holesCustomized);
+  // eslint-disable-next-line react-hooks/refs -- latest-value ref must be current during render so handlers never see stale state
   holesCustomizedRef.current = holesCustomized;
 
   const autoFitHolesActive = ui.mode === 'wizard' && ui.wizardStep === 0 && !holesCustomized;
@@ -410,7 +413,6 @@ export default function App() {
   const handleCopyLayer = useCallback(
     (from: LayerKind) => {
       const s = stateRef.current;
-      const to: LayerKind = from === 'door' ? 'spk' : 'door';
       const prevSnapshot: Partial<SpacerState> = {
         doorBolt: s.doorBolt,
         doorRecess: s.doorRecess,

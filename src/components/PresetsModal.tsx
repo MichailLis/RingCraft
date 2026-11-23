@@ -41,6 +41,7 @@ export function PresetsModal({
 
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset on open; deferring would flash stale saving state
       setSaving(false);
       closeBtnRef.current?.focus();
     }
