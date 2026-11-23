@@ -7,6 +7,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import { CounterboreIcon, CountersinkIcon, DiameterIcon } from './components/CadIcons';
 import { ControlPanel } from './components/ControlPanel';
 import { ExportModal } from './components/ExportModal';
@@ -1057,6 +1058,7 @@ export default function App() {
       />
 
       <ToastHost toasts={toasts} drawerOpen={drawerTab !== null} onDismiss={dismissToast} />
+      <Analytics />
     </div>
   );
 }
