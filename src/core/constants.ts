@@ -318,3 +318,9 @@ export const PRESETS: PresetDef[] = [
     },
   },
 ];
+
+export const QUALITY_PARAMS = {
+  draft: { pr: 0.8, seg: 40, out: 360, shadow: 1024 },
+  std: { pr: 1.5, seg: 64, out: 720, shadow: 1024 },
+  high: { pr: 2, seg: 96, out: 1200, shadow: 2048 },
+} as const;

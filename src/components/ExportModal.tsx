@@ -48,7 +48,7 @@ export function ExportModal({
   const contourCount =
     1 + (analysis.cutValid ? 1 : 0) + analysis.holes.filter((h) => h.valid).length + cbCount + cskCount;
   const fileBase = buildFileBase(state);
-  const stlDisabled = !ready3d || analysis.nErr > 0;
+  const stlDisabled = analysis.nErr > 0;
   const pngDisabled = state.view === '3d' && !ready3d;
 
   return (
@@ -201,9 +201,7 @@ export function ExportModal({
               <p className="text-[11.5px] leading-snug text-slate-600">
                 {analysis.nErr > 0
                   ? 'Исправьте конфликты геометрии для построения 3D-сетки'
-                  : ready3d
-                    ? 'Бинарная 3D-модель с цековками и зенковками для 3D-печати'
-                    : '3D-модуль недоступен в текущем браузере'}
+                  : 'Бинарная 3D-модель с цековками и зенковками для 3D-печати'}
               </p>
             </button>
 

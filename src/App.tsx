@@ -19,6 +19,7 @@ import {
   type ConstraintJumpTarget,
   type ConstraintNotice,
 } from './core/constraints';
+import { buildSpacerSTL } from './core/stlExport';
 import { analyze, buildDXF, buildFileBase, fmtN, sanitizeState } from './core/geometry';
 import { readStored, STORAGE_KEYS, writeStored } from './core/storage';
 import { clampWizardStep, resolveInitialPanelMode, wizardStepForLayer } from './core/wizard';
@@ -504,9 +505,9 @@ export default function App() {
   }, [pushToast]);
 
   const handleExportSTL = useCallback(async () => {
-    if (!vp3dRef.current || analysis.nErr > 0) return;
+    if (analysis.nErr > 0) return;
     try {
-      const dv = await vp3dRef.current.exportSTL();
+      const dv = await buildSpacerSTL(stateRef.current, analysis);
       downloadBlob(
         new Blob([dv.buffer as ArrayBuffer], { type: 'application/octet-stream' }),
         `${buildFileBase(stateRef.current)}.stl`
@@ -515,7 +516,7 @@ export default function App() {
     } catch {
       pushToast('Не удалось построить STL-модель', 'err');
     }
-  }, [analysis.nErr, pushToast]);
+  }, [analysis, pushToast]);
 
   const handleExportPNG = useCallback(() => {
     if (stateRef.current.view === '2d') {
@@ -944,7 +945,6 @@ export default function App() {
           state={state}
           analysis={analysis}
           ui={ui}
-          ready3d={ready3d}
           constraint={constraint}
           autoFitHolesActive={autoFitHolesActive}
           onPatch={handlePatch}

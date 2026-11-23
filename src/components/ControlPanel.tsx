@@ -80,7 +80,6 @@ interface ControlPanelProps {
   state: SpacerState;
   analysis: AnalysisResult;
   ui: UIState;
-  ready3d: boolean;
   constraint: ConstraintNotice | null;
   autoFitHolesActive: boolean;
   onPatch: (patch: Partial<SpacerState>, field?: ConstrainedField) => void;
@@ -775,7 +774,6 @@ export function ControlPanel({
   state,
   analysis,
   ui,
-  ready3d,
   constraint,
   autoFitHolesActive,
   onPatch,
@@ -1066,7 +1064,7 @@ export function ControlPanel({
               {currentStep.id === 'export' &&
                 (() => {
                   const isPrintMode = state.material === 'abs';
-                  const stlDisabled = !ready3d || analysis.nErr > 0;
+                  const stlDisabled = analysis.nErr > 0;
                   const cbCount = analysis.holes.filter(
                     (h) => h.valid && h.cbDepth > 0 && h.recessType === 'cb'
                   ).length;
