@@ -1,5 +1,6 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { clamp, D2R, f2, fmtN, TAU } from '../core/geometry';
+import { applyExportFrame, DRAWING_MARGIN_MM, exportFrame } from '../core/svgExport';
 import type { AnalysisResult, FastenerSummary, HoleInfo, Point2D, SpacerState } from '../core/types';
 import { CounterboreIcon, CountersinkIcon, DiameterIcon } from './CadIcons';
 
@@ -57,7 +58,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
   const hasInitFitRef = useRef(false);
 
   const computeFit = useCallback(() => {
-    const E = analysis.maxR + 54;
+    const E = analysis.maxR + DRAWING_MARGIN_MM;
     const pxH = Math.max(wrapRef.current?.clientHeight || 420, 120);
     const topPx = pxH < 240 ? 34 : 50;
     const botPx = pxH < 240 ? 36 : 48;
@@ -144,14 +145,13 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
         const hov = clone.querySelector('#hovG');
         if (hov) hov.innerHTML = '';
         clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-        clone.setAttribute('width', '1400');
-        clone.setAttribute('height', '1400');
+        applyExportFrame(clone, exportFrame(analysis.maxR));
         clone.removeAttribute('class');
         clone.removeAttribute('role');
         return '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(clone);
       },
     }),
-    [computeFit, zoomAt]
+    [computeFit, zoomAt, analysis.maxR]
   );
 
   const svgMarkup = useMemo(() => {
