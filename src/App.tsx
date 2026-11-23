@@ -19,6 +19,7 @@ import {
   type ConstraintNotice,
 } from './core/constraints';
 import { analyze, buildDXF, buildFileBase, fmtN, sanitizeState } from './core/geometry';
+import { readStored, STORAGE_KEYS, writeStored } from './core/storage';
 import { clampWizardStep, resolveInitialPanelMode, wizardStepForLayer } from './core/wizard';
 import type {
   DrawerTab,
@@ -32,21 +33,16 @@ import type {
   UIState,
 } from './core/types';
 
-// legacy prefix kept: renaming would drop users' saved data
-const STORAGE_STATE = 'ringforge.state';
-const STORAGE_UI = 'ringforge.ui';
-const STORAGE_SAVED = 'ringforge.saved';
-
 function loadInitialState(): { state: SpacerState; restored: boolean } {
-  try {
-    const raw = localStorage.getItem(STORAGE_STATE);
-    if (raw) {
-      return { state: sanitizeState(JSON.parse(raw)), restored: true };
+  return readStored<{ state: SpacerState; restored: boolean }>(
+    localStorage,
+    STORAGE_KEYS.state,
+    (data) => ({ state: sanitizeState(data as Record<string, unknown>), restored: true }),
+    {
+      state: { ...DEFAULTS },
+      restored: false,
     }
-  } catch {
-    // ignore invalid storage
-  }
-  return { state: { ...DEFAULTS }, restored: false };
+  );
 }
 
 const DEFAULT_OPEN: Record<SectionId, boolean> = {
@@ -64,10 +60,11 @@ function loadInitialUI(): UIState {
     open: { ...DEFAULT_OPEN },
     customRange: false,
   };
-  try {
-    const raw = localStorage.getItem(STORAGE_UI);
-    if (raw) {
-      const p = JSON.parse(raw) as {
+  return readStored(
+    localStorage,
+    STORAGE_KEYS.ui,
+    (data) => {
+      const p = data as {
         mode?: unknown;
         wizardStep?: unknown;
         open?: Partial<Record<SectionId, boolean>>;
@@ -84,25 +81,23 @@ function loadInitialUI(): UIState {
         },
         customRange: typeof p?.customRange === 'boolean' ? p.customRange : false,
       };
-    }
-  } catch {
-    // ignore
-  }
-  return fallback;
+    },
+    fallback
+  );
 }
 
 function loadSavedPresets(): SavedPreset[] {
-  try {
-    const arr = JSON.parse(localStorage.getItem(STORAGE_SAVED) || '[]');
-    if (Array.isArray(arr)) {
-      return arr
+  return readStored(
+    localStorage,
+    STORAGE_KEYS.saved,
+    (data) => {
+      if (!Array.isArray(data)) return [];
+      return data
         .filter((x) => x && typeof x.name === 'string' && x.p && typeof x.p === 'object')
         .map((x) => ({ name: x.name, p: sanitizeState(x.p) }));
-    }
-  } catch {
-    // ignore
-  }
-  return [];
+    },
+    []
+  );
 }
 
 function downloadBlob(blob: Blob, filename: string): void {
@@ -178,29 +173,17 @@ export default function App() {
 
   useEffect(() => {
     const t = window.setTimeout(() => {
-      try {
-        localStorage.setItem(STORAGE_STATE, JSON.stringify(state));
-      } catch {
-        // ignore quota errors
-      }
+      writeStored(localStorage, STORAGE_KEYS.state, state);
     }, 350);
     return () => clearTimeout(t);
   }, [state]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_UI, JSON.stringify(ui));
-    } catch {
-      // ignore
-    }
+    writeStored(localStorage, STORAGE_KEYS.ui, ui);
   }, [ui]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_SAVED, JSON.stringify(savedPresets));
-    } catch {
-      // ignore
-    }
+    writeStored(localStorage, STORAGE_KEYS.saved, savedPresets);
   }, [savedPresets]);
 
   useEffect(() => {
