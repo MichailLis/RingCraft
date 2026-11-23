@@ -50,7 +50,7 @@ test('2d and 3d views switch', async ({ page }) => {
   await page.getByRole('tab', { name: 'Чертёж 1:1' }).click();
   await expect(page.getByTestId('viewport-2d-svg')).toBeVisible();
   await page.getByRole('tab', { name: '3D-модель' }).click();
-  await expect(page.getByTestId('viewport-3d-canvas')).toBeVisible();
+  await expect(page.getByTestId('viewport-3d-canvas').locator('canvas')).toBeVisible();
 
   expect(errors).toEqual([]);
 });
