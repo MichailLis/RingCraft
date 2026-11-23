@@ -48,7 +48,11 @@ test('all wizard quick-size templates produce valid error-free and warning-free 
     const s = sanitizeState({ ...DEFAULTS, ...q.patch });
     const a = analyze(s);
     assert.equal(a.nErr, 0, `Quick size ${q.label} produced geometry errors`);
-    assert.equal(a.nWarn, 0, `Quick size ${q.label} produced geometry warnings: ${a.checks.map((c) => c.t).join('; ')}`);
+    assert.equal(
+      a.nWarn,
+      0,
+      `Quick size ${q.label} produced geometry warnings: ${a.checks.map((c) => c.t).join('; ')}`
+    );
     assert.equal(detectQuickSizeId(s), q.id);
   }
   assert.equal(detectQuickSizeId({ outerD: 195, innerD: 155 }), null);

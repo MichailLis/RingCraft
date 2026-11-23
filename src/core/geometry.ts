@@ -1,13 +1,5 @@
 import { BOLTS, DEFAULTS, LIMITS, MATS } from './constants';
-import type {
-  AnalysisResult,
-  CheckItem,
-  FastenerSummary,
-  HoleInfo,
-  LayerKind,
-  Point2D,
-  SpacerState,
-} from './types';
+import type { AnalysisResult, CheckItem, FastenerSummary, HoleInfo, LayerKind, Point2D, SpacerState } from './types';
 
 export const TAU = Math.PI * 2;
 export const D2R = Math.PI / 180;
@@ -113,8 +105,7 @@ export function fastFor(s: SpacerState, kind: LayerKind): FastenerSummary {
   };
 }
 
-export const anyCb = (s: SpacerState): boolean =>
-  fastFor(s, 'door').active || fastFor(s, 'spk').active;
+export const anyCb = (s: SpacerState): boolean => fastFor(s, 'door').active || fastFor(s, 'spk').active;
 
 export function outlineRadiusFn(s: SpacerState, inset = 0): (th: number) => number {
   const R = Math.max(1, s.outerD / 2 - inset);
@@ -403,9 +394,7 @@ export function analyze(s: SpacerState): AnalysisResult {
       const recessInstr = isCsk ? 'зенковкой 90°' : 'цековкой';
       const boltTag = fa.bolt !== 'custom' ? ` ${fa.bolt}` : '';
       if (nominalFloor < 2) {
-        const clampNote = isClamped
-          ? ` (${recessNoun} подрезана до ${fmtN(fa.actualCbDepth, 1)}\u00A0мм)`
-          : '';
+        const clampNote = isClamped ? ` (${recessNoun} подрезана до ${fmtN(fa.actualCbDepth, 1)}\u00A0мм)` : '';
         err(
           `${label}: под ${recessInstr}${boltTag} остаётся ${fmtN(actualFloor, 1)}\u00A0мм дна${clampNote} — увеличьте толщину (≥\u00A02\u00A0мм) или выберите меньший крепёж.`,
           k,
@@ -540,7 +529,26 @@ export function buildDXF(s: SpacerState, a: AnalysisResult): string {
     }
   };
   const fN = (v: number) => +v.toFixed(3);
-  push(0, 'SECTION', 2, 'HEADER', 9, '$ACADVER', 1, 'AC1009', 9, '$INSUNITS', 70, 4, 9, '$MEASUREMENT', 70, 1, 0, 'ENDSEC');
+  push(
+    0,
+    'SECTION',
+    2,
+    'HEADER',
+    9,
+    '$ACADVER',
+    1,
+    'AC1009',
+    9,
+    '$INSUNITS',
+    70,
+    4,
+    9,
+    '$MEASUREMENT',
+    70,
+    1,
+    0,
+    'ENDSEC'
+  );
   push(0, 'SECTION', 2, 'TABLES', 0, 'TABLE', 2, 'LAYER', 70, 6);
   (
     [
@@ -732,14 +740,7 @@ export function minActualCrossLayerGapDeg(s: HoleAngleState): number {
   return +Math.max(0, minGap).toFixed(1);
 }
 
-function minCrossLayerGapDeg(
-  nA: number,
-  rotA: number,
-  halfA: number,
-  nB: number,
-  rotB: number,
-  halfB: number
-): number {
+function minCrossLayerGapDeg(nA: number, rotA: number, halfA: number, nB: number, rotB: number, halfB: number): number {
   const stepA = 360 / nA;
   const stepB = 360 / nB;
   let minGap = 180;
@@ -881,10 +882,7 @@ function closestPeriodicEquiv(baseRot: number, n: number, curRot: number): numbe
  * keeps both layers aligned to exact vertical Y-axis mirror symmetry (avoiding off-axis
  * tilts like 48° on 6×5) while maximizing clearance between their symmetry phases.
  */
-export function optimalLayerPairRotations(
-  s: HoleAngleState,
-  kind: LayerKind
-): { doorRot: number; spkRot: number } {
+export function optimalLayerPairRotations(s: HoleAngleState, kind: LayerKind): { doorRot: number; spkRot: number } {
   const nD = Math.max(1, Math.round(s.doorN));
   const nS = Math.max(1, Math.round(s.spkN));
   const halfD = s.doorSlots ? s.slotAngle / 2 : 0;
@@ -942,8 +940,22 @@ export function isLayerRotationOptimal(
     const curSym = rotationSymmetryScores(curRot, nA);
     if (curSym.yErr > 0.4) return false;
     const pair = optimalLayerPairRotations({ ...s, doorAutoSpace: true }, kind);
-    const curGap = minCrossLayerGapDeg(s.doorN, s.doorRot, s.doorSlots ? s.slotAngle / 2 : 0, s.spkN, s.spkRot, s.spkSlots ? s.spkSlotAngle / 2 : 0);
-    const optGap = minCrossLayerGapDeg(s.doorN, pair.doorRot, s.doorSlots ? s.slotAngle / 2 : 0, s.spkN, pair.spkRot, s.spkSlots ? s.spkSlotAngle / 2 : 0);
+    const curGap = minCrossLayerGapDeg(
+      s.doorN,
+      s.doorRot,
+      s.doorSlots ? s.slotAngle / 2 : 0,
+      s.spkN,
+      s.spkRot,
+      s.spkSlots ? s.spkSlotAngle / 2 : 0
+    );
+    const optGap = minCrossLayerGapDeg(
+      s.doorN,
+      pair.doorRot,
+      s.doorSlots ? s.slotAngle / 2 : 0,
+      s.spkN,
+      pair.spkRot,
+      s.spkSlots ? s.spkSlotAngle / 2 : 0
+    );
     return curGap >= optGap - 0.4;
   }
 

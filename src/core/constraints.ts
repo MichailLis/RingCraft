@@ -329,11 +329,8 @@ function explainConflict(
   // 4. Hole-to-hole overlap (same-layer or cross-layer)
   const ovHole = attemptedAnalysis.holes.find((h) => h.overlap);
   if (ovHole) {
-    const fieldKind: LayerKind | undefined = field.startsWith('door') || field === 'slotAngle'
-      ? 'door'
-      : field.startsWith('spk')
-        ? 'spk'
-        : undefined;
+    const fieldKind: LayerKind | undefined =
+      field.startsWith('door') || field === 'slotAngle' ? 'door' : field.startsWith('spk') ? 'spk' : undefined;
 
     if (fieldKind && hasSameLayerOverlap(attempted, fieldKind)) {
       if (field === 'doorN' || field === 'spkN') {
@@ -446,10 +443,7 @@ export function applyConstrainedPatch(
     // Build the exact failing neighbor just beyond bestVal to explain the exact barrier hit
     const barrierVal =
       dir !== 0
-        ? roundToStep(
-            lim ? clamp(bestVal + dir * step, lim[0], lim[1]) : bestVal + dir * step,
-            step
-          )
+        ? roundToStep(lim ? clamp(bestVal + dir * step, lim[0], lim[1]) : bestVal + dir * step, step)
         : targetVal;
     const barrierState = sanitizeState({ ...nextState, [field]: barrierVal });
     const barrierAnalysis = analyze(barrierState);
@@ -487,11 +481,7 @@ function effectiveRadius(s: SpacerState, kind: LayerKind): number {
   return f.active ? Math.max(holeR, f.cbD / 2) : holeR;
 }
 
-function adaptFastenerForRing(
-  base: SpacerState,
-  kind: LayerKind,
-  allowFastenerAdapt: boolean
-): SpacerState {
+function adaptFastenerForRing(base: SpacerState, kind: LayerKind, allowFastenerAdapt: boolean): SpacerState {
   const next = { ...base };
   const wall = (next.outerD - next.innerD) / 2;
   const isDoor = kind === 'door';
@@ -585,10 +575,7 @@ export function applyRingResizeWithAutoFit(
   if (analyze(candidate).nErr === 0) {
     return {
       state: candidate,
-      applied:
-        candidate.outerD !== prev.outerD ||
-        candidate.innerD !== prev.innerD ||
-        candidate.thick !== prev.thick,
+      applied: candidate.outerD !== prev.outerD || candidate.innerD !== prev.innerD || candidate.thick !== prev.thick,
       clamped: ringClamped,
       notice: ringNotice,
     };
@@ -602,16 +589,8 @@ export function applyRingResizeWithAutoFit(
   const prevSpan = Math.max(1, prev.outerD - prev.innerD);
   const newSpan = Math.max(1, candidate.outerD - candidate.innerD);
   const doorOuter = prev.doorBCD >= prev.spkBCD;
-  const tDoor = clamp(
-    (prev.doorBCD - prev.innerD) / prevSpan,
-    doorOuter ? 0.55 : 0.25,
-    doorOuter ? 0.85 : 0.55
-  );
-  const tSpk = clamp(
-    (prev.spkBCD - prev.innerD) / prevSpan,
-    doorOuter ? 0.25 : 0.55,
-    doorOuter ? 0.52 : 0.8
-  );
+  const tDoor = clamp((prev.doorBCD - prev.innerD) / prevSpan, doorOuter ? 0.55 : 0.25, doorOuter ? 0.85 : 0.55);
+  const tSpk = clamp((prev.spkBCD - prev.innerD) / prevSpan, doorOuter ? 0.25 : 0.55, doorOuter ? 0.52 : 0.8);
 
   const doorEff = effectiveRadius(candidate, 'door');
   const spkEff = effectiveRadius(candidate, 'spk');
@@ -619,15 +598,10 @@ export function applyRingResizeWithAutoFit(
   const spkMin = Math.ceil(candidate.innerD + 2 * spkEff + 1.2);
   const spkMax = Math.floor(candidate.outerD - 2 * spkEff - 1.2);
   const spkMid = Math.round((candidate.innerD + candidate.outerD) / 2);
-  const fitSpkBCD =
-    spkMin <= spkMax
-      ? clamp(Math.round(candidate.innerD + tSpk * newSpan), spkMin, spkMax)
-      : spkMid;
+  const fitSpkBCD = spkMin <= spkMax ? clamp(Math.round(candidate.innerD + tSpk * newSpan), spkMin, spkMax) : spkMid;
 
   const doorMin = Math.ceil(candidate.innerD + 2 * doorEff + 1.2);
-  const doorMax = candidate.ears
-    ? Math.floor(candidate.outerD - 2)
-    : Math.floor(candidate.outerD - 2 * doorEff - 1.2);
+  const doorMax = candidate.ears ? Math.floor(candidate.outerD - 2) : Math.floor(candidate.outerD - 2 * doorEff - 1.2);
   const fitDoorBCD =
     doorMin <= doorMax
       ? clamp(Math.round(candidate.innerD + tDoor * newSpan), doorMin, doorMax)

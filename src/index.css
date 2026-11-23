@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --font-sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
@@ -6,7 +6,9 @@
   --bg-drafting: #eef2f6;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   min-height: 100%;
 }
 
@@ -29,7 +31,7 @@ body {
 }
 
 /* Custom precision CAD range slider */
-input[type="range"].cad-range {
+input[type='range'].cad-range {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
@@ -39,23 +41,19 @@ input[type="range"].cad-range {
   display: block;
 }
 
-input[type="range"].cad-range:focus-visible {
+input[type='range'].cad-range:focus-visible {
   outline: 2px solid #1e63c4;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-input[type="range"].cad-range::-webkit-slider-runnable-track {
+input[type='range'].cad-range::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    var(--range-accent, #33475c) var(--range-pct, 50%),
-    #d8e0e9 var(--range-pct, 50%)
-  );
+  background: linear-gradient(90deg, var(--range-accent, #33475c) var(--range-pct, 50%), #d8e0e9 var(--range-pct, 50%));
 }
 
-input[type="range"].cad-range::-webkit-slider-thumb {
+input[type='range'].cad-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 15px;
   height: 15px;
@@ -64,29 +62,27 @@ input[type="range"].cad-range::-webkit-slider-thumb {
   background: #ffffff;
   border: 2px solid var(--range-accent, #33475c);
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.22);
-  transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.14s ease;
+  transition:
+    transform 0.14s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.14s ease;
 }
 
-input[type="range"].cad-range:hover::-webkit-slider-thumb {
+input[type='range'].cad-range:hover::-webkit-slider-thumb {
   transform: scale(1.12);
 }
 
-input[type="range"].cad-range:active::-webkit-slider-thumb {
+input[type='range'].cad-range:active::-webkit-slider-thumb {
   transform: scale(1.18);
   background: var(--range-accent, #33475c);
 }
 
-input[type="range"].cad-range::-moz-range-track {
+input[type='range'].cad-range::-moz-range-track {
   height: 4px;
   border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    var(--range-accent, #33475c) var(--range-pct, 50%),
-    #d8e0e9 var(--range-pct, 50%)
-  );
+  background: linear-gradient(90deg, var(--range-accent, #33475c) var(--range-pct, 50%), #d8e0e9 var(--range-pct, 50%));
 }
 
-input[type="range"].cad-range::-moz-range-thumb {
+input[type='range'].cad-range::-moz-range-thumb {
   width: 13px;
   height: 13px;
   border-radius: 50%;
@@ -120,17 +116,19 @@ input[type="range"].cad-range::-moz-range-thumb {
 }
 
 /* Number inputs without spin buttons */
-input[type="number"].no-spin::-webkit-outer-spin-button,
-input[type="number"].no-spin::-webkit-inner-spin-button {
+input[type='number'].no-spin::-webkit-outer-spin-button,
+input[type='number'].no-spin::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-input[type="number"].no-spin {
+input[type='number'].no-spin {
   -moz-appearance: textfield;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }

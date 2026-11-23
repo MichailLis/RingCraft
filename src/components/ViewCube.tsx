@@ -305,10 +305,7 @@ export const ViewCube = forwardRef<ViewCubeHandle, ViewCubeProps>(function ViewC
       );
       const alpha = Math.max(0, Math.min(1, (nz - 0.22) / 0.24));
       text.setAttribute('opacity', alpha.toFixed(2));
-      text.setAttribute(
-        'fill',
-        isDark ? (faceHovered ? '#f8fafc' : '#e2e8f0') : faceHovered ? '#1e3a8a' : '#3d4856'
-      );
+      text.setAttribute('fill', isDark ? (faceHovered ? '#f8fafc' : '#e2e8f0') : faceHovered ? '#1e3a8a' : '#3d4856');
 
       // Update translucent edge/corner interactive pads on top of the sharp face
       for (const z of zones) {
@@ -559,11 +556,7 @@ export const ViewCube = forwardRef<ViewCubeHandle, ViewCubeProps>(function ViewC
         aria-label="Исходный изометрический вид"
         className="group/home absolute left-0.5 top-0 z-20 inline-flex h-7 w-7 items-center justify-center rounded-md opacity-90 hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/50 transition-transform hover:scale-105 cursor-pointer"
       >
-        <svg
-          viewBox="0 0 24 24"
-          className="h-5 w-5 drop-shadow-[0_1px_2px_rgba(15,23,42,0.18)]"
-          aria-hidden="true"
-        >
+        <svg viewBox="0 0 24 24" className="h-5 w-5 drop-shadow-[0_1px_2px_rgba(15,23,42,0.18)]" aria-hidden="true">
           <path
             d="M3 11.5L12 4l9 7.5h-2.5V20h-13v-8.5H3z"
             className={
@@ -590,17 +583,12 @@ export const ViewCube = forwardRef<ViewCubeHandle, ViewCubeProps>(function ViewC
       </button>
 
       {/* Sharp Fusion 360 ViewCube with X/Y/Z Axis Triad */}
-      <svg
-        viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
-        className="h-full w-full overflow-visible"
-      >
+      <svg viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`} className="h-full w-full overflow-visible">
         <g ref={backAxesRef} />
         <g
           ref={cubeLayerRef}
           className={
-            isDark
-              ? 'drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)]'
-              : 'drop-shadow-[0_6px_10px_rgba(15,23,42,0.18)]'
+            isDark ? 'drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)]' : 'drop-shadow-[0_6px_10px_rgba(15,23,42,0.18)]'
           }
         />
         <g ref={frontAxesRef} />

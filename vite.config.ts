@@ -1,33 +1,28 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import fs from 'fs';
+import { readFileSync } from 'node:fs';
 import path from 'path';
-import {defineConfig} from 'vite';
+import { defineConfig } from 'vite';
+
+// Ensures %VITE_SITE_URL% in index.html always resolves (on Vercel defaults to the production host; override via env).
+process.env.VITE_SITE_URL ||= process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : 'https://ringcraft.vercel.app';
+
+// Single source of truth for security headers: vercel.json. Applied to `vite preview` so
+// local preview and e2e enforce the same CSP as production (not applied to the dev server: HMR needs inline/eval).
+const vercelConfig = JSON.parse(readFileSync(path.resolve(import.meta.dirname, 'vercel.json'), 'utf8')) as {
+  headers: { source: string; headers: { key: string; value: string }[] }[];
+};
+const previewHeaders = Object.fromEntries(
+  vercelConfig.headers.filter((h) => h.source === '/(.*)').flatMap((h) => h.headers.map((x) => [x.key, x.value]))
+);
 
 export default defineConfig(() => {
   return {
-    plugins: [
-      react(),
-      tailwindcss(),
-      // Copies src/assets into dist/ so root-relative URLs like
-      // "/src/assets/images/..." (e.g. generate_image output) still resolve
-      // in production builds. Do not remove.
-      {
-        name: 'copy-unbundled-src-assets',
-        apply: 'build',
-        closeBundle(error?: Error): void {
-          if (error) {
-            return;
-          }
-          const distDir = path.resolve(import.meta.dirname, 'dist');
-          const srcAssets = path.resolve(import.meta.dirname, 'src/assets');
-          const distAssets = path.resolve(distDir, 'src/assets');
-          if (fs.existsSync(distDir) && fs.existsSync(srcAssets)) {
-            fs.cpSync(srcAssets, distAssets, {recursive: true, force: true});
-          }
-        },
-      },
-    ],
+    plugins: [react(), tailwindcss()],
+    define: { __VERCEL__: JSON.stringify(!!process.env.VERCEL) },
+    preview: { headers: previewHeaders },
     build: {
       chunkSizeWarningLimit: 750,
       rollupOptions: {
@@ -44,13 +39,6 @@ export default defineConfig(() => {
       alias: {
         '@': path.resolve(import.meta.dirname, '.'),
       },
-    },
-    server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify—file watching is disabled to prevent flickering during agent edits.
-      hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };
 });

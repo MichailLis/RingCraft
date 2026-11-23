@@ -14,13 +14,16 @@ function analyzeManifold(geo: THREE.BufferGeometry) {
   const vKey = (i: number) => `${q(pos[i])},${q(pos[i + 1])},${q(pos[i + 2])}`;
 
   for (let i = 0; i < pos.length; i += 9) {
-    const ax = pos[i], ay = pos[i + 1], az = pos[i + 2];
-    const bx = pos[i + 3], by = pos[i + 4], bz = pos[i + 5];
-    const cx = pos[i + 6], cy = pos[i + 7], cz = pos[i + 8];
-    signedVol6 +=
-      ax * (by * cz - bz * cy) +
-      ay * (bz * cx - bx * cz) +
-      az * (bx * cy - by * cx);
+    const ax = pos[i],
+      ay = pos[i + 1],
+      az = pos[i + 2];
+    const bx = pos[i + 3],
+      by = pos[i + 4],
+      bz = pos[i + 5];
+    const cx = pos[i + 6],
+      cy = pos[i + 7],
+      cz = pos[i + 8];
+    signedVol6 += ax * (by * cz - bz * cy) + ay * (bz * cx - bx * cz) + az * (bx * cy - by * cx);
 
     const k0 = vKey(i);
     const k1 = vKey(i + 3);

@@ -7,12 +7,7 @@ interface HeaderBarProps {
   onOpenExport: () => void;
 }
 
-export function HeaderBar({
-  hasErrors,
-  wizardActive = false,
-  onOpenPresets,
-  onOpenExport,
-}: HeaderBarProps) {
+export function HeaderBar({ hasErrors, wizardActive = false, onOpenPresets, onOpenExport }: HeaderBarProps) {
   return (
     <header className="relative z-30 flex h-13 shrink-0 items-center justify-between gap-2 sm:gap-4 border-b border-[#cfd8e3] bg-[#f8fafc] px-2.5 sm:px-4 lg:px-6">
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -34,7 +29,7 @@ export function HeaderBar({
           <circle cx="26.1" cy="26.1" r="1.5" fill="#d9541e" />
         </svg>
         <span className="text-[13.5px] sm:text-[15px] font-bold tracking-[0.09em] sm:tracking-[0.14em] text-[#16202b] whitespace-nowrap shrink-0">
-          RINGFORGE
+          RingCraft
         </span>
       </div>
 
@@ -61,9 +56,7 @@ export function HeaderBar({
           }`}
         >
           <Download
-            className={`h-4 w-4 shrink-0 ${
-              wizardActive ? (hasErrors ? 'text-red-700' : 'text-[#1e63c4]') : ''
-            }`}
+            className={`h-4 w-4 shrink-0 ${wizardActive ? (hasErrors ? 'text-red-700' : 'text-[#1e63c4]') : ''}`}
             aria-hidden="true"
           />
           <span>Экспорт</span>

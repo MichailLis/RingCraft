@@ -58,11 +58,7 @@ function holeLoopCCW(h: HoleInfo, big: boolean, holeSeg: number): Point2D[] {
   return cleanLoopCCW(src);
 }
 
-function buildOuterLoops(
-  s: SpacerState,
-  outCount: number,
-  bt: number
-): { outer: Point2D[]; inset: Point2D[] } {
+function buildOuterLoops(s: SpacerState, outCount: number, bt: number): { outer: Point2D[]; inset: Point2D[] } {
   const fnOut = outlineRadiusFn(s, 0);
   const fnIn = bt > 0 ? outlineRadiusFn(s, bt) : fnOut;
   const outer: Point2D[] = new Array(outCount);
@@ -92,11 +88,7 @@ function buildOuterLoops(
  * counterbores are active, clamping automatically if a hole sits very close to
  * the outer or inner contour so top/bottom caps never self-intersect.
  */
-export function computeChamferSize(
-  s: SpacerState,
-  a: AnalysisResult,
-  holeSeg = 32
-): number {
+export function computeChamferSize(s: SpacerState, a: AnalysisResult, holeSeg = 32): number {
   if (!s.chamfer) return 0;
   let bt = Math.min(1, s.thick / 4);
   const cutout = a.cutValid ? s.innerD / 2 : 0;
@@ -165,12 +157,7 @@ class SolidBuilder {
     this.uvs.push(uax, uay, ubx, uby, ucx, ucy);
   }
 
-  addFlatCap(
-    outerCCW: Point2D[],
-    holesCCW: Point2D[][],
-    z: number,
-    normalZ: 1 | -1
-  ) {
+  addFlatCap(outerCCW: Point2D[], holesCCW: Point2D[][], z: number, normalZ: 1 | -1) {
     const contourV2 = outerCCW.map((p) => new THREE.Vector2(p[0], p[1]));
     const holesV2 = holesCCW.map((loop) => loop.map((p) => new THREE.Vector2(p[0], p[1])));
     const allPts: Point2D[] = [...outerCCW];
@@ -224,14 +211,7 @@ class SolidBuilder {
    * point away from interior; when outward=false (cutout/hole walls), normals
    * point into the opening. Creases steeper than creaseCos split normals sharply.
    */
-  addMatchedStrip(
-    loopA: Point2D[],
-    zA: number,
-    loopB: Point2D[],
-    zB: number,
-    outward: boolean,
-    creaseAngleDeg = 22
-  ) {
+  addMatchedStrip(loopA: Point2D[], zA: number, loopB: Point2D[], zB: number, outward: boolean, creaseAngleDeg = 22) {
     const n = loopA.length;
     if (n < 3 || loopB.length !== n) return;
     const creaseCos = Math.cos((creaseAngleDeg * Math.PI) / 180);
@@ -306,41 +286,109 @@ class SolidBuilder {
 
       if (outward) {
         this.pushTri(
-          p00[0], p00[1], zA,
-          p10[0], p10[1], zA,
-          p11[0], p11[1], zB,
-          nStart[0], nStart[1], nStart[2],
-          nEnd[0], nEnd[1], nEnd[2],
-          nEnd[0], nEnd[1], nEnd[2],
-          u0, v0, u1, v0, u1, v1
+          p00[0],
+          p00[1],
+          zA,
+          p10[0],
+          p10[1],
+          zA,
+          p11[0],
+          p11[1],
+          zB,
+          nStart[0],
+          nStart[1],
+          nStart[2],
+          nEnd[0],
+          nEnd[1],
+          nEnd[2],
+          nEnd[0],
+          nEnd[1],
+          nEnd[2],
+          u0,
+          v0,
+          u1,
+          v0,
+          u1,
+          v1
         );
         this.pushTri(
-          p00[0], p00[1], zA,
-          p11[0], p11[1], zB,
-          p01[0], p01[1], zB,
-          nStart[0], nStart[1], nStart[2],
-          nEnd[0], nEnd[1], nEnd[2],
-          nStart[0], nStart[1], nStart[2],
-          u0, v0, u1, v1, u0, v1
+          p00[0],
+          p00[1],
+          zA,
+          p11[0],
+          p11[1],
+          zB,
+          p01[0],
+          p01[1],
+          zB,
+          nStart[0],
+          nStart[1],
+          nStart[2],
+          nEnd[0],
+          nEnd[1],
+          nEnd[2],
+          nStart[0],
+          nStart[1],
+          nStart[2],
+          u0,
+          v0,
+          u1,
+          v1,
+          u0,
+          v1
         );
       } else {
         this.pushTri(
-          p00[0], p00[1], zA,
-          p11[0], p11[1], zB,
-          p10[0], p10[1], zA,
-          nStart[0], nStart[1], nStart[2],
-          nEnd[0], nEnd[1], nEnd[2],
-          nEnd[0], nEnd[1], nEnd[2],
-          u0, v0, u1, v1, u1, v0
+          p00[0],
+          p00[1],
+          zA,
+          p11[0],
+          p11[1],
+          zB,
+          p10[0],
+          p10[1],
+          zA,
+          nStart[0],
+          nStart[1],
+          nStart[2],
+          nEnd[0],
+          nEnd[1],
+          nEnd[2],
+          nEnd[0],
+          nEnd[1],
+          nEnd[2],
+          u0,
+          v0,
+          u1,
+          v1,
+          u1,
+          v0
         );
         this.pushTri(
-          p00[0], p00[1], zA,
-          p01[0], p01[1], zB,
-          p11[0], p11[1], zB,
-          nStart[0], nStart[1], nStart[2],
-          nStart[0], nStart[1], nStart[2],
-          nEnd[0], nEnd[1], nEnd[2],
-          u0, v0, u0, v1, u1, v1
+          p00[0],
+          p00[1],
+          zA,
+          p01[0],
+          p01[1],
+          zB,
+          p11[0],
+          p11[1],
+          zB,
+          nStart[0],
+          nStart[1],
+          nStart[2],
+          nStart[0],
+          nStart[1],
+          nStart[2],
+          nEnd[0],
+          nEnd[1],
+          nEnd[2],
+          u0,
+          v0,
+          u0,
+          v1,
+          u1,
+          v1
         );
       }
     }
@@ -360,22 +408,56 @@ class SolidBuilder {
       const o0 = outerCCW[i];
       const o1 = outerCCW[next];
       this.pushTri(
-        i0[0], i0[1], z,
-        o1[0], o1[1], z,
-        i1[0], i1[1], z,
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1,
-        i0[0], i0[1], o1[0], o1[1], i1[0], i1[1]
+        i0[0],
+        i0[1],
+        z,
+        o1[0],
+        o1[1],
+        z,
+        i1[0],
+        i1[1],
+        z,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        i0[0],
+        i0[1],
+        o1[0],
+        o1[1],
+        i1[0],
+        i1[1]
       );
       this.pushTri(
-        i0[0], i0[1], z,
-        o0[0], o0[1], z,
-        o1[0], o1[1], z,
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1,
-        i0[0], i0[1], o0[0], o0[1], o1[0], o1[1]
+        i0[0],
+        i0[1],
+        z,
+        o0[0],
+        o0[1],
+        z,
+        o1[0],
+        o1[1],
+        z,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        i0[0],
+        i0[1],
+        o0[0],
+        o0[1],
+        o1[0],
+        o1[1]
       );
     }
   }
@@ -457,8 +539,7 @@ export function buildSpacerSolid(
   const outerCap = bt > 0 ? inset : outer;
 
   const cutoutWall = cutout > 0 ? circleLoopCCW(0, 0, cutout, cutoutSeg) : null;
-  const cutoutCap =
-    cutout > 0 ? (bt > 0 ? circleLoopCCW(0, 0, cutout + bt, cutoutSeg) : cutoutWall) : null;
+  const cutoutCap = cutout > 0 ? (bt > 0 ? circleLoopCCW(0, 0, cutout + bt, cutoutSeg) : cutoutWall) : null;
 
   const preparedHoles = validHoles.map((h) => {
     const inner = holeLoopCCW(h, false, holeSeg);

@@ -1,14 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  AlertCircle,
-  AlertTriangle,
-  ListChecks,
-  Maximize2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { AlertCircle, AlertTriangle, ListChecks, Maximize2, ZoomIn, ZoomOut } from 'lucide-react';
 import { CounterboreIcon, CountersinkIcon, DiameterIcon } from './components/CadIcons';
 import { ControlPanel } from './components/ControlPanel';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { ExportModal } from './components/ExportModal';
 import { HeaderBar } from './components/HeaderBar';
 import { InspectionDrawer } from './components/InspectionDrawer';
@@ -25,18 +19,10 @@ import {
   type ConstraintJumpTarget,
   type ConstraintNotice,
 } from './core/constraints';
-import {
-  analyze,
-  buildDXF,
-  buildFileBase,
-  fmtN,
-  sanitizeState,
-} from './core/geometry';
-import {
-  clampWizardStep,
-  resolveInitialPanelMode,
-  wizardStepForLayer,
-} from './core/wizard';
+import { buildSpacerSTL } from './core/stlExport';
+import { analyze, buildDXF, buildFileBase, fmtN, sanitizeState } from './core/geometry';
+import { browserKV, readStored, STORAGE_KEYS, writeStored } from './core/storage';
+import { clampWizardStep, resolveInitialPanelMode, wizardStepForLayer } from './core/wizard';
 import type {
   DrawerTab,
   LayerKind,
@@ -49,20 +35,16 @@ import type {
   UIState,
 } from './core/types';
 
-const STORAGE_STATE = 'ringforge.state';
-const STORAGE_UI = 'ringforge.ui';
-const STORAGE_SAVED = 'ringforge.saved';
-
 function loadInitialState(): { state: SpacerState; restored: boolean } {
-  try {
-    const raw = localStorage.getItem(STORAGE_STATE);
-    if (raw) {
-      return { state: sanitizeState(JSON.parse(raw)), restored: true };
+  return readStored<{ state: SpacerState; restored: boolean }>(
+    browserKV,
+    STORAGE_KEYS.state,
+    (data) => ({ state: sanitizeState(data as Record<string, unknown>), restored: true }),
+    {
+      state: { ...DEFAULTS },
+      restored: false,
     }
-  } catch {
-    // ignore invalid storage
-  }
-  return { state: { ...DEFAULTS }, restored: false };
+  );
 }
 
 const DEFAULT_OPEN: Record<SectionId, boolean> = {
@@ -80,10 +62,11 @@ function loadInitialUI(): UIState {
     open: { ...DEFAULT_OPEN },
     customRange: false,
   };
-  try {
-    const raw = localStorage.getItem(STORAGE_UI);
-    if (raw) {
-      const p = JSON.parse(raw) as {
+  return readStored(
+    browserKV,
+    STORAGE_KEYS.ui,
+    (data) => {
+      const p = data as {
         mode?: unknown;
         wizardStep?: unknown;
         open?: Partial<Record<SectionId, boolean>>;
@@ -100,25 +83,23 @@ function loadInitialUI(): UIState {
         },
         customRange: typeof p?.customRange === 'boolean' ? p.customRange : false,
       };
-    }
-  } catch {
-    // ignore
-  }
-  return fallback;
+    },
+    fallback
+  );
 }
 
 function loadSavedPresets(): SavedPreset[] {
-  try {
-    const arr = JSON.parse(localStorage.getItem(STORAGE_SAVED) || '[]');
-    if (Array.isArray(arr)) {
-      return arr
+  return readStored(
+    browserKV,
+    STORAGE_KEYS.saved,
+    (data) => {
+      if (!Array.isArray(data)) return [];
+      return data
         .filter((x) => x && typeof x.name === 'string' && x.p && typeof x.p === 'object')
         .map((x) => ({ name: x.name, p: sanitizeState(x.p) }));
-    }
-  } catch {
-    // ignore
-  }
-  return [];
+    },
+    []
+  );
 }
 
 function downloadBlob(blob: Blob, filename: string): void {
@@ -132,14 +113,43 @@ function downloadBlob(blob: Blob, filename: string): void {
   window.setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 
+function Viewport3DCrashed({
+  onFailed,
+  visible,
+  onSwitchTo2D,
+}: {
+  onFailed: (ok: boolean) => void;
+  visible: boolean;
+  onSwitchTo2D: () => void;
+}) {
+  useEffect(() => {
+    onFailed(false);
+  }, [onFailed]);
+  if (!visible) return <div className="absolute inset-0" />;
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#f1f5f9] p-6 text-center">
+      <p className="max-w-sm text-[13px] leading-relaxed text-slate-600">
+        <strong className="text-slate-900">3D-просмотр недоступен</strong> в этом браузере.
+        <br />
+        2D-чертёж, проверки геометрии и экспорт DXF / SVG работают полностью.
+      </p>
+      <button
+        type="button"
+        onClick={onSwitchTo2D}
+        className="rounded-lg border border-[#cfd8e3] bg-white px-4 py-2 text-xs font-semibold text-[#1e63c4] hover:bg-blue-50 cursor-pointer"
+      >
+        Открыть чертёж
+      </button>
+    </div>
+  );
+}
+
 export default function App() {
   const initial = useMemo(() => loadInitialState(), []);
   const [state, setState] = useState<SpacerState>(initial.state);
   const [ui, setUi] = useState<UIState>(loadInitialUI);
   const [savedPresets, setSavedPresets] = useState<SavedPreset[]>(loadSavedPresets);
-  const [activePresetKey, setActivePresetKey] = useState<string | null>(
-    initial.restored ? null : 'builtin:0'
-  );
+  const [activePresetKey, setActivePresetKey] = useState<string | null>(initial.restored ? null : 'builtin:0');
   const [drawerTab, setDrawerTab] = useState<DrawerTab>(null);
   const [presetsOpen, setPresetsOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
@@ -151,6 +161,7 @@ export default function App() {
   const vp2dRef = useRef<Viewport2DHandle>(null);
   const viewCubeRef = useRef<ViewCubeHandle>(null);
   const stateRef = useRef(state);
+  // eslint-disable-next-line react-hooks/refs -- latest-value ref must be current during render so handlers never see stale state
   stateRef.current = state;
   const toastIdRef = useRef(1);
   const toastTimersRef = useRef<Map<number, number>>(new Map());
@@ -180,44 +191,32 @@ export default function App() {
     [clearToasts]
   );
 
-  const pushToast = useCallback(
-    (msg: string, type: ToastItem['type'] = 'info', action: ToastAction | null = null) => {
-      const id = toastIdRef.current++;
-      setToasts((prev) => [...prev.slice(-2), { id, msg, type, action }]);
-      const timer = window.setTimeout(() => {
+  const pushToast = useCallback((msg: string, type: ToastItem['type'] = 'info', action: ToastAction | null = null) => {
+    const id = toastIdRef.current++;
+    setToasts((prev) => [...prev.slice(-2), { id, msg, type, action }]);
+    const timer = window.setTimeout(
+      () => {
         toastTimersRef.current.delete(id);
         setToasts((prev) => prev.filter((t) => t.id !== id));
-      }, action ? 6000 : 4200);
-      toastTimersRef.current.set(id, timer);
-    },
-    []
-  );
+      },
+      action ? 6000 : 4200
+    );
+    toastTimersRef.current.set(id, timer);
+  }, []);
 
   useEffect(() => {
     const t = window.setTimeout(() => {
-      try {
-        localStorage.setItem(STORAGE_STATE, JSON.stringify(state));
-      } catch {
-        // ignore quota errors
-      }
+      writeStored(browserKV, STORAGE_KEYS.state, state);
     }, 350);
     return () => clearTimeout(t);
   }, [state]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_UI, JSON.stringify(ui));
-    } catch {
-      // ignore
-    }
+    writeStored(browserKV, STORAGE_KEYS.ui, ui);
   }, [ui]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_SAVED, JSON.stringify(savedPresets));
-    } catch {
-      // ignore
-    }
+    writeStored(browserKV, STORAGE_KEYS.saved, savedPresets);
   }, [savedPresets]);
 
   useEffect(() => {
@@ -244,48 +243,47 @@ export default function App() {
   }, []);
 
   const uiRef = useRef(ui);
+  // eslint-disable-next-line react-hooks/refs -- latest-value ref must be current during render so handlers never see stale state
   uiRef.current = ui;
 
   const [holesCustomized, setHolesCustomized] = useState(false);
   const holesCustomizedRef = useRef(holesCustomized);
+  // eslint-disable-next-line react-hooks/refs -- latest-value ref must be current during render so handlers never see stale state
   holesCustomizedRef.current = holesCustomized;
 
   const autoFitHolesActive = ui.mode === 'wizard' && ui.wizardStep === 0 && !holesCustomized;
 
-  const handlePatch = useCallback(
-    (patch: Partial<SpacerState>, field?: ConstrainedField) => {
-      const isRingResizeField = field === 'outerD' || field === 'innerD' || field === 'thick';
-      const useAutoFit =
-        isRingResizeField &&
-        uiRef.current.mode === 'wizard' &&
-        uiRef.current.wizardStep === 0 &&
-        !holesCustomizedRef.current;
+  const handlePatch = useCallback((patch: Partial<SpacerState>, field?: ConstrainedField) => {
+    const isRingResizeField = field === 'outerD' || field === 'innerD' || field === 'thick';
+    const useAutoFit =
+      isRingResizeField &&
+      uiRef.current.mode === 'wizard' &&
+      uiRef.current.wizardStep === 0 &&
+      !holesCustomizedRef.current;
 
-      const res = useAutoFit
-        ? applyRingResizeWithAutoFit(stateRef.current, patch, field, true)
-        : applyConstrainedPatch(stateRef.current, patch, field);
+    const res = useAutoFit
+      ? applyRingResizeWithAutoFit(stateRef.current, patch, field, true)
+      : applyConstrainedPatch(stateRef.current, patch, field);
 
-      if (res.applied) {
-        setActivePresetKey(null);
-        setState(res.state);
-        if (
-          field &&
-          (field.startsWith('door') ||
-            field.startsWith('spk') ||
-            field === 'ears' ||
-            field === 'earMargin' ||
-            field === 'slotAngle')
-        ) {
-          setHolesCustomized(true);
-        }
-        if (isOutsideStdRange(res.state) && !uiRef.current.customRange) {
-          setUi((prev) => ({ ...prev, customRange: true }));
-        }
+    if (res.applied) {
+      setActivePresetKey(null);
+      setState(res.state);
+      if (
+        field &&
+        (field.startsWith('door') ||
+          field.startsWith('spk') ||
+          field === 'ears' ||
+          field === 'earMargin' ||
+          field === 'slotAngle')
+      ) {
+        setHolesCustomized(true);
       }
-      setConstraint(res.notice);
-    },
-    []
-  );
+      if (isOutsideStdRange(res.state) && !uiRef.current.customRange) {
+        setUi((prev) => ({ ...prev, customRange: true }));
+      }
+    }
+    setConstraint(res.notice);
+  }, []);
 
   const handleSelectQuickSize = useCallback((patch: Partial<SpacerState>) => {
     const res = applyConstrainedPatch(stateRef.current, patch);
@@ -409,7 +407,6 @@ export default function App() {
   const handleCopyLayer = useCallback(
     (from: LayerKind) => {
       const s = stateRef.current;
-      const to: LayerKind = from === 'door' ? 'spk' : 'door';
       const prevSnapshot: Partial<SpacerState> = {
         doorBolt: s.doorBolt,
         doorRecess: s.doorRecess,
@@ -453,8 +450,7 @@ export default function App() {
       setActivePresetKey(null);
       setHolesCustomized(true);
       setState(res.state);
-      const label =
-        from === 'door' ? 'Дверь → Динамик' : 'Динамик → Дверь';
+      const label = from === 'door' ? 'Дверь → Динамик' : 'Динамик → Дверь';
       pushToast(`Крепёж скопирован: ${label}`, 'ok', {
         label: 'Отменить',
         fn: () => {
@@ -494,9 +490,7 @@ export default function App() {
           }
     );
     window.requestAnimationFrame(() => {
-      document
-        .getElementById(`card-${target}`)
-        ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      document.getElementById(`card-${target}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
   }, []);
 
@@ -535,9 +529,9 @@ export default function App() {
   }, [pushToast]);
 
   const handleExportSTL = useCallback(async () => {
-    if (!vp3dRef.current || analysis.nErr > 0) return;
+    if (analysis.nErr > 0) return;
     try {
-      const dv = await vp3dRef.current.exportSTL();
+      const dv = await buildSpacerSTL(stateRef.current, analysis);
       downloadBlob(
         new Blob([dv.buffer as ArrayBuffer], { type: 'application/octet-stream' }),
         `${buildFileBase(stateRef.current)}.stl`
@@ -546,7 +540,7 @@ export default function App() {
     } catch {
       pushToast('Не удалось построить STL-модель', 'err');
     }
-  }, [analysis.nErr, pushToast]);
+  }, [analysis, pushToast]);
 
   const handleExportPNG = useCallback(() => {
     if (stateRef.current.view === '2d') {
@@ -629,21 +623,26 @@ export default function App() {
             } ${drawerTab ? 'h-[520px] sm:h-[560px]' : 'h-[360px] sm:h-[420px]'}`}
           >
             <div className="relative flex-1 min-h-0 overflow-hidden">
-              <Viewport3D
-                ref={vp3dRef}
-                state={state}
-                analysis={analysis}
-                visible={state.view === '3d'}
-                onReady={onViewport3DReady}
-                onSwitchTo2D={() => setState((prev) => ({ ...prev, view: '2d' }))}
-                onCameraSync={(m) => viewCubeRef.current?.syncFromCamera(m)}
-              />
-              <Viewport2D
-                ref={vp2dRef}
-                state={state}
-                analysis={analysis}
-                visible={state.view === '2d'}
-              />
+              <ErrorBoundary
+                fallback={() => (
+                  <Viewport3DCrashed
+                    onFailed={onViewport3DReady}
+                    visible={state.view === '3d'}
+                    onSwitchTo2D={() => setState((prev) => ({ ...prev, view: '2d' }))}
+                  />
+                )}
+              >
+                <Viewport3D
+                  ref={vp3dRef}
+                  state={state}
+                  analysis={analysis}
+                  visible={state.view === '3d'}
+                  onReady={onViewport3DReady}
+                  onSwitchTo2D={() => setState((prev) => ({ ...prev, view: '2d' }))}
+                  onCameraSync={(m) => viewCubeRef.current?.syncFromCamera(m)}
+                />
+              </ErrorBoundary>
+              <Viewport2D ref={vp2dRef} state={state} analysis={analysis} visible={state.view === '2d'} />
 
               {/* Top Viewport Toolbar: left = mode + inspection, center = warning/spec, right = 2D zoom (3D reserves top-right exclusively for ViewCube) */}
               <div
@@ -654,9 +653,7 @@ export default function App() {
                 <div className="pointer-events-auto flex shrink-0 items-center gap-2">
                   <div
                     className={`inline-flex h-9 shrink-0 items-center gap-0.5 rounded-lg border p-0.5 shadow-xs transition-colors ${
-                      isDark3d
-                        ? 'border-slate-600/80 bg-[#1a2028]/95'
-                        : 'border-[#cfd8e3] bg-white/95'
+                      isDark3d ? 'border-slate-600/80 bg-[#1a2028]/95' : 'border-[#cfd8e3] bg-white/95'
                     }`}
                     role="tablist"
                     aria-label="Режим просмотра"
@@ -729,7 +726,11 @@ export default function App() {
                       <ListChecks className="h-4 w-4 shrink-0" aria-hidden="true" />
                     )}
                     <span className="hidden min-[360px]:inline">
-                      {issueIsErr ? `Ошибки: ${analysis.nErr}` : analysis.nWarn > 0 ? `Замечания: ${analysis.nWarn}` : 'Контроль'}
+                      {issueIsErr
+                        ? `Ошибки: ${analysis.nErr}`
+                        : analysis.nWarn > 0
+                          ? `Замечания: ${analysis.nWarn}`
+                          : 'Контроль'}
                     </span>
                     <span className="font-mono-num font-bold opacity-85">
                       {issueIsErr || analysis.nWarn > 0 ? (
@@ -758,13 +759,17 @@ export default function App() {
                       }`}
                     >
                       {issueIsErr ? (
-                        <AlertCircle className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-red-400' : 'text-red-600'}`} aria-hidden="true" />
+                        <AlertCircle
+                          className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-red-400' : 'text-red-600'}`}
+                          aria-hidden="true"
+                        />
                       ) : (
-                        <AlertTriangle className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-amber-400' : 'text-amber-600'}`} aria-hidden="true" />
+                        <AlertTriangle
+                          className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-amber-400' : 'text-amber-600'}`}
+                          aria-hidden="true"
+                        />
                       )}
-                      <span className="truncate font-medium">
-                        {analysis.checks[0]?.short ?? analysis.checks[0]?.t}
-                      </span>
+                      <span className="truncate font-medium">{analysis.checks[0]?.short ?? analysis.checks[0]?.t}</span>
                       <span className="shrink-0 font-semibold underline underline-offset-2 whitespace-nowrap">
                         Подробнее
                       </span>
@@ -783,22 +788,28 @@ export default function App() {
                           {fmtN(state.outerD, 0)}/{fmtN(state.innerD, 0)} × {fmtN(state.thick, 0)} мм
                         </span>
                       </span>
-                      {(state.doorBolt !== 'custom' || state.spkBolt !== 'custom' || analysis.fd.active || analysis.fs.active) && (
+                      {(state.doorBolt !== 'custom' ||
+                        state.spkBolt !== 'custom' ||
+                        analysis.fd.active ||
+                        analysis.fs.active) && (
                         <>
-                          <span aria-hidden="true" className={isDark3d ? 'text-slate-400' : 'text-slate-500'}>·</span>
-                          <span className={`inline-flex items-center gap-2 ${isDark3d ? 'text-slate-300' : 'text-slate-600'}`}>
+                          <span aria-hidden="true" className={isDark3d ? 'text-slate-400' : 'text-slate-500'}>
+                            ·
+                          </span>
+                          <span
+                            className={`inline-flex items-center gap-2 ${isDark3d ? 'text-slate-300' : 'text-slate-600'}`}
+                          >
                             {(state.doorBolt !== 'custom' || analysis.fd.active) && (
                               <span className="inline-flex items-center gap-1">
                                 <span>
                                   Дверь: {state.doorBolt !== 'custom' ? state.doorBolt : `Ø${fmtN(state.doorHoleD)}`}
                                 </span>
-                                {analysis.fd.active && (
-                                  analysis.fd.recessType === 'csk' ? (
+                                {analysis.fd.active &&
+                                  (analysis.fd.recessType === 'csk' ? (
                                     <CountersinkIcon className="h-3.5 w-3.5 shrink-0" />
                                   ) : (
                                     <CounterboreIcon className="h-3.5 w-3.5 shrink-0" />
-                                  )
-                                )}
+                                  ))}
                               </span>
                             )}
                             {(state.spkBolt !== 'custom' || analysis.fs.active) && (
@@ -806,13 +817,12 @@ export default function App() {
                                 <span>
                                   Динамик: {state.spkBolt !== 'custom' ? state.spkBolt : `Ø${fmtN(state.spkHoleD)}`}
                                 </span>
-                                {analysis.fs.active && (
-                                  analysis.fs.recessType === 'csk' ? (
+                                {analysis.fs.active &&
+                                  (analysis.fs.recessType === 'csk' ? (
                                     <CountersinkIcon className="h-3.5 w-3.5 shrink-0" />
                                   ) : (
                                     <CounterboreIcon className="h-3.5 w-3.5 shrink-0" />
-                                  )
-                                )}
+                                  ))}
                               </span>
                             )}
                           </span>
@@ -890,13 +900,17 @@ export default function App() {
                     }`}
                   >
                     {issueIsErr ? (
-                      <AlertCircle className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-red-400' : 'text-red-600'}`} aria-hidden="true" />
+                      <AlertCircle
+                        className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-red-400' : 'text-red-600'}`}
+                        aria-hidden="true"
+                      />
                     ) : (
-                      <AlertTriangle className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-amber-400' : 'text-amber-600'}`} aria-hidden="true" />
+                      <AlertTriangle
+                        className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-amber-400' : 'text-amber-600'}`}
+                        aria-hidden="true"
+                      />
                     )}
-                    <span className="truncate font-medium">
-                      {analysis.checks[0]?.short ?? analysis.checks[0]?.t}
-                    </span>
+                    <span className="truncate font-medium">{analysis.checks[0]?.short ?? analysis.checks[0]?.t}</span>
                     <span className="shrink-0 font-semibold underline underline-offset-2 whitespace-nowrap">
                       Подробнее
                     </span>
@@ -917,12 +931,10 @@ export default function App() {
                       Контур
                     </span>
                     <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                      <span className="h-0.5 w-3 rounded bg-[#1e63c4]" />
-                      К двери
+                      <span className="h-0.5 w-3 rounded bg-[#1e63c4]" />К двери
                     </span>
                     <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                      <span className="h-0.5 w-3 rounded bg-[#d9541e]" />
-                      К динамику
+                      <span className="h-0.5 w-3 rounded bg-[#d9541e]" />К динамику
                     </span>
                     <span className="inline-flex items-center gap-1 whitespace-nowrap">
                       <span className="w-3 border-t-2 border-dashed border-slate-500" />
@@ -965,7 +977,6 @@ export default function App() {
           state={state}
           analysis={analysis}
           ui={ui}
-          ready3d={ready3d}
           constraint={constraint}
           autoFitHolesActive={autoFitHolesActive}
           onPatch={handlePatch}

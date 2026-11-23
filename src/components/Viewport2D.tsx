@@ -1,5 +1,6 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { clamp, D2R, f2, fastFor, fmtN, TAU } from '../core/geometry';
+import { clamp, D2R, f2, fmtN, TAU } from '../core/geometry';
+import { applyExportFrame, DRAWING_MARGIN_MM, exportFrame } from '../core/svgExport';
 import type { AnalysisResult, FastenerSummary, HoleInfo, Point2D, SpacerState } from '../core/types';
 import { CounterboreIcon, CountersinkIcon, DiameterIcon } from './CadIcons';
 
@@ -57,7 +58,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
   const hasInitFitRef = useRef(false);
 
   const computeFit = useCallback(() => {
-    const E = analysis.maxR + 54;
+    const E = analysis.maxR + DRAWING_MARGIN_MM;
     const pxH = Math.max(wrapRef.current?.clientHeight || 420, 120);
     const topPx = pxH < 240 ? 34 : 50;
     const botPx = pxH < 240 ? 36 : 48;
@@ -144,14 +145,13 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
         const hov = clone.querySelector('#hovG');
         if (hov) hov.innerHTML = '';
         clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-        clone.setAttribute('width', '1400');
-        clone.setAttribute('height', '1400');
+        applyExportFrame(clone, exportFrame(analysis.maxR));
         clone.removeAttribute('class');
         clone.removeAttribute('role');
         return '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(clone);
       },
     }),
-    [computeFit, zoomAt]
+    [computeFit, zoomAt, analysis.maxR]
   );
 
   const svgMarkup = useMemo(() => {
@@ -165,15 +165,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
       if (h.valid) fillD += holePath(h);
     });
 
-    const txt = (
-      x: number,
-      y: number,
-      str: string,
-      col: string,
-      size: number,
-      anchor = 'middle',
-      weight = 600
-    ) =>
+    const txt = (x: number, y: number, str: string, col: string, size: number, anchor = 'middle', weight = 600) =>
       `<text x="${f2(x)}" y="${f2(y)}" fill="${col}" font-family="IBM Plex Mono, monospace" font-size="${size}" font-weight="${weight}" text-anchor="${anchor}" paint-order="stroke" stroke="${C_SHEET}" stroke-width="1.7" stroke-linejoin="round">${str}</text>`;
 
     const fastLabel = (fa: FastenerSummary, n: number, holeD: number, slots: boolean) => {
@@ -258,9 +250,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
         let bestScore = -1;
         for (const deg of candidatesDeg) {
           const rad = deg * D2R;
-          const minSep = holeAngles.length
-            ? Math.min(...holeAngles.map((ha) => angDist(rad, ha)))
-            : Math.PI;
+          const minSep = holeAngles.length ? Math.min(...holeAngles.map((ha) => angDist(rad, ha))) : Math.PI;
           if (minSep > bestScore) {
             bestScore = minSep;
             best = rad;
@@ -269,15 +259,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
         return best;
       };
 
-      const txtHalo = (
-        x: number,
-        y: number,
-        str: string,
-        col: string,
-        size: number,
-        anchor = 'middle',
-        weight = 600
-      ) =>
+      const txtHalo = (x: number, y: number, str: string, col: string, size: number, anchor = 'middle', weight = 600) =>
         `<text x="${f2(x)}" y="${f2(y)}" fill="${col}" font-family="IBM Plex Mono, monospace" font-size="${size}" font-weight="${weight}" text-anchor="${anchor}" paint-order="stroke" stroke="${C_SHEET}" stroke-width="2.9" stroke-linejoin="round">${str}</text>`;
 
       const calloutR = a.maxR + 12;
@@ -289,7 +271,14 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
       const lElbow = lx + 6;
       g += `<polyline points="${f2(ld * Math.cos(la))},${f2(-ld * Math.sin(la))} ${f2(lx)},${f2(ly)} ${f2(lElbow)},${f2(ly)}" fill="none" stroke="${C_BLUE}" stroke-opacity=".75" stroke-width=".6" vector-effect="non-scaling-stroke"/>`;
       g += `<circle cx="${f2(ld * Math.cos(la))}" cy="${f2(-ld * Math.sin(la))}" r="1.2" fill="${C_BLUE}"/>`;
-      g += txtHalo(lElbow + 2, ly + 1.6, `Дверь Ø${fmtN(s.doorBCD, 0)} · ${fastLabel(a.fd, s.doorN, s.doorHoleD, s.doorSlots)}`, C_BLUE, 4.8, 'start');
+      g += txtHalo(
+        lElbow + 2,
+        ly + 1.6,
+        `Дверь Ø${fmtN(s.doorBCD, 0)} · ${fastLabel(a.fd, s.doorN, s.doorHoleD, s.doorSlots)}`,
+        C_BLUE,
+        4.8,
+        'start'
+      );
 
       const sa = pickClearAngle([152, 208, 138, 222]);
       const sd = s.spkBCD / 2;
@@ -298,7 +287,14 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
       const sElbow = sx - 6;
       g += `<polyline points="${f2(sd * Math.cos(sa))},${f2(-sd * Math.sin(sa))} ${f2(sx)},${f2(sy)} ${f2(sElbow)},${f2(sy)}" fill="none" stroke="${C_ORANGE}" stroke-opacity=".75" stroke-width=".6" vector-effect="non-scaling-stroke"/>`;
       g += `<circle cx="${f2(sd * Math.cos(sa))}" cy="${f2(-sd * Math.sin(sa))}" r="1.2" fill="${C_ORANGE}"/>`;
-      g += txtHalo(sElbow - 2, sy + 1.6, `Динамик Ø${fmtN(s.spkBCD, 0)} · ${fastLabel(a.fs, s.spkN, s.spkHoleD, s.spkSlots)}`, C_ORANGE, 4.8, 'end');
+      g += txtHalo(
+        sElbow - 2,
+        sy + 1.6,
+        `Динамик Ø${fmtN(s.spkBCD, 0)} · ${fastLabel(a.fs, s.spkN, s.spkHoleD, s.spkSlots)}`,
+        C_ORANGE,
+        4.8,
+        'end'
+      );
     }
 
     const bx = E - 76;
@@ -308,7 +304,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
       <rect x="${f2(bx)}" y="${f2(by)}" width="84" height="24" rx="1.5" fill="#ffffff" stroke="${C_DIM}" stroke-width=".6"/>
       <line x1="${f2(bx)}" y1="${f2(by + 10.5)}" x2="${f2(bx + 84)}" y2="${f2(by + 10.5)}" stroke="${C_DIM}" stroke-width=".35" stroke-opacity=".5"/>
       ${txt(bx + 4.5, by + 7.5, `ПРОСТАВКА Ø${fmtN(s.outerD, 0)} × ${fmtN(s.thick, 0)}`, C_INK, 4.8, 'start', 700)}
-      ${txt(bx + 4.5, by + 16, 'RINGFORGE · масштаб 1:1 · мм', C_GRID, 3.4, 'start')}
+      ${txt(bx + 4.5, by + 16, 'RingCraft · масштаб 1:1 · мм', C_GRID, 3.4, 'start')}
       ${txt(bx + 4.5, by + 21.3, `Вырез Ø${fmtN(s.innerD, 0)} мм · ${dt} · 2 слоя`, C_GRID, 3.4, 'start')}
     </g>`;
 

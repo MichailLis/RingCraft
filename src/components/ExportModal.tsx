@@ -48,7 +48,7 @@ export function ExportModal({
   const contourCount =
     1 + (analysis.cutValid ? 1 : 0) + analysis.holes.filter((h) => h.valid).length + cbCount + cskCount;
   const fileBase = buildFileBase(state);
-  const stlDisabled = !ready3d || analysis.nErr > 0;
+  const stlDisabled = analysis.nErr > 0;
   const pngDisabled = state.view === '3d' && !ready3d;
 
   return (
@@ -167,10 +167,14 @@ export function ExportModal({
                   <Layers className="h-4 w-4" aria-hidden="true" />
                   DXF R12
                 </span>
-                <Download className="h-4 w-4 opacity-90 transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
+                <Download
+                  className="h-4 w-4 opacity-90 transition-transform group-hover:translate-y-0.5"
+                  aria-hidden="true"
+                />
               </div>
               <p className="text-[11.5px] leading-snug text-blue-100">
-                Раскрой для ЧПУ и лазера · контур, вырез, дверь, динамик{cbCount ? ', цековка' : ''}{cskCount ? ', зенковка' : ''} ({contourCount})
+                Раскрой для ЧПУ и лазера · контур, вырез, дверь, динамик{cbCount ? ', цековка' : ''}
+                {cskCount ? ', зенковка' : ''} ({contourCount})
               </p>
             </button>
 
@@ -188,15 +192,16 @@ export function ExportModal({
                 {analysis.nErr > 0 ? (
                   <span className="font-mono-num text-[10.5px] font-semibold text-red-700">заблокирован</span>
                 ) : (
-                  <Download className="h-4 w-4 text-slate-500 group-hover:text-[#1e63c4] transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
+                  <Download
+                    className="h-4 w-4 text-slate-500 group-hover:text-[#1e63c4] transition-transform group-hover:translate-y-0.5"
+                    aria-hidden="true"
+                  />
                 )}
               </div>
               <p className="text-[11.5px] leading-snug text-slate-600">
                 {analysis.nErr > 0
                   ? 'Исправьте конфликты геометрии для построения 3D-сетки'
-                  : ready3d
-                    ? 'Бинарная 3D-модель с цековками и зенковками для 3D-печати'
-                    : '3D-модуль недоступен в текущем браузере'}
+                  : 'Бинарная 3D-модель с цековками и зенковками для 3D-печати'}
               </p>
             </button>
 
@@ -210,7 +215,10 @@ export function ExportModal({
                   <FileCode2 className="h-4 w-4 text-[#1e63c4]" aria-hidden="true" />
                   SVG 1:1
                 </span>
-                <Download className="h-4 w-4 text-slate-500 group-hover:text-[#1e63c4] transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
+                <Download
+                  className="h-4 w-4 text-slate-500 group-hover:text-[#1e63c4] transition-transform group-hover:translate-y-0.5"
+                  aria-hidden="true"
+                />
               </div>
               <p className="text-[11.5px] leading-snug text-slate-600">
                 Векторный чертёж с выносными размерами и штампом детали
@@ -228,7 +236,10 @@ export function ExportModal({
                   <FileImage className="h-4 w-4 text-[#1e63c4]" aria-hidden="true" />
                   PNG · {state.view === '2d' ? '2D' : '3D'}
                 </span>
-                <Download className="h-4 w-4 text-slate-500 group-hover:text-[#1e63c4] transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
+                <Download
+                  className="h-4 w-4 text-slate-500 group-hover:text-[#1e63c4] transition-transform group-hover:translate-y-0.5"
+                  aria-hidden="true"
+                />
               </div>
               <p className="text-[11.5px] leading-snug text-slate-600">
                 {state.view === '2d'
@@ -241,9 +252,7 @@ export function ExportModal({
 
         {/* Footer */}
         <div className="flex items-center justify-between gap-3 border-t border-slate-100 bg-[#f8fafc] px-5 py-3">
-          <span className="font-mono-num text-[11px] text-slate-500">
-            Все размеры в миллиметрах · масштаб 1:1
-          </span>
+          <span className="font-mono-num text-[11px] text-slate-500">Все размеры в миллиметрах · масштаб 1:1</span>
           <button
             type="button"
             onClick={onClose}

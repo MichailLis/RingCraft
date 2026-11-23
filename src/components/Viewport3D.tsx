@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { MATS } from '../core/constants';
+import { MATS, QUALITY_PARAMS } from '../core/constants';
 import { buildSpacerSolid } from '../core/solidMesh';
 import type { AnalysisResult, MaterialDef, SpacerState } from '../core/types';
 
@@ -11,7 +11,6 @@ export interface Viewport3DHandle {
   setViewDirection: (dx: number, dy: number, dz: number) => void;
   orbitBy: (dAzimuthRad: number, dPolarRad: number) => void;
   png: () => string;
-  exportSTL: () => Promise<DataView>;
 }
 
 interface Viewport3DProps {
@@ -27,12 +26,6 @@ const BG_THEMES = {
   light: { bg: 0xdbe2ea, ground: 0xcbd3dc, g1: 0x8f9dab, g2: 0xc2ccd6, edge: 0x263240 },
   gray: { bg: 0xb9bfc7, ground: 0xaab1b9, g1: 0x77828e, g2: 0xa7b0ba, edge: 0x1e293b },
   dark: { bg: 0x252b33, ground: 0x1e242b, g1: 0x475569, g2: 0x334155, edge: 0xcbd5e1 },
-} as const;
-
-const QUALITY_PARAMS = {
-  draft: { pr: 0.8, seg: 40, out: 360, shadow: 1024 },
-  std: { pr: 1.5, seg: 64, out: 720, shadow: 1024 },
-  high: { pr: 2, seg: 96, out: 1200, shadow: 2048 },
 } as const;
 
 function detectSoftwareGl(): boolean {
@@ -130,14 +123,7 @@ function buildPartGroup(
   const meshes: THREE.Mesh[] = [];
   const lines: THREE.LineSegments[] = [];
 
-  const { geometry, edgeGeometry } = buildSpacerSolid(
-    s,
-    a,
-    seg,
-    outCount,
-    forExport,
-    !forExport && edgeMat !== null
-  );
+  const { geometry, edgeGeometry } = buildSpacerSolid(s, a, seg, outCount, forExport, !forExport && edgeMat !== null);
 
   const mesh = new THREE.Mesh(geometry, mat);
   mesh.castShadow = true;
@@ -180,7 +166,6 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
     setViewDirection: (dx: number, dy: number, dz: number) => void;
     orbitBy: (dAzimuthRad: number, dPolarRad: number) => void;
     png: () => string;
-    exportSTL: () => Promise<DataView>;
   } | null>(null);
 
   useImperativeHandle(ref, () => ({
@@ -188,7 +173,6 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
     setViewDirection: (dx, dy, dz) => controlsApiRef.current?.setViewDirection(dx, dy, dz),
     orbitBy: (dAz, dPol) => controlsApiRef.current?.orbitBy(dAz, dPol),
     png: () => controlsApiRef.current?.png() || '',
-    exportSTL: () => controlsApiRef.current!.exportSTL(),
   }));
 
   useEffect(() => {
@@ -552,10 +536,7 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
             controls.target.x = THREE.MathUtils.damp(controls.target.x, camGoalTarget.x, 10, dt);
             controls.target.y = THREE.MathUtils.damp(controls.target.y, camGoalTarget.y, 10, dt);
             controls.target.z = THREE.MathUtils.damp(controls.target.z, camGoalTarget.z, 10, dt);
-            if (
-              camera.position.distanceTo(camGoalPos) < 0.06 &&
-              controls.target.distanceTo(camGoalTarget) < 0.04
-            ) {
+            if (camera.position.distanceTo(camGoalPos) < 0.06 && controls.target.distanceTo(camGoalTarget) < 0.04) {
               camera.position.copy(camGoalPos);
               controls.target.copy(camGoalTarget);
               camTransitioning = false;
@@ -673,19 +654,6 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
         const url = renderer.domElement.toDataURL('image/png');
         if (off) resize();
         return url;
-      },
-      exportSTL: async () => {
-        const { STLExporter } = await import('three/addons/exporters/STLExporter.js');
-        const s = stateRef.current;
-        const a = analysisRef.current;
-        const q = QUALITY_PARAMS[s.quality] || QUALITY_PARAMS.std;
-        const exportMat = new THREE.MeshBasicMaterial();
-        const built = buildPartGroup(s, a, q.seg, q.out, true, exportMat, null);
-        built.group.updateMatrixWorld(true);
-        const dv = new STLExporter().parse(built.group, { binary: true }) as DataView;
-        built.meshes.forEach((m) => m.geometry.dispose());
-        exportMat.dispose();
-        return dv;
       },
     };
 
