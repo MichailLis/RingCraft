@@ -4,10 +4,9 @@ import { readFileSync } from 'node:fs';
 import path from 'path';
 import { defineConfig } from 'vite';
 
-// Ensures %VITE_SITE_URL% in index.html always resolves (on Vercel defaults to the production host; override via env).
-process.env.VITE_SITE_URL ||= process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : 'https://ringcraft.vercel.app';
+// Pin the canonical origin so preview deployments and aliases agree with production.
+const siteOrigin = new URL(process.env.VITE_SITE_URL || 'https://ringcraft-audio.vercel.app').origin;
+process.env.VITE_SITE_URL = siteOrigin;
 
 // Single source of truth for security headers: vercel.json. Applied to `vite preview` so
 // local preview and e2e enforce the same CSP as production (not applied to the dev server: HMR needs inline/eval).
@@ -20,7 +19,26 @@ const previewHeaders = Object.fromEntries(
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      {
+        name: 'search-index-files',
+        apply: 'build',
+        generateBundle() {
+          this.emitFile({
+            type: 'asset',
+            fileName: 'robots.txt',
+            source: `User-agent: *\nAllow: /\n\nSitemap: ${siteOrigin}/sitemap.xml\n`,
+          });
+          this.emitFile({
+            type: 'asset',
+            fileName: 'sitemap.xml',
+            source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${siteOrigin}/</loc></url></urlset>\n`,
+          });
+        },
+      },
+    ],
     define: { __VERCEL__: JSON.stringify(!!process.env.VERCEL) },
     preview: { headers: previewHeaders },
     build: {
