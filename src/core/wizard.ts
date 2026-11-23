@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import type { LayerKind, PanelMode, SpacerState, WizardStepId } from './types';
 
 export interface WizardStepDef {
@@ -19,40 +20,40 @@ export interface QuickSizeDef {
 export const WIZARD_STEPS: readonly WizardStepDef[] = [
   {
     id: 'ring',
-    shortLabel: 'Кольцо',
-    title: 'Размеры кольца',
-    subtitle: 'Выберите типоразмер динамика и задайте габариты проставки.',
-    nextLabel: 'Далее',
+    shortLabel: t('Кольцо'),
+    title: t('Размеры кольца'),
+    subtitle: t('Выберите типоразмер динамика и задайте габариты проставки.'),
+    nextLabel: t('Далее'),
   },
   {
     id: 'door',
-    shortLabel: 'Дверь',
-    title: 'Крепление к двери',
-    subtitle: 'Настройте отверстия крепления проставки к металлу двери, болты и ушки.',
-    nextLabel: 'Далее',
+    shortLabel: t('Дверь'),
+    title: t('Крепление к двери'),
+    subtitle: t('Настройте отверстия крепления проставки к металлу двери, болты и ушки.'),
+    nextLabel: t('Далее'),
   },
   {
     id: 'spk',
-    shortLabel: 'Динамик',
-    title: 'Крепление динамика',
-    subtitle: 'Задайте отверстия или пазы под крепление корзины динамика.',
-    nextLabel: 'Далее',
+    shortLabel: t('Динамик'),
+    title: t('Крепление динамика'),
+    subtitle: t('Задайте отверстия или пазы под крепление корзины динамика.'),
+    nextLabel: t('Далее'),
   },
   {
     id: 'export',
-    shortLabel: 'Экспорт',
-    title: 'Изготовление и экспорт',
-    subtitle: 'Выберите способ изготовления и скачайте 3D-модель или чертёж.',
-    nextLabel: 'Готово',
+    shortLabel: t('Экспорт'),
+    title: t('Изготовление и экспорт'),
+    subtitle: t('Выберите способ изготовления и скачайте 3D-модель или чертёж.'),
+    nextLabel: t('Готово'),
   },
 ] as const;
 
 export const QUICK_SIZES: readonly QuickSizeDef[] = [
   {
     id: '13cm',
-    label: '13 см',
-    inch: '5,25"',
-    dims: '146 / 116 мм',
+    label: t('13 см'),
+    inch: t('5,25"'),
+    dims: t('146 / 116 мм'),
     patch: {
       outerD: 146,
       innerD: 116,
@@ -74,9 +75,9 @@ export const QUICK_SIZES: readonly QuickSizeDef[] = [
   },
   {
     id: '16cm',
-    label: '16,5 см',
-    inch: '6,5"',
-    dims: '180 / 146 мм',
+    label: t('16,5 см'),
+    inch: t('6,5"'),
+    dims: t('180 / 146 мм'),
     patch: {
       outerD: 180,
       innerD: 146,
@@ -98,9 +99,9 @@ export const QUICK_SIZES: readonly QuickSizeDef[] = [
   },
   {
     id: '20cm',
-    label: '20 см',
+    label: t('20 см'),
     inch: '8"',
-    dims: '232 / 183 мм',
+    dims: t('232 / 183 мм'),
     patch: {
       outerD: 232,
       innerD: 183,

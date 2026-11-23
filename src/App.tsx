@@ -1,3 +1,4 @@
+import { t } from './i18n';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, AlertTriangle, ListChecks, Maximize2, ZoomIn, ZoomOut } from 'lucide-react';
 import { CounterboreIcon, CountersinkIcon, DiameterIcon } from './components/CadIcons';
@@ -129,16 +130,17 @@ function Viewport3DCrashed({
   return (
     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#f1f5f9] p-6 text-center">
       <p className="max-w-sm text-[13px] leading-relaxed text-slate-600">
-        <strong className="text-slate-900">3D-просмотр недоступен</strong> в этом браузере.
+        <strong className="text-slate-900">{t('3D-просмотр недоступен')}</strong>
+        {t(' в этом браузере.')}
         <br />
-        2D-чертёж, проверки геометрии и экспорт DXF / SVG работают полностью.
+        {t('2D-чертёж, проверки геометрии и экспорт DXF / SVG работают полностью.')}
       </p>
       <button
         type="button"
         onClick={onSwitchTo2D}
         className="rounded-lg border border-[#cfd8e3] bg-white px-4 py-2 text-xs font-semibold text-[#1e63c4] hover:bg-blue-50 cursor-pointer"
       >
-        Открыть чертёж
+        {t('Открыть чертёж')}
       </button>
     </div>
   );
@@ -300,7 +302,7 @@ export default function App() {
     (wide: boolean) => {
       setConstraint(null);
       if (!wide && isOutsideStdRange(stateRef.current)) {
-        pushToast('Текущие размеры шире 120–260 мм — сначала уменьшите их или оставьте произвольный режим', 'info');
+        pushToast(t('Текущие размеры шире 120–260 мм — сначала уменьшите их или оставьте произвольный режим'), 'info');
         return;
       }
       if (wide && uiRef.current.mode === 'wizard' && uiRef.current.wizardStep === 0) {
@@ -326,7 +328,7 @@ export default function App() {
         if (isOutsideStdRange(res.state) && !uiRef.current.customRange) {
           setUi((prev) => ({ ...prev, customRange: true }));
         }
-        pushToast('Отверстия подстроены под новый размер кольца', 'ok');
+        pushToast(t('Отверстия подстроены под новый размер кольца'), 'ok');
       }
       setConstraint(res.notice);
     },
@@ -347,7 +349,7 @@ export default function App() {
       setUi((prev) => ({ ...prev, customRange: isOutsideStdRange(next) }));
       setConstraint(null);
       setActivePresetKey(key);
-      pushToast(`Пресет применён: ${preset.name}`, 'ok');
+      pushToast(t('Пресет применён: {0}', preset.name), 'ok');
     },
     [pushToast]
   );
@@ -363,7 +365,7 @@ export default function App() {
       setUi((prev) => ({ ...prev, customRange: isOutsideStdRange(next) }));
       setConstraint(null);
       setActivePresetKey(`saved:${index}`);
-      pushToast(`Пресет применён: ${saved.name}`, 'ok');
+      pushToast(t('Пресет применён: {0}', saved.name), 'ok');
     },
     [pushToast]
   );
@@ -376,7 +378,7 @@ export default function App() {
         setActivePresetKey(`saved:${next.length - 1}`);
         return next;
       });
-      pushToast(`Пресет «${name}» сохранён`, 'ok');
+      pushToast(t('Пресет «{0}» сохранён', name), 'ok');
     },
     [pushToast]
   );
@@ -387,8 +389,8 @@ export default function App() {
         const removed = prev[index];
         if (!removed) return prev;
         const next = prev.filter((_, i) => i !== index);
-        pushToast(`Пресет «${removed.name}» удалён`, 'warn', {
-          label: 'Отменить',
+        pushToast(t('Пресет «{0}» удалён', removed.name), 'warn', {
+          label: t('Отменить'),
           fn: () => {
             setSavedPresets((cur) => {
               const restored = [...cur];
@@ -450,9 +452,9 @@ export default function App() {
       setActivePresetKey(null);
       setHolesCustomized(true);
       setState(res.state);
-      const label = from === 'door' ? 'Дверь → Динамик' : 'Динамик → Дверь';
-      pushToast(`Крепёж скопирован: ${label}`, 'ok', {
-        label: 'Отменить',
+      const label = from === 'door' ? t('Дверь → Динамик') : t('Динамик → Дверь');
+      pushToast(t('Крепёж скопирован: {0}', label), 'ok', {
+        label: t('Отменить'),
         fn: () => {
           setConstraint(null);
           setState((cur) => sanitizeState({ ...cur, ...prevSnapshot }));
@@ -473,7 +475,7 @@ export default function App() {
     setUi((prev) => ({ ...prev, customRange: false }));
     setConstraint(null);
     setActivePresetKey('builtin:0');
-    pushToast('Сброшено к стандарту 16,5 см · Дверь M5 / Динамик Ø4,2', 'ok');
+    pushToast(t('Сброшено к стандарту 16,5 см · Дверь M5 / Динамик Ø4,2'), 'ok');
   }, [pushToast]);
 
   const focusSectionTarget = useCallback((target: ConstraintJumpTarget) => {
@@ -497,8 +499,8 @@ export default function App() {
   useEffect(() => {
     if (initial.restored) {
       const id = window.setTimeout(() => {
-        pushToast('Параметры восстановлены из прошлой сессии', 'info', {
-          label: 'Сбросить',
+        pushToast(t('Параметры восстановлены из прошлой сессии'), 'info', {
+          label: t('Сбросить'),
           fn: () => handleReset(),
         });
       }, 600);
@@ -510,13 +512,13 @@ export default function App() {
     const content = buildDXF(stateRef.current, analysis);
     downloadBlob(new Blob([content], { type: 'application/dxf' }), `${buildFileBase(stateRef.current)}.dxf`);
     const extraRecess = [
-      analysis.holes.some((h) => h.valid && h.cbDepth > 0 && h.recessType === 'cb') ? 'цековка' : null,
-      analysis.holes.some((h) => h.valid && h.cbDepth > 0 && h.recessType === 'csk') ? 'зенковка' : null,
+      analysis.holes.some((h) => h.valid && h.cbDepth > 0 && h.recessType === 'cb') ? t('цековка') : null,
+      analysis.holes.some((h) => h.valid && h.cbDepth > 0 && h.recessType === 'csk') ? t('зенковка') : null,
     ].filter(Boolean);
     pushToast(
       analysis.nWarn || analysis.nErr
-        ? 'DXF сохранён — обратите внимание на замечания геометрии'
-        : `DXF сохранён · контуры и отверстия${extraRecess.length ? ` (${extraRecess.join(', ')})` : ''}`,
+        ? t('DXF сохранён — обратите внимание на замечания геометрии')
+        : t('DXF сохранён · контуры и отверстия{0}', extraRecess.length ? ` (${extraRecess.join(', ')})` : ''),
       'ok'
     );
   }, [analysis, pushToast]);
@@ -525,7 +527,7 @@ export default function App() {
     const src = vp2dRef.current?.exportSvgString();
     if (!src) return;
     downloadBlob(new Blob([src], { type: 'image/svg+xml' }), `${buildFileBase(stateRef.current)}.svg`);
-    pushToast('SVG-чертёж 1:1 сохранён', 'ok');
+    pushToast(t('SVG-чертёж 1:1 сохранён'), 'ok');
   }, [pushToast]);
 
   const handleExportSTL = useCallback(async () => {
@@ -536,9 +538,9 @@ export default function App() {
         new Blob([dv.buffer as ArrayBuffer], { type: 'application/octet-stream' }),
         `${buildFileBase(stateRef.current)}.stl`
       );
-      pushToast('STL сохранён · цековки и зенковки обоих слоёв · мм', 'ok');
+      pushToast(t('STL сохранён · цековки и зенковки обоих слоёв · мм'), 'ok');
     } catch {
-      pushToast('Не удалось построить STL-модель', 'err');
+      pushToast(t('Не удалось построить STL-модель'), 'err');
     }
   }, [analysis, pushToast]);
 
@@ -560,10 +562,10 @@ export default function App() {
         a.href = canvas.toDataURL('image/png');
         a.download = `${buildFileBase(stateRef.current)}_2d.png`;
         a.click();
-        pushToast('PNG-снимок 2D-чертежа сохранён', 'ok');
+        pushToast(t('PNG-снимок 2D-чертежа сохранён'), 'ok');
       };
       img.onerror = () => {
-        pushToast('Не удалось сохранить PNG-снимок чертежа', 'err');
+        pushToast(t('Не удалось сохранить PNG-снимок чертежа'), 'err');
       };
       img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
       return;
@@ -577,9 +579,9 @@ export default function App() {
       a.href = url;
       a.download = `${buildFileBase(stateRef.current)}.png`;
       a.click();
-      pushToast('PNG-снимок 3D-сцены сохранён', 'ok');
+      pushToast(t('PNG-снимок 3D-сцены сохранён'), 'ok');
     } catch {
-      pushToast('Не удалось сохранить PNG-снимок', 'err');
+      pushToast(t('Не удалось сохранить PNG-снимок'), 'err');
     }
   }, [pushToast]);
 
@@ -588,7 +590,7 @@ export default function App() {
       setReady3d(ok);
       if (!ok && stateRef.current.view === '3d') {
         setState((prev) => ({ ...prev, view: '2d' }));
-        pushToast('3D недоступно — открыт 2D-чертёж. DXF и SVG работают полностью.', 'warn');
+        pushToast(t('3D недоступно — открыт 2D-чертёж. DXF и SVG работают полностью.'), 'warn');
       }
     },
     [pushToast]
@@ -613,7 +615,7 @@ export default function App() {
         }}
       />
 
-      <main className="mx-auto flex w-full max-w-[1720px] flex-1 flex-col gap-2.5 p-2.5 lg:min-h-0 lg:flex-row lg:overflow-hidden lg:gap-3 lg:px-6 lg:py-3">
+      <main className="mx-auto flex w-full flex-1 flex-col gap-2.5 p-2.5 lg:min-h-0 lg:flex-row lg:overflow-hidden lg:gap-3 lg:px-6 lg:py-3">
         {/* Left/Main Stage */}
         <section className="flex min-w-0 flex-col lg:flex-1 lg:min-h-0">
           {/* Viewport Card */}
@@ -656,7 +658,7 @@ export default function App() {
                       isDark3d ? 'border-slate-600/80 bg-[#1a2028]/95' : 'border-[#cfd8e3] bg-white/95'
                     }`}
                     role="tablist"
-                    aria-label="Режим просмотра"
+                    aria-label={t('Режим просмотра')}
                   >
                     <button
                       id="tab-3d"
@@ -674,7 +676,7 @@ export default function App() {
                             : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
-                      3D-модель
+                      {t('3D-модель')}
                     </button>
                     <button
                       id="tab-2d"
@@ -690,7 +692,7 @@ export default function App() {
                             : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
-                      Чертёж 1:1
+                      {t('Чертёж 1:1')}
                     </button>
                   </div>
 
@@ -698,7 +700,7 @@ export default function App() {
                     type="button"
                     aria-expanded={drawerTab !== null}
                     aria-controls="inspection-drawer"
-                    title="Проверки и таблица отверстий"
+                    title={t('Проверки и таблица отверстий')}
                     onClick={() => openDrawer(drawerTab ? null : hasIssue ? 'checks' : 'table')}
                     className={`inline-flex h-9 items-center gap-1.5 rounded-lg border px-2.5 sm:px-3 text-xs font-semibold shadow-xs transition-colors cursor-pointer whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45 ${
                       drawerTab !== null
@@ -727,10 +729,10 @@ export default function App() {
                     )}
                     <span className="hidden min-[360px]:inline">
                       {issueIsErr
-                        ? `Ошибки: ${analysis.nErr}`
+                        ? t('Ошибки: {0}', analysis.nErr)
                         : analysis.nWarn > 0
-                          ? `Замечания: ${analysis.nWarn}`
-                          : 'Контроль'}
+                          ? t('Замечания: {0}', analysis.nWarn)
+                          : t('Контроль')}
                     </span>
                     <span className="font-mono-num font-bold opacity-85">
                       {issueIsErr || analysis.nWarn > 0 ? (
@@ -771,7 +773,7 @@ export default function App() {
                       )}
                       <span className="truncate font-medium">{analysis.checks[0]?.short ?? analysis.checks[0]?.t}</span>
                       <span className="shrink-0 font-semibold underline underline-offset-2 whitespace-nowrap">
-                        Подробнее
+                        {t('Подробнее')}
                       </span>
                     </button>
                   ) : (
@@ -785,7 +787,8 @@ export default function App() {
                       <span className="inline-flex items-center gap-1">
                         <DiameterIcon className="h-3.5 w-3.5 shrink-0" />
                         <span>
-                          {fmtN(state.outerD, 0)}/{fmtN(state.innerD, 0)} × {fmtN(state.thick, 0)} мм
+                          {fmtN(state.outerD, 0)}/{fmtN(state.innerD, 0)} × {fmtN(state.thick, 0)}
+                          {t(' мм')}
                         </span>
                       </span>
                       {(state.doorBolt !== 'custom' ||
@@ -802,7 +805,8 @@ export default function App() {
                             {(state.doorBolt !== 'custom' || analysis.fd.active) && (
                               <span className="inline-flex items-center gap-1">
                                 <span>
-                                  Дверь: {state.doorBolt !== 'custom' ? state.doorBolt : `Ø${fmtN(state.doorHoleD)}`}
+                                  {t('Дверь: ')}
+                                  {state.doorBolt !== 'custom' ? state.doorBolt : `Ø${fmtN(state.doorHoleD)}`}
                                 </span>
                                 {analysis.fd.active &&
                                   (analysis.fd.recessType === 'csk' ? (
@@ -815,7 +819,8 @@ export default function App() {
                             {(state.spkBolt !== 'custom' || analysis.fs.active) && (
                               <span className="inline-flex items-center gap-1">
                                 <span>
-                                  Динамик: {state.spkBolt !== 'custom' ? state.spkBolt : `Ø${fmtN(state.spkHoleD)}`}
+                                  {t('Динамик: ')}
+                                  {state.spkBolt !== 'custom' ? state.spkBolt : `Ø${fmtN(state.spkHoleD)}`}
                                 </span>
                                 {analysis.fs.active &&
                                   (analysis.fs.recessType === 'csk' ? (
@@ -838,8 +843,8 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => vp2dRef.current?.zoomOut()}
-                      aria-label="Отдалить чертёж"
-                      title="Отдалить"
+                      aria-label={t('Отдалить чертёж')}
+                      title={t('Отдалить')}
                       className="inline-flex h-7.5 w-7.5 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
                     >
                       <ZoomOut className="h-4 w-4" aria-hidden="true" />
@@ -847,8 +852,8 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => vp2dRef.current?.zoomIn()}
-                      aria-label="Приблизить чертёж"
-                      title="Приблизить"
+                      aria-label={t('Приблизить чертёж')}
+                      title={t('Приблизить')}
                       className="inline-flex h-7.5 w-7.5 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
                     >
                       <ZoomIn className="h-4 w-4" aria-hidden="true" />
@@ -856,8 +861,8 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => vp2dRef.current?.fit()}
-                      aria-label="Вписать чертёж"
-                      title="Вписать чертёж"
+                      aria-label={t('Вписать чертёж')}
+                      title={t('Вписать чертёж')}
                       className="inline-flex h-7.5 w-7.5 items-center justify-center rounded-md text-slate-600 hover:bg-blue-50 hover:text-[#1e63c4] cursor-pointer"
                     >
                       <Maximize2 className="h-4 w-4" aria-hidden="true" />
@@ -912,7 +917,7 @@ export default function App() {
                     )}
                     <span className="truncate font-medium">{analysis.checks[0]?.short ?? analysis.checks[0]?.t}</span>
                     <span className="shrink-0 font-semibold underline underline-offset-2 whitespace-nowrap">
-                      Подробнее
+                      {t('Подробнее')}
                     </span>
                   </button>
                 </div>
@@ -928,23 +933,25 @@ export default function App() {
                   <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-lg border border-[#cfd8e3] bg-white/95 px-2.5 py-1 text-[11px] font-medium text-slate-700 shadow-xs">
                     <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                       <span className="h-0.5 w-3 rounded bg-[#16202b]" />
-                      Контур
+                      {t('Контур')}
                     </span>
                     <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                      <span className="h-0.5 w-3 rounded bg-[#1e63c4]" />К двери
+                      <span className="h-0.5 w-3 rounded bg-[#1e63c4]" />
+                      {t('К двери')}
                     </span>
                     <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                      <span className="h-0.5 w-3 rounded bg-[#d9541e]" />К динамику
+                      <span className="h-0.5 w-3 rounded bg-[#d9541e]" />
+                      {t('К динамику')}
                     </span>
                     <span className="inline-flex items-center gap-1 whitespace-nowrap">
                       <span className="w-3 border-t-2 border-dashed border-slate-500" />
                       <CounterboreIcon className="h-3.5 w-3.5 text-slate-600" />
-                      <span>Цековка</span>
+                      <span>{t('Цековка')}</span>
                     </span>
                     <span className="inline-flex items-center gap-1 whitespace-nowrap">
                       <span className="w-3 border-t-2 border-slate-500" />
                       <CountersinkIcon className="h-3.5 w-3.5 text-slate-600" />
-                      <span>Зенковка</span>
+                      <span>{t('Зенковка')}</span>
                     </span>
                   </div>
                 )}
@@ -957,8 +964,8 @@ export default function App() {
                   }`}
                 >
                   {state.view === '3d'
-                    ? 'ЛКМ — вращение · колесо — масштаб · ПКМ — панорама'
-                    : 'Перетаскивание — панорама · колесо — масштаб · 2×клик — вписать'}
+                    ? t('ЛКМ — вращение · колесо — масштаб · ПКМ — панорама')
+                    : t('Перетаскивание — панорама · колесо — масштаб · 2×клик — вписать')}
                 </div>
               </div>
             </div>
@@ -1012,7 +1019,7 @@ export default function App() {
               mode: 'edit',
               open: { ring: false, door: false, spk: false, scene: false },
             }));
-            pushToast('Модель собрана — каждый раздел доступен для отдельного редактирования', 'ok');
+            pushToast(t('Модель собрана — каждый раздел доступен для отдельного редактирования'), 'ok');
           }}
           onSkipWizard={() => {
             setConstraint(null);

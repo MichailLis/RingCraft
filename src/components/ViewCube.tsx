@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import * as THREE from 'three';
 import type { SceneBgMode } from '../core/types';
@@ -59,23 +60,23 @@ function addVec(a: Vec3, b: Vec3, s = 1): Vec3 {
 
 function dirTitle(dx: number, dy: number, dz: number): string {
   const parts: string[] = [];
-  if (dy > 0) parts.push('Сверху');
-  else if (dy < 0) parts.push('Снизу');
-  if (dz > 0) parts.push('Спереди');
-  else if (dz < 0) parts.push('Сзади');
-  if (dx < 0) parts.push('Слева');
-  else if (dx > 0) parts.push('Справа');
+  if (dy > 0) parts.push(t('Сверху'));
+  else if (dy < 0) parts.push(t('Снизу'));
+  if (dz > 0) parts.push(t('Спереди'));
+  else if (dz < 0) parts.push(t('Сзади'));
+  if (dx < 0) parts.push(t('Слева'));
+  else if (dx > 0) parts.push(t('Справа'));
   return parts.join(' · ');
 }
 
 const MAIN_FACES: FaceDef[] = (
   [
-    { id: 'f-front', label: 'СПЕРЕДИ', aria: 'Вид спереди', n: [0, 0, 1], u: [1, 0, 0], v: [0, 1, 0] },
-    { id: 'f-back', label: 'СЗАДИ', aria: 'Вид сзади', n: [0, 0, -1], u: [-1, 0, 0], v: [0, 1, 0] },
-    { id: 'f-right', label: 'СПРАВА', aria: 'Вид справа', n: [1, 0, 0], u: [0, 0, -1], v: [0, 1, 0] },
-    { id: 'f-left', label: 'СЛЕВА', aria: 'Вид слева', n: [-1, 0, 0], u: [0, 0, 1], v: [0, 1, 0] },
-    { id: 'f-top', label: 'СВЕРХУ', aria: 'Вид сверху', n: [0, 1, 0], u: [1, 0, 0], v: [0, 0, -1] },
-    { id: 'f-bottom', label: 'СНИЗУ', aria: 'Вид снизу', n: [0, -1, 0], u: [1, 0, 0], v: [0, 0, 1] },
+    { id: 'f-front', label: t('СПЕРЕДИ'), aria: t('Вид спереди'), n: [0, 0, 1], u: [1, 0, 0], v: [0, 1, 0] },
+    { id: 'f-back', label: t('СЗАДИ'), aria: t('Вид сзади'), n: [0, 0, -1], u: [-1, 0, 0], v: [0, 1, 0] },
+    { id: 'f-right', label: t('СПРАВА'), aria: t('Вид справа'), n: [1, 0, 0], u: [0, 0, -1], v: [0, 1, 0] },
+    { id: 'f-left', label: t('СЛЕВА'), aria: t('Вид слева'), n: [-1, 0, 0], u: [0, 0, 1], v: [0, 1, 0] },
+    { id: 'f-top', label: t('СВЕРХУ'), aria: t('Вид сверху'), n: [0, 1, 0], u: [1, 0, 0], v: [0, 0, -1] },
+    { id: 'f-bottom', label: t('СНИЗУ'), aria: t('Вид снизу'), n: [0, -1, 0], u: [1, 0, 0], v: [0, 0, 1] },
   ] as const
 ).map((f) => {
   const n: Vec3 = [f.n[0], f.n[1], f.n[2]];
@@ -119,7 +120,7 @@ function buildHitZones(): HitZoneDef[] {
         const nzCount = (su !== 0 ? 1 : 0) + (sv !== 0 ? 1 : 0);
         const kind: HitZoneDef['kind'] = nzCount === 0 ? 'face' : nzCount === 1 ? 'edge' : 'corner';
         const id = kind === 'face' ? f.id : `${kind[0]}-${dir.join(',')}`;
-        const ariaLabel = kind === 'face' ? f.aria : `Вид: ${dirTitle(dir[0], dir[1], dir[2])}`;
+        const ariaLabel = kind === 'face' ? f.aria : t('Вид: {0}', dirTitle(dir[0], dir[1], dir[2]));
 
         zones.push({
           id,
@@ -540,7 +541,7 @@ export const ViewCube = forwardRef<ViewCubeHandle, ViewCubeProps>(function ViewC
     <div
       className={`group pointer-events-auto relative select-none ${dragging ? 'cursor-grabbing' : ''}`}
       style={{ width: SVG_SIZE, height: SVG_SIZE, touchAction: 'none' }}
-      aria-label="Навигационный куб вида"
+      aria-label={t('Навигационный куб вида')}
       onPointerLeave={() => {
         if (!dragRef.current && hoverIdRef.current) {
           hoverIdRef.current = null;
@@ -552,8 +553,8 @@ export const ViewCube = forwardRef<ViewCubeHandle, ViewCubeProps>(function ViewC
       <button
         type="button"
         onClick={onResetHome}
-        title="Исходный изометрический вид"
-        aria-label="Исходный изометрический вид"
+        title={t('Исходный изометрический вид')}
+        aria-label={t('Исходный изометрический вид')}
         className="group/home absolute left-0.5 top-0 z-20 inline-flex h-7 w-7 items-center justify-center rounded-md opacity-90 hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/50 transition-transform hover:scale-105 cursor-pointer"
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5 drop-shadow-[0_1px_2px_rgba(15,23,42,0.18)]" aria-hidden="true">

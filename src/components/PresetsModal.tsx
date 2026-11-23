@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useEffect, useRef, useState } from 'react';
 import { BookmarkPlus, Check, LayoutGrid, Trash2, X } from 'lucide-react';
 import { CadSummaryText } from './CadIcons';
@@ -57,12 +58,12 @@ export function PresetsModal({
   if (!open) return null;
 
   const openSave = () => {
-    setDraftName(`Мой Ø${Math.round(currentOuterD)}`);
+    setDraftName(t('Мой Ø{0}', Math.round(currentOuterD)));
     setSaving(true);
   };
 
   const commitSave = () => {
-    const trimmed = draftName.trim() || `Мой Ø${Math.round(currentOuterD)}`;
+    const trimmed = draftName.trim() || t('Мой Ø{0}', Math.round(currentOuterD));
     onSaveCurrent(trimmed);
     setSaving(false);
   };
@@ -90,10 +91,10 @@ export function PresetsModal({
             </span>
             <div className="min-w-0">
               <h2 id="presets-modal-title" className="text-[15px] font-bold leading-tight text-slate-900">
-                Пресеты проставок
+                {t('Пресеты проставок')}
               </h2>
               <p className="mt-0.5 text-[11.5px] text-slate-500">
-                Готовые типоразмеры автодинамиков и ваши сохранённые конфигурации
+                {t('Готовые типоразмеры автодинамиков и ваши сохранённые конфигурации')}
               </p>
             </div>
           </div>
@@ -101,7 +102,7 @@ export function PresetsModal({
             ref={closeBtnRef}
             type="button"
             onClick={onClose}
-            aria-label="Закрыть окно пресетов"
+            aria-label={t('Закрыть окно пресетов')}
             className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-800 cursor-pointer"
           >
             <X className="h-4 w-4" />
@@ -112,7 +113,9 @@ export function PresetsModal({
         <div className="flex-1 min-h-0 overflow-y-auto space-y-4 p-5">
           {/* Built-in presets */}
           <div>
-            <div className="mb-2 text-[11px] font-bold tracking-wider uppercase text-slate-400">Типовые размеры</div>
+            <div className="mb-2 text-[11px] font-bold tracking-wider uppercase text-slate-400">
+              {t('Типовые размеры')}
+            </div>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {PRESETS.map((p, idx) => {
                 const key = `builtin:${idx}`;
@@ -151,7 +154,8 @@ export function PresetsModal({
           <div className="border-t border-slate-100 pt-4">
             <div className="mb-2 flex items-center justify-between gap-2">
               <span className="text-[11px] font-bold tracking-wider uppercase text-slate-400">
-                Сохранённые виды ({savedPresets.length})
+                {t('Сохранённые виды (')}
+                {savedPresets.length})
               </span>
               {!saving && (
                 <button
@@ -160,7 +164,7 @@ export function PresetsModal({
                   className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-[#b6c3d1] bg-white px-2.5 py-1 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:bg-[#eaf1fb]/60 hover:text-[#154b96] transition-colors cursor-pointer"
                 >
                   <BookmarkPlus className="h-4 w-4 shrink-0" aria-hidden="true" />
-                  <span>Сохранить текущий вид</span>
+                  <span>{t('Сохранить текущий вид')}</span>
                 </button>
               )}
             </div>
@@ -185,8 +189,8 @@ export function PresetsModal({
                       setSaving(false);
                     }
                   }}
-                  placeholder="Название пресета"
-                  aria-label="Название пресета"
+                  placeholder={t('Название пресета')}
+                  aria-label={t('Название пресета')}
                   className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-[#1e63c4] focus:outline-none"
                 />
                 <button
@@ -194,12 +198,12 @@ export function PresetsModal({
                   className="inline-flex h-8 items-center gap-1 rounded-lg bg-[#1e63c4] px-3 text-xs font-semibold text-white hover:bg-[#154b96] cursor-pointer whitespace-nowrap"
                 >
                   <Check className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>Сохранить</span>
+                  <span>{t('Сохранить')}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setSaving(false)}
-                  aria-label="Отменить сохранение"
+                  aria-label={t('Отменить сохранение')}
                   className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-100 cursor-pointer"
                 >
                   <X className="h-3.5 w-3.5" />
@@ -230,14 +234,15 @@ export function PresetsModal({
                       >
                         <span className="truncate w-full text-[13px] font-bold text-[#154b96]">{sp.name}</span>
                         <span className="font-mono-num mt-0.5 text-[11px] text-slate-500">
-                          Ø{fmtN(sp.p.outerD || 180, 0)} × {fmtN(sp.p.thick || 16, 0)} мм
+                          Ø{fmtN(sp.p.outerD || 180, 0)} × {fmtN(sp.p.thick || 16, 0)}
+                          {t(' мм')}
                         </span>
                       </button>
                       <button
                         type="button"
                         onClick={() => onDeleteSaved(idx)}
-                        aria-label={`Удалить пресет «${sp.name}»`}
-                        title={`Удалить пресет «${sp.name}»`}
+                        aria-label={t('Удалить пресет «{0}»', sp.name)}
+                        title={t('Удалить пресет «{0}»', sp.name)}
                         className="mr-2 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
                       >
                         <Trash2 className="h-4 w-4" aria-hidden="true" />
@@ -249,8 +254,9 @@ export function PresetsModal({
             ) : (
               !saving && (
                 <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50/70 px-3.5 py-3 text-center text-xs text-slate-500">
-                  Текущие размеры: Ø{fmtN(currentOuterD, 0)} × {fmtN(currentThick, 0)} мм — можно сохранить как
-                  собственный шаблон.
+                  {t('Текущие размеры: Ø')}
+                  {fmtN(currentOuterD, 0)} × {fmtN(currentThick, 0)}
+                  {t(' мм — можно сохранить как собственный шаблон.')}
                 </p>
               )
             )}
@@ -264,7 +270,7 @@ export function PresetsModal({
             onClick={onClose}
             className="rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
           >
-            Закрыть
+            {t('Закрыть')}
           </button>
         </div>
       </div>

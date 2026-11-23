@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import type {
   BoltSize,
   BoltSpec,
@@ -11,18 +12,26 @@ import type {
 } from './types';
 
 export const MATS: Record<MaterialId, MaterialDef> = {
-  mdf: { name: 'МДФ', shortName: 'МДФ', color: '#c9a06b', rough: 0.92, metal: 0.02, env: 0.4, tex: 'wood' },
+  mdf: { name: t('МДФ'), shortName: t('МДФ'), color: '#c9a06b', rough: 0.92, metal: 0.02, env: 0.4, tex: 'wood' },
   fanera: {
-    name: 'Фанера берёзовая',
-    shortName: 'Фанера',
+    name: t('Фанера берёзовая'),
+    shortName: t('Фанера'),
     color: '#d8b47e',
     rough: 0.85,
     metal: 0.02,
     env: 0.45,
     tex: 'ply',
   },
-  abs: { name: 'ABS-пластик', shortName: 'ABS', color: '#39414b', rough: 0.5, metal: 0.08, env: 0.7, tex: 'noise' },
-  alu: { name: 'Алюминий', shortName: 'Алюм.', color: '#b9c5d0', rough: 0.32, metal: 0.92, env: 1.1, tex: 'brush' },
+  abs: { name: t('ABS-пластик'), shortName: 'ABS', color: '#39414b', rough: 0.5, metal: 0.08, env: 0.7, tex: 'noise' },
+  alu: {
+    name: t('Алюминий'),
+    shortName: t('Алюм.'),
+    color: '#b9c5d0',
+    rough: 0.32,
+    metal: 0.92,
+    env: 1.1,
+    tex: 'brush',
+  },
 };
 
 export const BOLTS: Record<Exclude<BoltSize, 'custom'>, BoltSpec> = {
@@ -35,46 +44,46 @@ export const BOLTS: Record<Exclude<BoltSize, 'custom'>, BoltSpec> = {
 };
 
 export const BOLT_OPTS: [BoltSize, string][] = [
-  ['custom', 'Своё отверстие (ручной диаметр)'],
-  ['M3', 'Болт M3 (отверстие Ø3,4 мм)'],
-  ['M4', 'Болт M4 (отверстие Ø4,5 мм)'],
-  ['M5', 'Болт M5 (отверстие Ø5,5 мм)'],
-  ['M6', 'Болт M6 (отверстие Ø6,6 мм)'],
-  ['M8', 'Болт M8 (отверстие Ø9,0 мм)'],
-  ['M10', 'Болт M10 (отверстие Ø11,0 мм)'],
+  ['custom', t('Своё отверстие (ручной диаметр)')],
+  ['M3', t('Болт M3 (отверстие Ø3,4 мм)')],
+  ['M4', t('Болт M4 (отверстие Ø4,5 мм)')],
+  ['M5', t('Болт M5 (отверстие Ø5,5 мм)')],
+  ['M6', t('Болт M6 (отверстие Ø6,6 мм)')],
+  ['M8', t('Болт M8 (отверстие Ø9,0 мм)')],
+  ['M10', t('Болт M10 (отверстие Ø11,0 мм)')],
 ];
 
 export const RECESS_OPTS: [RecessMode, string][] = [
-  ['none', 'Без углубления (головка снаружи)'],
-  ['flush', 'Цековка · цилиндр под головку (заподлицо)'],
-  ['deep', 'Цековка · утопленная глубже (+1 мм)'],
-  ['csk', 'Зенковка 90° · конус впотай'],
-  ['csk_deep', 'Зенковка 90° · конус глубже (+0,5 мм)'],
+  ['none', t('Без углубления (головка снаружи)')],
+  ['flush', t('Цековка · цилиндр под головку (заподлицо)')],
+  ['deep', t('Цековка · утопленная глубже (+1 мм)')],
+  ['csk', t('Зенковка 90° · конус впотай')],
+  ['csk_deep', t('Зенковка 90° · конус глубже (+0,5 мм)')],
 ];
 
 export const CUSTOM_RECESS_OPTS: [RecessMode, string][] = [
-  ['none', 'Без углубления (головка снаружи)'],
-  ['csk', 'Зенковка 90° · конус под саморез'],
-  ['csk_deep', 'Зенковка 90° · конус глубже (+0,5 мм)'],
+  ['none', t('Без углубления (головка снаружи)')],
+  ['csk', t('Зенковка 90° · конус под саморез')],
+  ['csk_deep', t('Зенковка 90° · конус глубже (+0,5 мм)')],
 ];
 
 export const MATERIAL_OPTS: [MaterialId, string][] = [
-  ['mdf', 'МДФ (MDF)'],
-  ['fanera', 'Фанера берёзовая'],
-  ['abs', 'ABS-пластик (3D-печать)'],
-  ['alu', 'Алюминий (ЧПУ)'],
+  ['mdf', t('МДФ (MDF)')],
+  ['fanera', t('Фанера берёзовая')],
+  ['abs', t('ABS-пластик (3D-печать)')],
+  ['alu', t('Алюминий (ЧПУ)')],
 ];
 
 export const QUALITY_OPTS: [QualityMode, string][] = [
-  ['draft', 'Черновик'],
-  ['std', 'Стандарт'],
-  ['high', 'Высокое'],
+  ['draft', t('Черновик')],
+  ['std', t('Стандарт')],
+  ['high', t('Высокое')],
 ];
 
 export const BG_OPTS: [SceneBgMode, string][] = [
-  ['light', 'Светлый чертёжный'],
-  ['gray', 'Нейтральный серый'],
-  ['dark', 'Тёмная студия'],
+  ['light', t('Светлый чертёжный')],
+  ['gray', t('Нейтральный серый')],
+  ['dark', t('Тёмная студия')],
 ];
 
 export const DEFAULTS: SpacerState = {
@@ -170,9 +179,9 @@ export const LIMITS: Partial<Record<keyof SpacerState, [number, number]>> = {
 };
 
 export const PRESETS: PresetDef[] = [
-  { name: 'Универсал 16,5 см', meta: 'Ø180 · M5 ⌴ / 4×Ø4,2', p: {} },
+  { name: t('Универсал 16,5 см'), meta: t('Ø180 · M5 ⌴ / 4×Ø4,2'), p: {} },
   {
-    name: 'ВАЗ 2110 · дверь',
+    name: t('ВАЗ 2110 · дверь'),
     meta: 'Ø176 · M5 ⌴ / 4×Ø4',
     p: {
       outerD: 176,
@@ -200,8 +209,8 @@ export const PRESETS: PresetDef[] = [
     },
   },
   {
-    name: 'Kia Rio · 16,5 см',
-    meta: 'Ø184 · M6 пазы / 4×Ø4,2',
+    name: t('Kia Rio · 16,5 см'),
+    meta: t('Ø184 · M6 пазы / 4×Ø4,2'),
     p: {
       outerD: 184,
       innerD: 146,
@@ -259,8 +268,8 @@ export const PRESETS: PresetDef[] = [
     },
   },
   {
-    name: 'СЧ 13 см · 5,25"',
-    meta: 'Ø146 · M4 ⌴ / 4×Ø3,5',
+    name: t('СЧ 13 см · 5,25"'),
+    meta: t('Ø146 · M4 ⌴ / 4×Ø3,5'),
     p: {
       outerD: 146,
       innerD: 116,
@@ -288,7 +297,7 @@ export const PRESETS: PresetDef[] = [
     },
   },
   {
-    name: '20 см · УАЗ / ГАЗель',
+    name: t('20 см · УАЗ / ГАЗель'),
     meta: 'Ø232 · M8 ⌴ / M5 ⌴',
     p: {
       outerD: 232,

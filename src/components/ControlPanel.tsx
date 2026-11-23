@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   AlertCircle,
@@ -105,9 +106,9 @@ interface ControlPanelProps {
 }
 
 const Q_LABELS: Record<QualityMode, string> = {
-  draft: 'Черновик',
-  std: 'Стандарт',
-  high: 'Высокое',
+  draft: t('Черновик'),
+  std: t('Стандарт'),
+  high: t('Высокое'),
 };
 
 interface CollapsibleCardProps {
@@ -219,23 +220,23 @@ function LayerCardBody({
       <div className="flex flex-col gap-1.5">
         <div className={`flex items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 ${accentBg}`}>
           <span className="text-[11px] font-medium text-slate-600 truncate">
-            {isDoor ? 'Крепление проставки к металлу двери' : 'Крепление корзины динамика к проставке'}
+            {isDoor ? t('Крепление проставки к металлу двери') : t('Крепление корзины динамика к проставке')}
           </span>
           <button
             type="button"
             onClick={() => onCopyLayer(layer)}
-            title={`Скопировать параметры крепежа на ${isDoor ? 'динамик' : 'дверь'}`}
+            title={t('Скопировать параметры крепежа на {0}', isDoor ? t('динамик') : t('дверь'))}
             className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 hover:border-slate-300 hover:text-slate-900 cursor-pointer whitespace-nowrap"
           >
             <Copy className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-            <span>{isDoor ? 'На динамик' : 'На дверь'}</span>
+            <span>{isDoor ? t('На динамик') : t('На дверь')}</span>
           </button>
         </div>
         <ConstraintHint notice={noticeFor('copyLayer')} onJumpTarget={onFocusTarget} onDismiss={onDismissConstraint} />
       </div>
 
       <SelectField<BoltSize>
-        label="Тип крепежа"
+        label={t('Тип крепежа')}
         value={boltVal}
         options={BOLT_OPTS}
         constraint={noticeFor(boltKey)}
@@ -255,34 +256,46 @@ function LayerCardBody({
       <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5 rounded-lg border border-dashed border-slate-200 bg-slate-50/80 px-2.5 py-1.5 font-mono-num text-[10.5px] leading-snug text-slate-700">
         {boltSpec ? (
           <>
-            <strong style={{ color: accentDark }}>Болт {boltVal}</strong>
-            <span>· отв.</span>
+            <strong style={{ color: accentDark }}>
+              {t('Болт ')}
+              {boltVal}
+            </strong>
+            <span>{t('· отв.')}</span>
             <strong style={{ color: accentDark }}>Ø{fmtN(boltSpec.clear)}</strong>
             {fa.active ? (
               fa.recessType === 'csk' ? (
                 <>
                   <span>·</span>
-                  <span className="inline-flex items-center gap-0.5" title="Зенковка 90°">
+                  <span className="inline-flex items-center gap-0.5" title={t('Зенковка 90°')}>
                     <CountersinkIcon className="h-3.5 w-3.5 text-slate-600" />
                     <span>{fmtN(fa.cbD)}×90°</span>
                   </span>
-                  <span>(глуб. {fmtN(fa.actualCbDepth, 1)})</span>
+                  <span>
+                    {t('(глуб. ')}
+                    {fmtN(fa.actualCbDepth, 1)})
+                  </span>
                   {cbClamped ? (
                     <span className="font-semibold text-red-700">
-                      · подрезано с {fmtN(fa.cbDepth, 1)} · дно {fmtN(floorMm, 1)}
-                      {'\u00A0'}мм
+                      {t('· подрезано с ')}
+                      {fmtN(fa.cbDepth, 1)}
+                      {t(' · дно ')}
+                      {fmtN(floorMm, 1)}
+                      {'\u00A0'}
+                      {t('мм')}
                     </span>
                   ) : (
                     <span>
-                      · дно {fmtN(floorMm, 1)}
-                      {'\u00A0'}мм
+                      {t('· дно ')}
+                      {fmtN(floorMm, 1)}
+                      {'\u00A0'}
+                      {t('мм')}
                     </span>
                   )}
                 </>
               ) : (
                 <>
                   <span>·</span>
-                  <span className="inline-flex items-center gap-0.5" title="Цековка">
+                  <span className="inline-flex items-center gap-0.5" title={t('Цековка')}>
                     <CounterboreIcon className="h-3.5 w-3.5 text-slate-600" />
                     <span>
                       {fmtN(fa.cbD)}×{fmtN(fa.actualCbDepth, 1)}
@@ -290,39 +303,51 @@ function LayerCardBody({
                   </span>
                   {cbClamped ? (
                     <span className="font-semibold text-red-700">
-                      · подрезано с {fmtN(fa.cbDepth, 0)} · дно {fmtN(floorMm, 1)}
-                      {'\u00A0'}мм
+                      {t('· подрезано с ')}
+                      {fmtN(fa.cbDepth, 0)}
+                      {t(' · дно ')}
+                      {fmtN(floorMm, 1)}
+                      {'\u00A0'}
+                      {t('мм')}
                     </span>
                   ) : (
                     <span>
-                      · дно {fmtN(floorMm, 1)}
-                      {'\u00A0'}мм
+                      {t('· дно ')}
+                      {fmtN(floorMm, 1)}
+                      {'\u00A0'}
+                      {t('мм')}
                     </span>
                   )}
                 </>
               )
             ) : (
               <span>
-                · головка Ø{fmtN(boltSpec.dk)}×{fmtN(boltSpec.k, 0)} · снаружи
+                {t('· головка Ø')}
+                {fmtN(boltSpec.dk)}×{fmtN(boltSpec.k, 0)}
+                {t(' · снаружи')}
               </span>
             )}
           </>
         ) : fa.active && fa.recessType === 'csk' ? (
           <>
-            <span>Отверстие</span>
+            <span>{t('Отверстие')}</span>
             <strong style={{ color: accentDark }}>Ø{fmtN(state[holeDKey])}</strong>
             <span>·</span>
-            <span className="inline-flex items-center gap-0.5" title="Зенковка 90°">
+            <span className="inline-flex items-center gap-0.5" title={t('Зенковка 90°')}>
               <CountersinkIcon className="h-3.5 w-3.5 text-slate-600" />
               <span>{fmtN(fa.cbD)}×90°</span>
             </span>
             <span>
-              (глуб. {fmtN(fa.actualCbDepth, 1)}) · дно {fmtN(floorMm, 1)}
-              {'\u00A0'}мм
+              {t('(глуб. ')}
+              {fmtN(fa.actualCbDepth, 1)}
+              {t(') · дно ')}
+              {fmtN(floorMm, 1)}
+              {'\u00A0'}
+              {t('мм')}
             </span>
           </>
         ) : (
-          <span>Произвольный Ø отверстия · без углубления</span>
+          <span>{t('Произвольный Ø отверстия · без углубления')}</span>
         )}
       </div>
 
@@ -333,7 +358,7 @@ function LayerCardBody({
           return (
             <div className="flex flex-col gap-1.5">
               <SliderField
-                label="Окружность отверстий"
+                label={t('Окружность отверстий')}
                 icon={
                   <BcdDiameterIcon className={`h-4 w-4 shrink-0 ${isDoor ? 'text-[#1e63c4]' : 'text-[#d9541e]'}`} />
                 }
@@ -343,7 +368,7 @@ function LayerCardBody({
                 inputMin={WIDE_RANGES[bcdKey][0]}
                 inputMax={WIDE_RANGES[bcdKey][1]}
                 step={1}
-                unit="мм"
+                unit={t('мм')}
                 accent={accent}
                 constraint={noticeFor(bcdKey)}
                 onJumpTarget={onFocusTarget}
@@ -352,13 +377,15 @@ function LayerCardBody({
               />
               <div className="flex items-center justify-between gap-2">
                 <span className="font-mono-num text-[11px] text-slate-500">
-                  Центр рамки: Ø{fmtN(centeredBcd, 0)} мм
+                  {t('Центр рамки: Ø')}
+                  {fmtN(centeredBcd, 0)}
+                  {t(' мм')}
                 </span>
                 <button
                   type="button"
                   disabled={isCentered}
                   onClick={() => onPatch({ [bcdKey]: centeredBcd }, bcdKey)}
-                  title={`Поставить отверстия на Ø${fmtN(centeredBcd, 0)} мм — ровно посередине стенки кольца`}
+                  title={t('Поставить отверстия на Ø{0} мм — ровно посередине стенки кольца', fmtN(centeredBcd, 0))}
                   className={`inline-flex h-7 items-center gap-1.5 rounded-md border px-2 text-[11px] font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45 ${
                     isCentered
                       ? 'border-emerald-200 bg-emerald-50/80 text-emerald-700 cursor-default'
@@ -368,12 +395,12 @@ function LayerCardBody({
                   {isCentered ? (
                     <>
                       <Check className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                      <span>По центру рамки</span>
+                      <span>{t('По центру рамки')}</span>
                     </>
                   ) : (
                     <>
                       <Crosshair className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                      <span>По центру рамки</span>
+                      <span>{t('По центру рамки')}</span>
                     </>
                   )}
                 </button>
@@ -383,7 +410,7 @@ function LayerCardBody({
         })()}
 
         <StepperField
-          label={slotsVal ? 'Количество пазов' : 'Количество отверстий'}
+          label={slotsVal ? t('Количество пазов') : t('Количество отверстий')}
           value={state[nKey]}
           min={2}
           max={8}
@@ -404,31 +431,31 @@ function LayerCardBody({
           const compatible = areLayerCountsCompatible(state.doorN, state.spkN);
           const autoShifted = isDoorAutoShifted(state);
           const minGap = minActualCrossLayerGapDeg(state);
-          const otherLabel = isDoor ? 'динамика' : 'двери';
+          const otherLabel = isDoor ? t('динамика') : t('двери');
           const strictIncompatible = !compatible && !state.doorAutoSpace;
           const tightRigid = strictIncompatible && minGap < 14;
           const canEnableAutoShift = isDoor && strictIncompatible && isBalanced;
 
           const statusText = autoShifted
             ? isDoor
-              ? `Отступ от динамика · мин. ${fmtN(minGap, 1)}°`
-              : `Дверь обходит динамик · мин. ${fmtN(minGap, 1)}°`
+              ? t('Отступ от динамика · мин. {0}°', fmtN(minGap, 1))
+              : t('Дверь обходит динамик · мин. {0}°', fmtN(minGap, 1))
             : strictIncompatible
-              ? `Шаг ${fmtN(360 / state[nKey], 0)}° · мин. ${fmtN(minGap, 1)}°`
-              : `Симметрия: ${fmtN(optRot, 1)}° · мин. ${fmtN(minGap, 1)}°`;
+              ? t('Шаг {0}° · мин. {1}°', fmtN(360 / state[nKey], 0), fmtN(minGap, 1))
+              : t('Симметрия: {0}° · мин. {1}°', fmtN(optRot, 1), fmtN(minGap, 1));
 
-          const confirmedLabel = strictIncompatible ? 'Оптимально' : 'Симметрия';
+          const confirmedLabel = strictIncompatible ? t('Оптимально') : t('Симметрия');
 
           return (
             <div className="flex flex-col gap-2 pt-1 border-t border-slate-100">
               <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                 <SliderField
-                  label={boltVal !== 'custom' ? 'Отв. под болт' : slotsVal ? 'Ширина паза' : 'Отверстие'}
+                  label={boltVal !== 'custom' ? t('Отв. под болт') : slotsVal ? t('Ширина паза') : t('Отверстие')}
                   value={state[holeDKey]}
                   min={2.5}
                   max={12}
                   step={0.1}
-                  unit="мм"
+                  unit={t('мм')}
                   accent={accent}
                   disabled={boltVal !== 'custom'}
                   constraint={noticeFor(holeDKey)}
@@ -436,7 +463,7 @@ function LayerCardBody({
                   onChange={(v) => onPatch({ [holeDKey]: v }, holeDKey)}
                 />
                 <SliderField
-                  label="Поворот группы"
+                  label={t('Поворот группы')}
                   value={state[rotKey]}
                   min={0}
                   max={359.5}
@@ -466,18 +493,22 @@ function LayerCardBody({
                         'doorAutoSpace'
                       );
                     }}
-                    title="Включить автоматический обход отверстий динамика, чтобы развести близкие пары"
+                    title={t('Включить автоматический обход отверстий динамика, чтобы развести близкие пары')}
                     className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50/80 px-2 text-[11px] font-semibold text-amber-800 transition-colors hover:border-amber-400 hover:bg-amber-100/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/45"
                   >
                     <Crosshair className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                    <span>Развести</span>
+                    <span>{t('Развести')}</span>
                   </button>
                 ) : (
                   <button
                     type="button"
                     disabled={isBalanced}
                     onClick={() => onPatch({ doorRot: pair.doorRot, spkRot: pair.spkRot }, rotKey)}
-                    title={`Выставить симметричный поворот ${fmtN(optRot, 1)}° относительно отверстий ${otherLabel}`}
+                    title={t(
+                      'Выставить симметричный поворот {0}° относительно отверстий {1}',
+                      fmtN(optRot, 1),
+                      otherLabel
+                    )}
                     className={`inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md border px-2 text-[11px] font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45 ${
                       isBalanced
                         ? strictIncompatible
@@ -494,7 +525,7 @@ function LayerCardBody({
                     ) : (
                       <>
                         <Crosshair className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                        <span>Выровнять</span>
+                        <span>{t('Выровнять')}</span>
                       </>
                     )}
                   </button>
@@ -503,11 +534,11 @@ function LayerCardBody({
               {isDoor && (
                 <div className="pt-1 border-t border-slate-100">
                   <ToggleField
-                    label="Обходить отверстия динамика"
+                    label={t('Обходить отверстия динамика')}
                     hint={
                       autoShifted
-                        ? 'Сдвигает отверстия двери в свободные промежутки между крепежом динамика'
-                        : 'При некратном количестве разводит отверстия двери и динамика'
+                        ? t('Сдвигает отверстия двери в свободные промежутки между крепежом динамика')
+                        : t('При некратном количестве разводит отверстия двери и динамика')
                     }
                     checked={state.doorAutoSpace}
                     accent={accent}
@@ -527,7 +558,7 @@ function LayerCardBody({
 
       <div className="border-t border-slate-100 pt-2.5 flex flex-col gap-2.5">
         <ToggleField
-          label="Дуговые пазы вместо отверстий"
+          label={t('Дуговые пазы вместо отверстий')}
           checked={slotsVal}
           accent={accent}
           constraint={noticeFor(slotsKey)}
@@ -539,7 +570,7 @@ function LayerCardBody({
         />
         {slotsVal && (
           <SliderField
-            label="Угол раскрытия паза"
+            label={t('Угол раскрытия паза')}
             value={state[slotAngKey]}
             min={6}
             max={40}
@@ -556,7 +587,7 @@ function LayerCardBody({
 
       <div className="border-t border-slate-100 pt-2.5 flex flex-col gap-2.5">
         <SelectField<RecessMode>
-          label="Углубление под головку"
+          label={t('Углубление под головку')}
           icon={
             fa.active ? (
               fa.recessType === 'csk' ? (
@@ -577,7 +608,7 @@ function LayerCardBody({
         />
         {recessVal !== 'none' && (
           <SliderField
-            label={fa.recessType === 'csk' ? 'Зазор зенковки' : 'Зазор вокруг головки'}
+            label={fa.recessType === 'csk' ? t('Зазор зенковки') : t('Зазор вокруг головки')}
             icon={
               fa.recessType === 'csk' ? (
                 <CountersinkIcon className="h-4 w-4 shrink-0 text-slate-500" />
@@ -589,7 +620,7 @@ function LayerCardBody({
             min={0.2}
             max={1.5}
             step={0.1}
-            unit="мм"
+            unit={t('мм')}
             accent={accent}
             constraint={noticeFor(headClearKey)}
             onJumpTarget={onFocusTarget}
@@ -602,8 +633,8 @@ function LayerCardBody({
       {isDoor && (
         <div className="border-t border-slate-100 pt-2.5 flex flex-col gap-2.5">
           <ToggleField
-            label="Монтажные ушки"
-            hint="Расширяют внешний контур вокруг отверстий двери"
+            label={t('Монтажные ушки')}
+            hint={t('Расширяют внешний контур вокруг отверстий двери')}
             checked={state.ears}
             accent={accent}
             constraint={noticeFor('ears')}
@@ -615,12 +646,12 @@ function LayerCardBody({
           />
           {state.ears && (
             <SliderField
-              label="Вылет ушка (запас стенки)"
+              label={t('Вылет ушка (запас стенки)')}
               value={state.earMargin}
               min={4}
               max={16}
               step={0.5}
-              unit="мм"
+              unit={t('мм')}
               accent={accent}
               constraint={noticeFor('earMargin')}
               onJumpTarget={onFocusTarget}
@@ -668,7 +699,9 @@ function RingControlsBody({
     <div className="p-3 space-y-3">
       {showRangeToggle && (
         <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-100">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">Диапазон шкалы</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+            {t('Диапазон шкалы')}
+          </span>
           <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5">
             <button
               type="button"
@@ -686,7 +719,7 @@ function RingControlsBody({
                 wideRange ? 'bg-white text-[#154b96] shadow-2xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Произвольный
+              {t('Произвольный')}
             </button>
           </div>
         </div>
@@ -694,7 +727,7 @@ function RingControlsBody({
 
       <div className="flex flex-col gap-2.5">
         <SliderField
-          label="Внешний диаметр"
+          label={t('Внешний диаметр')}
           icon={<OuterDiameterIcon />}
           value={state.outerD}
           min={ranges.outerD[0]}
@@ -702,7 +735,7 @@ function RingControlsBody({
           inputMin={WIDE_RANGES.outerD[0]}
           inputMax={WIDE_RANGES.outerD[1]}
           step={1}
-          unit="мм"
+          unit={t('мм')}
           constraint={noticeFor('outerD')}
           onJumpTarget={onFocusTarget}
           onAutoFitHoles={onAutoFitHoles}
@@ -710,7 +743,7 @@ function RingControlsBody({
           onChange={(v) => onPatch({ outerD: v }, 'outerD')}
         />
         <SliderField
-          label="Внутренний вырез"
+          label={t('Внутренний вырез')}
           icon={<InnerCutoutIcon />}
           value={state.innerD}
           min={ranges.innerD[0]}
@@ -718,7 +751,7 @@ function RingControlsBody({
           inputMin={WIDE_RANGES.innerD[0]}
           inputMax={WIDE_RANGES.innerD[1]}
           step={1}
-          unit="мм"
+          unit={t('мм')}
           constraint={noticeFor('innerD')}
           onJumpTarget={onFocusTarget}
           onAutoFitHoles={onAutoFitHoles}
@@ -727,14 +760,15 @@ function RingControlsBody({
         />
         <div className="flex flex-col gap-1 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11.5px] text-slate-600">
           <div className="flex items-center justify-between">
-            <span className="font-medium">Ширина стенки кольца</span>
+            <span className="font-medium">{t('Ширина стенки кольца')}</span>
             <span className="font-mono-num text-[12px] font-semibold text-slate-800">
-              {fmtN(Math.max(0, analysis.ringW))} мм
+              {fmtN(Math.max(0, analysis.ringW))}
+              {t(' мм')}
             </span>
           </div>
           {autoFitHolesActive && (
             <span className="text-[10.5px] leading-snug text-slate-500">
-              Отверстия подстраиваются под кольцо · точная настройка на шагах 2–3
+              {t('Отверстия подстраиваются под кольцо · точная настройка на шагах 2–3')}
             </span>
           )}
         </div>
@@ -742,7 +776,7 @@ function RingControlsBody({
 
       <div className="pt-2.5 border-t border-slate-100 flex flex-col gap-2.5">
         <SliderField
-          label="Толщина проставки"
+          label={t('Толщина проставки')}
           icon={<ThicknessIcon />}
           value={state.thick}
           min={ranges.thick[0]}
@@ -750,7 +784,7 @@ function RingControlsBody({
           inputMin={WIDE_RANGES.thick[0]}
           inputMax={WIDE_RANGES.thick[1]}
           step={1}
-          unit="мм"
+          unit={t('мм')}
           constraint={noticeFor('thick')}
           onJumpTarget={onFocusTarget}
           onAutoFitHoles={onAutoFitHoles}
@@ -758,8 +792,8 @@ function RingControlsBody({
           onChange={(v) => onPatch({ thick: v }, 'thick')}
         />
         <ToggleField
-          label="Фаска по контуру 45°"
-          hint="Снимает кромку 45° по внешнему и внутреннему контуру"
+          label={t('Фаска по контуру 45°')}
+          hint={t('Снимает кромку 45° по внешнему и внутреннему контуру')}
           checked={state.chamfer}
           onChange={(v) => {
             onPatch({ chamfer: v });
@@ -803,7 +837,8 @@ export function ControlPanel({
     <span className="inline-flex items-center gap-1">
       <DiameterIcon className="h-3.5 w-3.5 shrink-0" />
       <span>
-        {fmtN(state.outerD, 0)}/{fmtN(state.innerD, 0)} · {fmtN(state.thick, 0)} мм
+        {fmtN(state.outerD, 0)}/{fmtN(state.innerD, 0)} · {fmtN(state.thick, 0)}
+        {t(' мм')}
       </span>
     </span>
   );
@@ -880,13 +915,15 @@ export function ControlPanel({
 
     return (
       <aside
-        aria-label="Мастер создания модели"
+        aria-label={t('Мастер создания модели')}
         className="flex flex-col overflow-hidden rounded-xl border border-[#cfd8e3] bg-[#f8fafc] shadow-xs lg:min-h-0 lg:w-[404px] lg:shrink-0"
       >
         {/* Header aligned with viewport toolbar rail */}
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-200 bg-white px-2.5 py-3">
           <div className="flex items-center gap-2 min-w-0 pl-0.5">
-            <h2 className="text-[12px] font-bold tracking-wider uppercase text-slate-800 truncate">Мастер создания</h2>
+            <h2 className="text-[12px] font-bold tracking-wider uppercase text-slate-800 truncate">
+              {t('Мастер создания')}
+            </h2>
             <span className="font-mono-num text-[11px] font-semibold text-[#154b96] shrink-0">
               {stepIndex + 1}/{WIZARD_STEPS.length}
             </span>
@@ -896,12 +933,12 @@ export function ControlPanel({
             onClick={onSkipWizard}
             className="inline-flex h-9 shrink-0 items-center rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:bg-blue-50/50 hover:text-[#154b96] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45"
           >
-            Все параметры
+            {t('Все параметры')}
           </button>
         </div>
 
         {/* Clickable 4-step progress rail */}
-        <nav aria-label="Шаги мастера" className="shrink-0 border-b border-slate-200/80 bg-[#f8fafc] px-2.5 py-2">
+        <nav aria-label={t('Шаги мастера')} className="shrink-0 border-b border-slate-200/80 bg-[#f8fafc] px-2.5 py-2">
           <ol className="grid grid-cols-4 gap-1.5">
             {WIZARD_STEPS.map((step, idx) => {
               const isActive = idx === stepIndex;
@@ -969,14 +1006,14 @@ export function ControlPanel({
                   <div className="border-b border-slate-100 bg-slate-50/70 px-3 py-2.5">
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">
-                        Типоразмер
+                        {t('Типоразмер')}
                       </span>
                       <button
                         type="button"
                         onClick={onOpenPresets}
                         className="inline-flex min-h-6 items-center text-[11px] font-semibold text-[#154b96] hover:underline cursor-pointer"
                       >
-                        Авто-пресеты…
+                        {t('Авто-пресеты…')}
                       </button>
                     </div>
                     <div className="grid grid-cols-2 gap-1.5">
@@ -1012,9 +1049,11 @@ export function ControlPanel({
                             : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300'
                         }`}
                       >
-                        <span className="text-[12px] font-bold leading-tight whitespace-nowrap">Произвольный</span>
+                        <span className="text-[12px] font-bold leading-tight whitespace-nowrap">
+                          {t('Произвольный')}
+                        </span>
                         <span className="font-mono-num text-[10px] text-slate-600 mt-0.5 whitespace-nowrap">
-                          Ø50–500 · любой
+                          {t('Ø50–500 · любой')}
                         </span>
                       </button>
                     </div>
@@ -1074,18 +1113,18 @@ export function ControlPanel({
                   const contourCount =
                     1 + (analysis.cutValid ? 1 : 0) + analysis.holes.filter((h) => h.valid).length + cbCount + cskCount;
                   const dxfLayers = [
-                    'Контур',
-                    'Вырез',
-                    'Дверь',
-                    'Динамик',
-                    cbCount > 0 ? 'Цековка' : null,
-                    cskCount > 0 ? 'Зенковка' : null,
+                    t('Контур'),
+                    t('Вырез'),
+                    t('Дверь'),
+                    t('Динамик'),
+                    cbCount > 0 ? t('Цековка') : null,
+                    cskCount > 0 ? t('Зенковка') : null,
                   ].filter(Boolean);
 
                   return (
                     <div className="p-3 space-y-3">
                       {/* 2-way production target */}
-                      <div className="grid grid-cols-2 gap-2" role="group" aria-label="Способ изготовления">
+                      <div className="grid grid-cols-2 gap-2" role="group" aria-label={t('Способ изготовления')}>
                         <button
                           type="button"
                           aria-pressed={isPrintMode}
@@ -1111,9 +1150,9 @@ export function ControlPanel({
                                 isPrintMode ? 'text-[#154b96]' : 'text-slate-800'
                               }`}
                             >
-                              3D-печать
+                              {t('3D-печать')}
                             </div>
-                            <div className="text-[10.5px] text-slate-600 mt-0.5">Модель STL · мм</div>
+                            <div className="text-[10.5px] text-slate-600 mt-0.5">{t('Модель STL · мм')}</div>
                           </div>
                         </button>
 
@@ -1142,9 +1181,9 @@ export function ControlPanel({
                                 !isPrintMode ? 'text-[#154b96]' : 'text-slate-800'
                               }`}
                             >
-                              Фрезеровка
+                              {t('Фрезеровка')}
                             </div>
-                            <div className="text-[10.5px] text-slate-600 mt-0.5">Фанера · DXF / ЧПУ</div>
+                            <div className="text-[10.5px] text-slate-600 mt-0.5">{t('Фанера · DXF / ЧПУ')}</div>
                           </div>
                         </button>
                       </div>
@@ -1152,11 +1191,11 @@ export function ControlPanel({
                       {isPrintMode ? (
                         <div className="space-y-2.5 pt-2 border-t border-slate-100">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-[11.5px] font-medium text-slate-700">Детализация STL</span>
+                            <span className="text-[11.5px] font-medium text-slate-700">{t('Детализация STL')}</span>
                             <div
                               className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5"
                               role="group"
-                              aria-label="Детализация 3D-сетки"
+                              aria-label={t('Детализация 3D-сетки')}
                             >
                               {QUALITY_OPTS.map(([val, lbl]) => {
                                 const active = state.quality === val;
@@ -1188,14 +1227,16 @@ export function ControlPanel({
                             <span className="flex items-center gap-2 min-w-0">
                               <Box className="h-4 w-4 shrink-0" aria-hidden="true" />
                               <span className="text-[12.5px] font-semibold">
-                                {analysis.nErr > 0 ? 'STL заблокирован — исправьте ошибки' : 'Скачать STL (3D-печать)'}
+                                {analysis.nErr > 0
+                                  ? t('STL заблокирован — исправьте ошибки')
+                                  : t('Скачать STL (3D-печать)')}
                               </span>
                             </span>
                             <Download className="h-4 w-4 shrink-0 opacity-90" aria-hidden="true" />
                           </button>
 
                           <p className="text-[11px] leading-snug text-slate-500">
-                            Замкнутая 3D-сетка в миллиметрах — включает цековки и зенковки обоих слоёв.
+                            {t('Замкнутая 3D-сетка в миллиметрах — включает цековки и зенковки обоих слоёв.')}
                           </p>
 
                           <div className="grid grid-cols-2 gap-1.5 pt-1">
@@ -1205,7 +1246,7 @@ export function ControlPanel({
                               className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] transition-colors cursor-pointer"
                             >
                               <Layers className="h-4 w-4 shrink-0" aria-hidden="true" />
-                              <span>DXF R12 (ЧПУ)</span>
+                              <span>{t('DXF R12 (ЧПУ)')}</span>
                             </button>
                             <button
                               type="button"
@@ -1213,7 +1254,7 @@ export function ControlPanel({
                               className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] transition-colors cursor-pointer"
                             >
                               <FileCode2 className="h-4 w-4 shrink-0" aria-hidden="true" />
-                              <span>Чертёж SVG 1:1</span>
+                              <span>{t('Чертёж SVG 1:1')}</span>
                             </button>
                           </div>
                         </div>
@@ -1221,9 +1262,10 @@ export function ControlPanel({
                         <div className="space-y-2.5 pt-2 border-t border-slate-100">
                           <div className="rounded-lg bg-slate-50 px-2.5 py-2 text-[11px] text-slate-600">
                             <div className="flex items-center justify-between gap-2">
-                              <span className="font-semibold text-slate-700">В файле DXF R12</span>
+                              <span className="font-semibold text-slate-700">{t('В файле DXF R12')}</span>
                               <span className="font-mono-num text-[10.5px] text-slate-500">
-                                {contourCount} контуров
+                                {contourCount}
+                                {t(' контуров')}
                               </span>
                             </div>
                             <div className="font-mono-num mt-1 text-[10.5px] text-slate-600 leading-relaxed">
@@ -1238,7 +1280,7 @@ export function ControlPanel({
                           >
                             <span className="flex items-center gap-2 min-w-0">
                               <Layers className="h-4 w-4 shrink-0" aria-hidden="true" />
-                              <span className="text-[12.5px] font-semibold">Скачать DXF R12 (ЧПУ)</span>
+                              <span className="text-[12.5px] font-semibold">{t('Скачать DXF R12 (ЧПУ)')}</span>
                             </span>
                             <Download className="h-4 w-4 shrink-0 opacity-90" aria-hidden="true" />
                           </button>
@@ -1250,7 +1292,7 @@ export function ControlPanel({
                               className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] transition-colors cursor-pointer"
                             >
                               <FileCode2 className="h-4 w-4 shrink-0" aria-hidden="true" />
-                              <span>Шаблон SVG 1:1</span>
+                              <span>{t('Шаблон SVG 1:1')}</span>
                             </button>
                             <button
                               type="button"
@@ -1259,7 +1301,7 @@ export function ControlPanel({
                               className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                             >
                               <Box className="h-4 w-4 shrink-0" aria-hidden="true" />
-                              <span>3D-модель STL</span>
+                              <span>{t('3D-модель STL')}</span>
                             </button>
                           </div>
                         </div>
@@ -1272,37 +1314,41 @@ export function ControlPanel({
             {/* Compact Model Summary on Final Step */}
             {currentStep.id === 'export' && (
               <section
-                aria-label="Сводка собранной модели"
+                aria-label={t('Сводка собранной модели')}
                 className="rounded-xl border border-slate-200 bg-white p-3 space-y-2.5"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">Итог модели</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                    {t('Итог модели')}
+                  </span>
                   <button
                     type="button"
                     onClick={onOpenExport}
                     className="inline-flex min-h-6 items-center gap-1 text-[11px] font-semibold text-[#154b96] hover:underline cursor-pointer"
                   >
-                    <span>Все форматы…</span>
+                    <span>{t('Все форматы…')}</span>
                   </button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   <div className="rounded-lg bg-slate-50 px-2.5 py-1.5">
-                    <div className="text-[10px] font-medium text-slate-500">Кольцо</div>
+                    <div className="text-[10px] font-medium text-slate-500">{t('Кольцо')}</div>
                     <div className="font-mono-num font-semibold text-slate-800 mt-0.5">{ringSummary}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 px-2.5 py-1.5">
-                    <div className="text-[10px] font-medium text-slate-500">Полка и кромка</div>
+                    <div className="text-[10px] font-medium text-slate-500">{t('Полка и кромка')}</div>
                     <div className="font-mono-num font-semibold text-slate-800 mt-0.5">
-                      {fmtN(analysis.ringW)} мм · {state.chamfer ? 'фаска' : 'прямой'}
+                      {fmtN(analysis.ringW)}
+                      {t(' мм · ')}
+                      {state.chamfer ? t('фаска') : t('прямой')}
                     </div>
                   </div>
                   <div className="rounded-lg bg-slate-50 px-2.5 py-1.5">
-                    <div className="text-[10px] font-medium text-slate-500">Крепёж к двери</div>
+                    <div className="text-[10px] font-medium text-slate-500">{t('Крепёж к двери')}</div>
                     <div className="font-mono-num font-semibold text-[#154b96] mt-0.5">{doorSummary}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 px-2.5 py-1.5">
-                    <div className="text-[10px] font-medium text-slate-500">Крепёж динамика</div>
+                    <div className="text-[10px] font-medium text-slate-500">{t('Крепёж динамика')}</div>
                     <div className="font-mono-num font-semibold text-[#b8431a] mt-0.5">{spkSummary}</div>
                   </div>
                 </div>
@@ -1325,12 +1371,12 @@ export function ControlPanel({
                       )}
                       <span className="truncate">{analysis.checks[0]?.short ?? analysis.checks[0]?.t}</span>
                     </span>
-                    <span className="shrink-0 font-semibold underline underline-offset-2">Контроль</span>
+                    <span className="shrink-0 font-semibold underline underline-offset-2">{t('Контроль')}</span>
                   </button>
                 ) : (
                   <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/70 px-2.5 py-2 text-[11.5px] font-medium text-emerald-900">
                     <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
-                    <span>Геометрия проверена · готова к экспорту</span>
+                    <span>{t('Геометрия проверена · готова к экспорту')}</span>
                   </div>
                 )}
               </section>
@@ -1353,17 +1399,17 @@ export function ControlPanel({
               className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45"
             >
               <ArrowLeft className="h-4 w-4 shrink-0" aria-hidden="true" />
-              <span>Назад</span>
+              <span>{t('Назад')}</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={onReset}
-              title="Сбросить к стандарту 16,5 см"
+              title={t('Сбросить к стандарту 16,5 см')}
               className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-600 hover:border-slate-300 hover:text-slate-900 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45"
             >
               <RotateCcw className="h-4 w-4 shrink-0" aria-hidden="true" />
-              <span>Сброс</span>
+              <span>{t('Сброс')}</span>
             </button>
           )}
 
@@ -1390,29 +1436,29 @@ export function ControlPanel({
 
   return (
     <aside
-      aria-label="Параметры детали"
+      aria-label={t('Параметры детали')}
       className="flex flex-col overflow-hidden rounded-xl border border-[#cfd8e3] bg-[#f8fafc] shadow-xs lg:min-h-0 lg:w-[404px] lg:shrink-0"
     >
       {/* Sidebar header aligned with card edges (px-2.5) and viewport toolbar rail (py-3 + h-9) */}
       <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-200 bg-white px-2.5 py-3">
         <h2 className="pl-0.5 text-[12px] font-bold tracking-wider uppercase text-slate-800 truncate">
-          Параметры детали
+          {t('Параметры детали')}
         </h2>
         <div className="flex items-center gap-1.5 shrink-0">
           <button
             type="button"
             onClick={onStartWizard}
-            title="Запустить пошаговый мастер создания"
+            title={t('Запустить пошаговый мастер создания')}
             className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:bg-blue-50/50 hover:text-[#154b96] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45"
           >
             <WizardStepsIcon className="h-4 w-4 shrink-0" />
-            <span>Мастер</span>
+            <span>{t('Мастер')}</span>
           </button>
           <button
             type="button"
             onClick={() => onToggleAll(!anyOpen)}
-            title={anyOpen ? 'Свернуть все карточки' : 'Развернуть все карточки'}
-            aria-label={anyOpen ? 'Свернуть все карточки' : 'Развернуть все карточки'}
+            title={anyOpen ? t('Свернуть все карточки') : t('Развернуть все карточки')}
+            aria-label={anyOpen ? t('Свернуть все карточки') : t('Развернуть все карточки')}
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-[#1e63c4] hover:bg-blue-50/50 hover:text-[#1e63c4] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45"
           >
             {anyOpen ? (
@@ -1424,8 +1470,8 @@ export function ControlPanel({
           <button
             type="button"
             onClick={onReset}
-            title="Сбросить к стандарту 16,5 см"
-            aria-label="Сбросить к стандарту"
+            title={t('Сбросить к стандарту 16,5 см')}
+            aria-label={t('Сбросить к стандарту')}
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-[#1e63c4] hover:bg-blue-50/50 hover:text-[#1e63c4] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45"
           >
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
@@ -1440,7 +1486,7 @@ export function ControlPanel({
           <CollapsibleCard
             id="card-ring"
             headingId="heading-ring"
-            title="Размеры кольца"
+            title={t('Размеры кольца')}
             summary={ringSummary}
             icon={<RingDimensionsIcon className="h-[18px] w-[18px] text-slate-600 shrink-0" />}
             open={ui.open.ring}
@@ -1465,7 +1511,7 @@ export function ControlPanel({
           <CollapsibleCard
             id="card-door"
             headingId="heading-door"
-            title="Крепление к двери"
+            title={t('Крепление к двери')}
             summary={doorSummary}
             summaryColor="#154b96"
             icon={<DoorBoltLayerIcon className="h-[18px] w-[18px] text-[#1e63c4] shrink-0" />}
@@ -1488,7 +1534,7 @@ export function ControlPanel({
           <CollapsibleCard
             id="card-spk"
             headingId="heading-spk"
-            title="Крепление динамика"
+            title={t('Крепление динамика')}
             summary={spkSummary}
             summaryColor="#b8431a"
             icon={<SpeakerLayerIcon className="h-[18px] w-[18px] text-[#d9541e] shrink-0" />}
@@ -1511,7 +1557,7 @@ export function ControlPanel({
           <CollapsibleCard
             id="card-scene"
             headingId="heading-scene"
-            title="Сцена и чертёж"
+            title={t('Сцена и чертёж')}
             summary={Q_LABELS[state.quality]}
             icon={<SceneCubeIcon className="h-[18px] w-[18px] text-slate-600 shrink-0" />}
             open={ui.open.scene}
@@ -1519,11 +1565,11 @@ export function ControlPanel({
           >
             <div className="p-3 flex flex-col gap-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[12px] font-medium text-slate-700">Вид заготовки в 3D</span>
+                <span className="text-[12px] font-medium text-slate-700">{t('Вид заготовки в 3D')}</span>
                 <div
                   className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5"
                   role="group"
-                  aria-label="Вид заготовки в 3D"
+                  aria-label={t('Вид заготовки в 3D')}
                 >
                   <button
                     type="button"
@@ -1535,7 +1581,7 @@ export function ControlPanel({
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    Фанера
+                    {t('Фанера')}
                   </button>
                   <button
                     type="button"
@@ -1547,12 +1593,12 @@ export function ControlPanel({
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    Пластик
+                    {t('Пластик')}
                   </button>
                 </div>
               </div>
               <SelectField<QualityMode>
-                label="Качество 3D-сетки и теней"
+                label={t('Качество 3D-сетки и теней')}
                 value={state.quality}
                 options={QUALITY_OPTS}
                 onChange={(v) => {
@@ -1560,7 +1606,7 @@ export function ControlPanel({
                 }}
               />
               <SelectField<SceneBgMode>
-                label="Фон 3D-сцены"
+                label={t('Фон 3D-сцены')}
                 value={state.sceneBg}
                 options={BG_OPTS}
                 onChange={(v) => {
@@ -1569,21 +1615,21 @@ export function ControlPanel({
               />
               <div className="border-t border-slate-100 pt-2.5 flex flex-col gap-2.5">
                 <ToggleField
-                  label="Координатная сетка"
+                  label={t('Координатная сетка')}
                   checked={state.grid}
                   onChange={(v) => {
                     onPatch({ grid: v });
                   }}
                 />
                 <ToggleField
-                  label="Кромки детали (каркас)"
+                  label={t('Кромки детали (каркас)')}
                   checked={state.edges}
                   onChange={(v) => {
                     onPatch({ edges: v });
                   }}
                 />
                 <ToggleField
-                  label="Автовращение 3D-модели"
+                  label={t('Автовращение 3D-модели')}
                   checked={state.autoRotate}
                   onChange={(v) => {
                     onPatch({ autoRotate: v });
@@ -1591,7 +1637,7 @@ export function ControlPanel({
                 />
                 {state.autoRotate && (
                   <SliderField
-                    label="Скорость вращения"
+                    label={t('Скорость вращения')}
                     value={state.rotSpeed}
                     min={0}
                     max={2}
@@ -1600,7 +1646,7 @@ export function ControlPanel({
                   />
                 )}
                 <ToggleField
-                  label="Размерные линии на чертеже"
+                  label={t('Размерные линии на чертеже')}
                   checked={state.showDims}
                   onChange={(v) => {
                     onPatch({ showDims: v });

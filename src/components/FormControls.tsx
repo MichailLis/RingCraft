@@ -1,12 +1,13 @@
+import { locale, t } from '../i18n';
 import { useId, useState, type ReactNode } from 'react';
 import { AlertTriangle, ArrowUpRight, Minus, Plus, X } from 'lucide-react';
 import type { ConstraintJumpTarget, ConstraintNotice } from '../core/constraints';
 import { clamp } from '../core/geometry';
 
 const JUMP_TARGET_LABELS: Record<ConstraintJumpTarget, string> = {
-  ring: 'К размерам кольца',
-  door: 'К креплению к двери',
-  spk: 'К креплению динамика',
+  ring: t('К размерам кольца'),
+  door: t('К креплению к двери'),
+  spk: t('К креплению динамика'),
 };
 
 interface ConstraintHintProps {
@@ -37,7 +38,7 @@ export function ConstraintHint({ notice, onJumpTarget, onAutoFitHoles, onDismiss
                 onClick={() => onAutoFitHoles!(notice)}
                 className="inline-flex min-h-6 items-center gap-1 rounded-md border border-[#1e63c4]/40 bg-[#eaf1fb] px-2 py-0.5 text-[11px] font-semibold text-[#154b96] hover:bg-[#dce8f8] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45"
               >
-                <span>Подстроить отверстия</span>
+                <span>{t('Подстроить отверстия')}</span>
               </button>
             )}
             {target && onJumpTarget && (
@@ -57,7 +58,7 @@ export function ConstraintHint({ notice, onJumpTarget, onAutoFitHoles, onDismiss
         <button
           type="button"
           onClick={onDismiss}
-          aria-label="Скрыть пояснение ограничения"
+          aria-label={t('Скрыть пояснение ограничения')}
           className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-amber-800 hover:bg-amber-200/70 hover:text-amber-950 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45"
         >
           <X className="h-4 w-4" aria-hidden="true" />
@@ -88,7 +89,8 @@ interface SliderFieldProps {
   onCommit?: () => void;
 }
 
-const formatNumInput = (v: number): string => String(+v.toFixed(2)).replace('.', ',');
+const formatNumInput = (v: number): string =>
+  v.toLocaleString(locale, { maximumFractionDigits: 2, useGrouping: false });
 
 export function SliderField({
   label,
@@ -153,7 +155,7 @@ export function SliderField({
           <input
             type="text"
             inputMode="decimal"
-            aria-label={`${label}, число`}
+            aria-label={t('{0}, число', label)}
             disabled={disabled}
             value={editing ? draft : formatNumInput(value)}
             onFocus={(e) => {
@@ -317,7 +319,7 @@ export function StepperField({
             type="button"
             onClick={() => onChange(clamp(value - 1, min, max))}
             disabled={value <= min}
-            aria-label={`${label}: меньше`}
+            aria-label={t('{0}: меньше', label)}
             className="inline-flex h-9 w-9 sm:h-7 sm:w-7 items-center justify-center rounded-md bg-white text-slate-700 shadow-2xs hover:bg-slate-100 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
           >
             <Minus className="h-4 w-4" aria-hidden="true" />
@@ -329,7 +331,7 @@ export function StepperField({
             type="button"
             onClick={() => onChange(clamp(value + 1, min, max))}
             disabled={value >= max}
-            aria-label={`${label}: больше`}
+            aria-label={t('{0}: больше', label)}
             className="inline-flex h-9 w-9 sm:h-7 sm:w-7 items-center justify-center rounded-md bg-white text-slate-700 shadow-2xs hover:bg-slate-100 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
