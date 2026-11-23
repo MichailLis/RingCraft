@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import { CrashScreen } from './components/CrashScreen.tsx';
@@ -23,5 +24,6 @@ import './index.css';
 createRoot(document.getElementById('root')!).render(
   <ErrorBoundary fallback={(e) => <CrashScreen error={e} />}>
     <App />
+    {__VERCEL__ && <Analytics />}
   </ErrorBoundary>
 );
