@@ -1,6 +1,0 @@
-{
-  "name": "RINGFORGE",
-  "description": "Параметрический CAD-конструктор проставок и переходных рамок для автомобильных динамиков: два независимых слоя крепежа, 3D-модель, чертёж 1:1, экспорт DXF R12, STL, SVG.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

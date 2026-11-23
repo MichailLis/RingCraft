@@ -34,7 +34,7 @@ export function HeaderBar({
           <circle cx="26.1" cy="26.1" r="1.5" fill="#d9541e" />
         </svg>
         <span className="text-[13.5px] sm:text-[15px] font-bold tracking-[0.09em] sm:tracking-[0.14em] text-[#16202b] whitespace-nowrap shrink-0">
-          RINGFORGE
+          RingCraft
         </span>
       </div>
 

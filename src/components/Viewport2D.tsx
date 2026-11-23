@@ -308,7 +308,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
       <rect x="${f2(bx)}" y="${f2(by)}" width="84" height="24" rx="1.5" fill="#ffffff" stroke="${C_DIM}" stroke-width=".6"/>
       <line x1="${f2(bx)}" y1="${f2(by + 10.5)}" x2="${f2(bx + 84)}" y2="${f2(by + 10.5)}" stroke="${C_DIM}" stroke-width=".35" stroke-opacity=".5"/>
       ${txt(bx + 4.5, by + 7.5, `ПРОСТАВКА Ø${fmtN(s.outerD, 0)} × ${fmtN(s.thick, 0)}`, C_INK, 4.8, 'start', 700)}
-      ${txt(bx + 4.5, by + 16, 'RINGFORGE · масштаб 1:1 · мм', C_GRID, 3.4, 'start')}
+      ${txt(bx + 4.5, by + 16, 'RingCraft · масштаб 1:1 · мм', C_GRID, 3.4, 'start')}
       ${txt(bx + 4.5, by + 21.3, `Вырез Ø${fmtN(s.innerD, 0)} мм · ${dt} · 2 слоя`, C_GRID, 3.4, 'start')}
     </g>`;
 

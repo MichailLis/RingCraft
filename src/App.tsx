@@ -49,6 +49,7 @@ import type {
   UIState,
 } from './core/types';
 
+// legacy prefix kept: renaming would drop users' saved data
 const STORAGE_STATE = 'ringforge.state';
 const STORAGE_UI = 'ringforge.ui';
 const STORAGE_SAVED = 'ringforge.saved';
