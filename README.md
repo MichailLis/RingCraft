@@ -1,12 +1,12 @@
 # RingCraft
 
-Параметрический онлайн-конструктор проставочных колец и переходных рамок для автомобильных динамиков. Задайте размеры и крепёж, проверьте модель в 3D и скачайте чертёж для фрезеровки или модель для 3D-печати.
-
-Browser-based CAD for car speaker spacer rings and adapters. Preview your design in 3D or as a 2D drawing and export DXF, STL, SVG, or PNG. The interface is available in English and Russian.
+![RingCraft — конструктор проставок для автодинамиков](public/og.png)
 
 **[Открыть RingCraft · Open live demo](https://ringcraft-audio.vercel.app/)**
 
-![Редактор RingCraft с 3D-моделью проставки и панелью размеров](docs/images/ringcraft-editor.png)
+Параметрический онлайн-конструктор проставочных колец и переходных рамок для автомобильных динамиков. Задайте размеры и крепёж, проверьте модель в 3D и скачайте чертёж для фрезеровки или модель для 3D-печати.
+
+Browser-based CAD for car speaker spacer rings and adapters. Preview your design in 3D or as a 2D drawing and export DXF, STL, SVG, or PNG. The interface is available in English and Russian.
 
 ## Возможности
 
@@ -15,6 +15,8 @@ Browser-based CAD for car speaker spacer rings and adapters. Preview your design
 - Экспорт: DXF, STL, SVG, PNG-снимок вида.
 - Пресеты и сохранение параметров в браузере.
 - Русский и английский интерфейсы с автоматическим выбором по языковым настройкам браузера.
+
+![Редактор RingCraft с 3D-моделью проставки и панелью размеров](docs/images/ringcraft-editor.png)
 
 Параметры модели и пользовательские пресеты хранятся локально в браузере. На размещённом сайте Vercel Web Analytics собирает статистику посещений без cookies.
 
