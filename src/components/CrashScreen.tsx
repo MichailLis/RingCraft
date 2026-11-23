@@ -1,9 +1,9 @@
-import { clearStored, STORAGE_KEYS } from '../core/storage';
+import { browserKV, clearStored, STORAGE_KEYS } from '../core/storage';
 
 export function CrashScreen({ error }: { error: Error }) {
   const reload = () => location.reload();
   const resetAndReload = () => {
-    clearStored(localStorage, Object.values(STORAGE_KEYS));
+    clearStored(browserKV, Object.values(STORAGE_KEYS));
     location.reload();
   };
 
@@ -17,6 +17,7 @@ export function CrashScreen({ error }: { error: Error }) {
         <div className="mt-5 flex flex-col gap-2 sm:flex-row">
           <button
             type="button"
+            autoFocus
             onClick={reload}
             className="rounded-lg bg-[#1e63c4] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#1a56ab]"
           >

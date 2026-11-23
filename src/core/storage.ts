@@ -33,8 +33,24 @@ export function readStored<T>(kv: KV, key: string, parse: (data: unknown) => T, 
   }
 }
 
+/** Lazy localStorage: the global is touched inside each call, so blocked site data (SecurityError) is caught by callers' try. */
+export const browserKV: KV = {
+  getItem: (k) => window.localStorage.getItem(k),
+  setItem: (k, v) => window.localStorage.setItem(k, v),
+  removeItem: (k) => window.localStorage.removeItem(k),
+};
+
 export function writeStored(kv: KV, key: string, data: unknown): void {
   try {
+    const existing = kv.getItem(key);
+    if (existing !== null) {
+      try {
+        const json: unknown = JSON.parse(existing);
+        if (isEnvelope(json) && json.v > STORAGE_VERSION) return; // newer release's data: never clobber
+      } catch {
+        // corrupt existing value: overwrite
+      }
+    }
     kv.setItem(key, JSON.stringify({ v: STORAGE_VERSION, data }));
   } catch {
     // ignore quota / private-mode errors

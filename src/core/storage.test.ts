@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { sanitizeState } from './geometry';
-import { STORAGE_KEYS, clearStored, readStored, writeStored, type KV } from './storage';
+import { STORAGE_KEYS, browserKV, clearStored, readStored, writeStored, type KV } from './storage';
 
 function fakeKV(initial: Record<string, string> = {}): KV & { map: Map<string, string> } {
   const map = new Map(Object.entries(initial));
@@ -107,4 +107,20 @@ test('clearStored removes keys and swallows errors', () => {
   };
   assert.doesNotThrow(() => clearStored(bad, ['a']));
   assert.equal(STORAGE_KEYS.state, 'ringforge.state');
+});
+
+test('browserKV is safe when window/localStorage is unavailable', () => {
+  assert.equal(
+    readStored(browserKV, 'k', (d) => d, 'fb'),
+    'fb'
+  );
+  assert.doesNotThrow(() => writeStored(browserKV, 'k', 1));
+  assert.doesNotThrow(() => clearStored(browserKV, ['k']));
+});
+
+test('write does not clobber newer-version data', () => {
+  const newer = '{"v":999,"data":{"x":1}}';
+  const kv = fakeKV({ k: newer });
+  writeStored(kv, 'k', { a: 1 });
+  assert.equal(kv.map.get('k'), newer);
 });

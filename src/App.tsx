@@ -21,7 +21,7 @@ import {
 } from './core/constraints';
 import { buildSpacerSTL } from './core/stlExport';
 import { analyze, buildDXF, buildFileBase, fmtN, sanitizeState } from './core/geometry';
-import { readStored, STORAGE_KEYS, writeStored } from './core/storage';
+import { browserKV, readStored, STORAGE_KEYS, writeStored } from './core/storage';
 import { clampWizardStep, resolveInitialPanelMode, wizardStepForLayer } from './core/wizard';
 import type {
   DrawerTab,
@@ -37,7 +37,7 @@ import type {
 
 function loadInitialState(): { state: SpacerState; restored: boolean } {
   return readStored<{ state: SpacerState; restored: boolean }>(
-    localStorage,
+    browserKV,
     STORAGE_KEYS.state,
     (data) => ({ state: sanitizeState(data as Record<string, unknown>), restored: true }),
     {
@@ -63,7 +63,7 @@ function loadInitialUI(): UIState {
     customRange: false,
   };
   return readStored(
-    localStorage,
+    browserKV,
     STORAGE_KEYS.ui,
     (data) => {
       const p = data as {
@@ -90,7 +90,7 @@ function loadInitialUI(): UIState {
 
 function loadSavedPresets(): SavedPreset[] {
   return readStored(
-    localStorage,
+    browserKV,
     STORAGE_KEYS.saved,
     (data) => {
       if (!Array.isArray(data)) return [];
@@ -113,11 +113,35 @@ function downloadBlob(blob: Blob, filename: string): void {
   window.setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 
-function Viewport3DCrashed({ onFailed }: { onFailed: (ok: boolean) => void }) {
+function Viewport3DCrashed({
+  onFailed,
+  visible,
+  onSwitchTo2D,
+}: {
+  onFailed: (ok: boolean) => void;
+  visible: boolean;
+  onSwitchTo2D: () => void;
+}) {
   useEffect(() => {
     onFailed(false);
   }, [onFailed]);
-  return <div className="absolute inset-0" />;
+  if (!visible) return <div className="absolute inset-0" />;
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#f1f5f9] p-6 text-center">
+      <p className="max-w-sm text-[13px] leading-relaxed text-slate-600">
+        <strong className="text-slate-900">3D-просмотр недоступен</strong> в этом браузере.
+        <br />
+        2D-чертёж, проверки геометрии и экспорт DXF / SVG работают полностью.
+      </p>
+      <button
+        type="button"
+        onClick={onSwitchTo2D}
+        className="rounded-lg border border-[#cfd8e3] bg-white px-4 py-2 text-xs font-semibold text-[#1e63c4] hover:bg-blue-50 cursor-pointer"
+      >
+        Открыть чертёж
+      </button>
+    </div>
+  );
 }
 
 export default function App() {
@@ -182,17 +206,17 @@ export default function App() {
 
   useEffect(() => {
     const t = window.setTimeout(() => {
-      writeStored(localStorage, STORAGE_KEYS.state, state);
+      writeStored(browserKV, STORAGE_KEYS.state, state);
     }, 350);
     return () => clearTimeout(t);
   }, [state]);
 
   useEffect(() => {
-    writeStored(localStorage, STORAGE_KEYS.ui, ui);
+    writeStored(browserKV, STORAGE_KEYS.ui, ui);
   }, [ui]);
 
   useEffect(() => {
-    writeStored(localStorage, STORAGE_KEYS.saved, savedPresets);
+    writeStored(browserKV, STORAGE_KEYS.saved, savedPresets);
   }, [savedPresets]);
 
   useEffect(() => {
@@ -599,7 +623,15 @@ export default function App() {
             } ${drawerTab ? 'h-[520px] sm:h-[560px]' : 'h-[360px] sm:h-[420px]'}`}
           >
             <div className="relative flex-1 min-h-0 overflow-hidden">
-              <ErrorBoundary fallback={() => <Viewport3DCrashed onFailed={onViewport3DReady} />}>
+              <ErrorBoundary
+                fallback={() => (
+                  <Viewport3DCrashed
+                    onFailed={onViewport3DReady}
+                    visible={state.view === '3d'}
+                    onSwitchTo2D={() => setState((prev) => ({ ...prev, view: '2d' }))}
+                  />
+                )}
+              >
                 <Viewport3D
                   ref={vp3dRef}
                   state={state}
