@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { Fragment, type ReactNode } from 'react';
 
 interface IconProps {
@@ -192,17 +193,17 @@ export function CadSummaryText({
         if (!part) return null;
         if (part === '⌴') {
           return (
-            <span key={idx} className="inline-flex items-center" title="Цековка (цилиндрическая)">
+            <span key={idx} className="inline-flex items-center" title={t('Цековка (цилиндрическая)')}>
               <CounterboreIcon className={iconClassName} />
-              <span className="sr-only">цековка</span>
+              <span className="sr-only">{t('цековка')}</span>
             </span>
           );
         }
         if (part === '⌵') {
           return (
-            <span key={idx} className="inline-flex items-center" title="Зенковка 90° (коническая)">
+            <span key={idx} className="inline-flex items-center" title={t('Зенковка 90° (коническая)')}>
               <CountersinkIcon className={iconClassName} />
-              <span className="sr-only">зенковка 90°</span>
+              <span className="sr-only">{t('зенковка 90°')}</span>
             </span>
           );
         }
@@ -222,7 +223,7 @@ export function RecessInlineBadge({
   className?: string;
 }) {
   return (
-    <span className={className} title={type === 'csk' ? 'Зенковка 90°' : 'Цековка'}>
+    <span className={className} title={type === 'csk' ? t('Зенковка 90°') : t('Цековка')}>
       {type === 'csk' ? (
         <CountersinkIcon className="h-3.5 w-3.5 shrink-0" />
       ) : (

@@ -1,3 +1,4 @@
+import { t as translate } from '../i18n';
 import type { ToastItem } from '../core/types';
 import { AlertCircle, AlertTriangle, CheckCircle2, Info, X } from 'lucide-react';
 
@@ -56,7 +57,7 @@ export function ToastHost({ toasts, drawerOpen = false, onDismiss }: ToastHostPr
             <button
               type="button"
               onClick={() => onDismiss(t.id)}
-              aria-label="Закрыть уведомление"
+              aria-label={translate('Закрыть уведомление')}
               className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded text-slate-500 hover:bg-slate-100 hover:text-slate-700 cursor-pointer"
             >
               <X className="h-4 w-4" aria-hidden="true" />

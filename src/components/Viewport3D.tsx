@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -699,22 +700,23 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
       {loading && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#e9edf2] text-xs font-medium text-slate-500">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-[#1e63c4]" />
-          <span>Инициализация 3D-сцены…</span>
+          <span>{t('Инициализация 3D-сцены…')}</span>
         </div>
       )}
       {failed && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#f1f5f9] p-6 text-center">
           <p className="max-w-sm text-[13px] leading-relaxed text-slate-600">
-            <strong className="text-slate-900">3D-просмотр недоступен</strong> в этом браузере.
+            <strong className="text-slate-900">{t('3D-просмотр недоступен')}</strong>
+            {t(' в этом браузере.')}
             <br />
-            2D-чертёж, проверки геометрии и экспорт DXF / SVG работают полностью.
+            {t('2D-чертёж, проверки геометрии и экспорт DXF / SVG работают полностью.')}
           </p>
           <button
             type="button"
             onClick={onSwitchTo2D}
             className="rounded-lg border border-[#cfd8e3] bg-white px-4 py-2 text-xs font-semibold text-[#1e63c4] hover:bg-blue-50 cursor-pointer"
           >
-            Открыть чертёж
+            {t('Открыть чертёж')}
           </button>
         </div>
       )}

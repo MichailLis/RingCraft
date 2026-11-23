@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { LIMITS } from './constants';
 import { analyze, clamp, fastFor, fmtN, sanitizeState } from './geometry';
 import type { AnalysisResult, LayerKind, SpacerState } from './types';
@@ -113,11 +114,11 @@ function inferPrimaryField(patch: Partial<SpacerState>): ConstrainedField | null
 }
 
 function layerTitle(kind: LayerKind): string {
-  return kind === 'door' ? 'крепления к двери' : 'крепления динамика';
+  return kind === 'door' ? t('крепления к двери') : t('крепления динамика');
 }
 
 function layerShort(kind: LayerKind): string {
-  return kind === 'door' ? 'дверь' : 'динамик';
+  return kind === 'door' ? t('дверь') : t('динамик');
 }
 
 function hasSameLayerOverlap(s: SpacerState, kind: LayerKind): boolean {
@@ -159,8 +160,8 @@ function formatLimitPrefix(
     field === 'doorRot' || field === 'spkRot' || field === 'slotAngle' || field === 'spkSlotAngle'
       ? '°'
       : field === 'doorN' || field === 'spkN'
-        ? ' отв.'
-        : '\u00A0мм';
+        ? t(' отв.')
+        : t(' мм');
   const dec =
     field === 'doorHoleD' ||
     field === 'spkHoleD' ||
@@ -173,10 +174,10 @@ function formatLimitPrefix(
       : 0;
   const goingDown = attemptedVal < curVal;
   if (field === 'doorRot' || field === 'spkRot') {
-    return `Упор на ${fmtN(clampedVal, 1)}°: `;
+    return t('Упор на {0}°: ', fmtN(clampedVal, 1));
   }
   const sign = goingDown ? '≥' : '≤';
-  return `Ограничение ${sign}\u00A0${fmtN(clampedVal, dec)}${unit}: `;
+  return t('Ограничение {0} {1}{2}: ', sign, fmtN(clampedVal, dec), unit);
 }
 
 function explainConflict(
@@ -195,18 +196,22 @@ function explainConflict(
     if (field === 'outerD') {
       return {
         field,
-        reason: `${prefix}внешний диаметр не может быть меньше внутреннего выреза (${fmtN(prev.innerD, 0)}\u00A0мм).`,
+        reason: t('{0}внешний диаметр не может быть меньше внутреннего выреза ({1} мм).', prefix, fmtN(prev.innerD, 0)),
       };
     }
     if (field === 'innerD') {
       return {
         field,
-        reason: `${prefix}внутренний вырез не может перекрывать внешний диаметр (${fmtN(prev.outerD, 0)}\u00A0мм).`,
+        reason: t('{0}внутренний вырез не может перекрывать внешний диаметр ({1} мм).', prefix, fmtN(prev.outerD, 0)),
       };
     }
     return {
       field,
-      reason: `Вырез (${fmtN(attempted.innerD, 0)}\u00A0мм) перекрывает внешний контур (${fmtN(attempted.outerD, 0)}\u00A0мм).`,
+      reason: t(
+        'Вырез ({0} мм) перекрывает внешний контур ({1} мм).',
+        fmtN(attempted.innerD, 0),
+        fmtN(attempted.outerD, 0)
+      ),
     };
   }
 
@@ -221,8 +226,8 @@ function explainConflict(
     const fa = worstKind === 'door' ? fd : fs;
     const minThick = Math.ceil(fa.cbDepth + 2);
     const isCsk = fa.recessType === 'csk';
-    const recLower = isCsk ? 'зенковка 90°' : 'цековка';
-    const recUpper = isCsk ? 'Зенковка 90°' : 'Цековка';
+    const recLower = isCsk ? t('зенковка 90°') : t('цековка');
+    const recUpper = isCsk ? t('Зенковка 90°') : t('Цековка');
     const boltPart = fa.bolt !== 'custom' ? ` ${fa.bolt}` : '';
 
     if (field === 'thick') {
@@ -230,20 +235,41 @@ function explainConflict(
         field,
         blockingLayer: worstKind,
         blockingTarget: worstKind,
-        reason: `Ограничение ≥\u00A0${minThick}\u00A0мм: ${recLower}${boltPart} (${layerShort(worstKind)}, глубина ${fmtN(fa.cbDepth, 1)}\u00A0мм) требует минимум 2\u00A0мм дна под головкой.`,
+        reason: t(
+          'Ограничение ≥ {0} мм: {1}{2} ({3}, глубина {4} мм) требует минимум 2 мм дна под головкой.',
+          minThick,
+          recLower,
+          boltPart,
+          layerShort(worstKind),
+          fmtN(fa.cbDepth, 1)
+        ),
       };
     }
     if (field === 'copyLayer') {
       return {
         field,
         blockingTarget: 'ring',
-        reason: `Нельзя скопировать крепёж: ${recLower}${boltPart} (${fmtN(fa.cbDepth, 1)}\u00A0мм) не помещается в толщину ${fmtN(prev.thick, 0)}\u00A0мм (нужно ≥\u00A0${minThick}\u00A0мм).`,
+        reason: t(
+          'Нельзя скопировать крепёж: {0}{1} ({2} мм) не помещается в толщину {3} мм (нужно ≥ {4} мм).',
+          recLower,
+          boltPart,
+          fmtN(fa.cbDepth, 1),
+          fmtN(prev.thick, 0),
+          minThick
+        ),
       };
     }
     return {
       field,
       blockingTarget: 'ring',
-      reason: `${recUpper}${boltPart} (глубина ${fmtN(fa.cbDepth, 1)}\u00A0мм) не помещается в толщину ${fmtN(prev.thick, 0)}\u00A0мм — увеличьте толщину до ≥\u00A0${minThick}\u00A0мм.`,
+      reason: t(
+        '{0}{1} (глубина {2} мм) не помещается в толщину {3} мм — увеличьте толщину до ≥ {4} мм.',
+        recUpper,
+        boltPart,
+        fmtN(fa.cbDepth, 1),
+        fmtN(prev.thick, 0),
+        minThick
+      ),
     };
   }
 
@@ -260,7 +286,12 @@ function explainConflict(
         field,
         blockingLayer: hitKind,
         blockingTarget: hitKind,
-        reason: `${prefix}отверстия ${layerTitle(hitKind)} (Ø окружности ${fmtN(bcdVal, 0)}\u00A0мм) выходят за внешний контур.`,
+        reason: t(
+          '{0}отверстия {1} (Ø окружности {2} мм) выходят за внешний контур.',
+          prefix,
+          layerTitle(hitKind),
+          fmtN(bcdVal, 0)
+        ),
       };
     }
     if (field === 'innerD') {
@@ -268,14 +299,23 @@ function explainConflict(
         field,
         blockingLayer: hitKind,
         blockingTarget: hitKind,
-        reason: `${prefix}вырез упирается в отверстия ${layerTitle(hitKind)} (Ø окружности ${fmtN(bcdVal, 0)}\u00A0мм).`,
+        reason: t(
+          '{0}вырез упирается в отверстия {1} (Ø окружности {2} мм).',
+          prefix,
+          layerTitle(hitKind),
+          fmtN(bcdVal, 0)
+        ),
       };
     }
     if (field === 'ears') {
       return {
         field,
         blockingTarget: 'ring',
-        reason: `Нельзя отключить ушки: при окружности отверстий ${fmtN(prev.doorBCD, 0)}\u00A0мм крепёж к двери выходит за внешний контур (${fmtN(prev.outerD, 0)}\u00A0мм).`,
+        reason: t(
+          'Нельзя отключить ушки: при окружности отверстий {0} мм крепёж к двери выходит за внешний контур ({1} мм).',
+          fmtN(prev.doorBCD, 0),
+          fmtN(prev.outerD, 0)
+        ),
       };
     }
     if (field === 'doorBCD' || field === 'spkBCD') {
@@ -283,46 +323,66 @@ function explainConflict(
         return {
           field,
           blockingTarget: 'ring',
-          reason: `${prefix}отверстия упираются во внутренний вырез (${fmtN(prev.innerD, 0)}\u00A0мм).`,
+          reason: t('{0}отверстия упираются во внутренний вырез ({1} мм).', prefix, fmtN(prev.innerD, 0)),
         };
       }
       if (field === 'doorBCD' && !prev.ears) {
         return {
           field,
           blockingTarget: 'ring',
-          reason: `${prefix}отверстия выходят за внешний контур (${fmtN(prev.outerD, 0)}\u00A0мм) — включите монтажные ушки или увеличьте диаметр кольца.`,
+          reason: t(
+            '{0}отверстия выходят за внешний контур ({1} мм) — включите монтажные ушки или увеличьте диаметр кольца.',
+            prefix,
+            fmtN(prev.outerD, 0)
+          ),
         };
       }
       return {
         field,
         blockingTarget: 'ring',
-        reason: `${prefix}отверстия выходят за внешний контур (${fmtN(prev.outerD, 0)}\u00A0мм).`,
+        reason: t('{0}отверстия выходят за внешний контур ({1} мм).', prefix, fmtN(prev.outerD, 0)),
       };
     }
     if (field === 'doorSlots' || field === 'spkSlots' || field === 'slotAngle' || field === 'spkSlotAngle') {
       return {
         field,
         blockingTarget: 'ring',
-        reason: `${prefix || 'Нельзя включить пазы: '}паз выходит за ${hitInner ? `внутренний вырез (${fmtN(prev.innerD, 0)}\u00A0мм)` : `внешний контур (${fmtN(prev.outerD, 0)}\u00A0мм)`}.`,
+        reason: t(
+          '{0}паз выходит за {1}.',
+          prefix || t('Нельзя включить пазы: '),
+          hitInner
+            ? t('внутренний вырез ({0} мм)', fmtN(prev.innerD, 0))
+            : t('внешний контур ({0} мм)', fmtN(prev.outerD, 0))
+        ),
       };
     }
     if (field === 'earMargin') {
       return {
         field,
-        reason: `${prefix}вылет ушка должен полностью охватывать отверстие с запасом стенки.`,
+        reason: t('{0}вылет ушка должен полностью охватывать отверстие с запасом стенки.', prefix),
       };
     }
     if (field === 'copyLayer') {
       return {
         field,
         blockingTarget: 'ring',
-        reason: `Нельзя скопировать крепёж: отверстия/головки ${layerTitle(hitKind)} выходят за ${hitInner ? `вырез (${fmtN(prev.innerD, 0)}\u00A0мм)` : `контур (${fmtN(prev.outerD, 0)}\u00A0мм)`}.`,
+        reason: t(
+          'Нельзя скопировать крепёж: отверстия/головки {0} выходят за {1}.',
+          layerTitle(hitKind),
+          hitInner ? t('вырез ({0} мм)', fmtN(prev.innerD, 0)) : t('контур ({0} мм)', fmtN(prev.outerD, 0))
+        ),
       };
     }
     return {
       field,
       blockingTarget: 'ring',
-      reason: `${prefix || 'Нельзя применить: '}отверстие или головка упирается в ${hitInner ? `внутренний вырез (${fmtN(prev.innerD, 0)}\u00A0мм)` : `внешний контур (${fmtN(prev.outerD, 0)}\u00A0мм)`}.`,
+      reason: t(
+        '{0}отверстие или головка упирается в {1}.',
+        prefix || t('Нельзя применить: '),
+        hitInner
+          ? t('внутренний вырез ({0} мм)', fmtN(prev.innerD, 0))
+          : t('внешний контур ({0} мм)', fmtN(prev.outerD, 0))
+      ),
     };
   }
 
@@ -336,12 +396,15 @@ function explainConflict(
       if (field === 'doorN' || field === 'spkN') {
         return {
           field,
-          reason: `Нельзя поставить ${fmtN(attNum ?? 0, 0)} отв.: отверстия в группе пересекаются — уменьшите диаметр, длину паза или увеличьте окружность отверстий.`,
+          reason: t(
+            'Нельзя поставить {0} отв.: отверстия в группе пересекаются — уменьшите диаметр, длину паза или увеличьте окружность отверстий.',
+            fmtN(attNum ?? 0, 0)
+          ),
         };
       }
       return {
         field,
-        reason: `${prefix || 'Нельзя применить: '}отверстия или пазы внутри группы пересекаются друг с другом.`,
+        reason: t('{0}отверстия или пазы внутри группы пересекаются друг с другом.', prefix || t('Нельзя применить: ')),
       };
     }
 
@@ -351,20 +414,30 @@ function explainConflict(
         field,
         blockingLayer: otherLayer,
         blockingTarget: otherLayer,
-        reason: `Нельзя поставить ${fmtN(attNum ?? 0, 0)} отв.: пересечение с отверстиями ${layerTitle(otherLayer)} — измените поворот или разведите окружности отверстий.`,
+        reason: t(
+          'Нельзя поставить {0} отв.: пересечение с отверстиями {1} — измените поворот или разведите окружности отверстий.',
+          fmtN(attNum ?? 0, 0),
+          layerTitle(otherLayer)
+        ),
       };
     }
     if (field === 'copyLayer') {
       return {
         field,
-        reason: `Нельзя скопировать крепёж: увеличенные головки пересекаются с другой группой — измените поворот или разведите окружности отверстий.`,
+        reason: t(
+          'Нельзя скопировать крепёж: увеличенные головки пересекаются с другой группой — измените поворот или разведите окружности отверстий.'
+        ),
       };
     }
     return {
       field,
       blockingLayer: fieldKind ? otherLayer : undefined,
       blockingTarget: fieldKind ? otherLayer : undefined,
-      reason: `${prefix || 'Нельзя применить: '}пересечение с отверстиями ${layerTitle(otherLayer)} — измените поворот или разведите окружности отверстий.`,
+      reason: t(
+        '{0}пересечение с отверстиями {1} — измените поворот или разведите окружности отверстий.',
+        prefix || t('Нельзя применить: '),
+        layerTitle(otherLayer)
+      ),
     };
   }
 
@@ -372,7 +445,7 @@ function explainConflict(
   const firstErr = attemptedAnalysis.checks.find((c) => c.lv === 'err');
   return {
     field,
-    reason: firstErr?.t ?? 'Значение конфликтует с другими параметрами модели.',
+    reason: firstErr?.t ?? t('Значение конфликтует с другими параметрами модели.'),
   };
 }
 
@@ -553,14 +626,23 @@ export function applyRingResizeWithAutoFit(
     ringClamped = true;
     ringNotice = {
       field: 'outerD',
-      reason: `Ограничение ≥\u00A0${fmtN(nextOuter, 0)}\u00A0мм: внешний диаметр должен быть больше внутреннего выреза (${fmtN(nextInner, 0)}\u00A0мм) минимум на ${MIN_RING_DIFF}\u00A0мм. Сначала уменьшите вырез.`,
+      reason: t(
+        'Ограничение ≥ {0} мм: внешний диаметр должен быть больше внутреннего выреза ({1} мм) минимум на {2} мм. Сначала уменьшите вырез.',
+        fmtN(nextOuter, 0),
+        fmtN(nextInner, 0),
+        MIN_RING_DIFF
+      ),
     };
   } else if (field === 'innerD' && nextInner > nextOuter - MIN_RING_DIFF) {
     nextInner = clamp(nextOuter - MIN_RING_DIFF, LIMITS.innerD![0], LIMITS.innerD![1]);
     ringClamped = true;
     ringNotice = {
       field: 'innerD',
-      reason: `Ограничение ≤\u00A0${fmtN(nextInner, 0)}\u00A0мм: внутренний вырез должен оставлять стенку до внешнего диаметра (${fmtN(nextOuter, 0)}\u00A0мм). Сначала увеличьте внешний диаметр.`,
+      reason: t(
+        'Ограничение ≤ {0} мм: внутренний вырез должен оставлять стенку до внешнего диаметра ({1} мм). Сначала увеличьте внешний диаметр.',
+        fmtN(nextInner, 0),
+        fmtN(nextOuter, 0)
+      ),
     };
   }
 

@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useEffect, useRef } from 'react';
 import { AlertCircle, AlertTriangle, CheckCircle2, Download, FileCode2, Box, FileImage, Layers, X } from 'lucide-react';
 import { CadSummaryText } from './CadIcons';
@@ -74,10 +75,12 @@ export function ExportModal({
             </span>
             <div className="min-w-0">
               <h2 id="export-modal-title" className="text-[15px] font-bold leading-tight text-slate-900">
-                Экспорт файлов проставки
+                {t('Экспорт файлов проставки')}
               </h2>
               <p className="font-mono-num mt-0.5 truncate text-[11.5px] text-slate-500">
-                Ø{fmtN(state.outerD, 0)}/{fmtN(state.innerD, 0)} × {fmtN(state.thick, 0)} мм · {fileBase}
+                Ø{fmtN(state.outerD, 0)}/{fmtN(state.innerD, 0)} × {fmtN(state.thick, 0)}
+                {t(' мм · ')}
+                {fileBase}
               </p>
             </div>
           </div>
@@ -85,7 +88,7 @@ export function ExportModal({
             ref={closeBtnRef}
             type="button"
             onClick={onClose}
-            aria-label="Закрыть окно экспорта"
+            aria-label={t('Закрыть окно экспорта')}
             className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-800 cursor-pointer"
           >
             <X className="h-4 w-4" />
@@ -100,9 +103,12 @@ export function ExportModal({
               <div className="flex items-start gap-2 min-w-0">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" aria-hidden="true" />
                 <div>
-                  <div className="font-bold">Ошибки геометрии ({analysis.nErr})</div>
+                  <div className="font-bold">
+                    {t('Ошибки геометрии (')}
+                    {analysis.nErr})
+                  </div>
                   <div className="text-[11.5px] text-red-800">
-                    Экспорт STL заблокирован до исправления. DXF и SVG доступны.
+                    {t('Экспорт STL заблокирован до исправления. DXF и SVG доступны.')}
                   </div>
                 </div>
               </div>
@@ -114,7 +120,7 @@ export function ExportModal({
                 }}
                 className="shrink-0 rounded-lg border border-red-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-red-800 hover:bg-red-100/60 cursor-pointer whitespace-nowrap"
               >
-                К проверкам
+                {t('К проверкам')}
               </button>
             </div>
           ) : analysis.nWarn > 0 ? (
@@ -127,7 +133,11 @@ export function ExportModal({
                     <span className="leading-snug">
                       {analysis.nWarn === 1 && firstWarn
                         ? firstWarn.t
-                        : `Замечания (${analysis.nWarn}): ${firstWarn?.short ?? firstWarn?.t ?? 'проверьте геометрию'}.`}
+                        : t(
+                            'Замечания ({0}): {1}.',
+                            analysis.nWarn,
+                            firstWarn?.short ?? firstWarn?.t ?? t('проверьте геометрию')
+                          )}
                     </span>
                   </div>
                   <button
@@ -138,7 +148,7 @@ export function ExportModal({
                     }}
                     className="shrink-0 rounded-lg border border-amber-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-amber-950 hover:bg-amber-100/60 cursor-pointer whitespace-nowrap"
                   >
-                    Проверить
+                    {t('Проверить')}
                   </button>
                 </div>
               );
@@ -147,9 +157,9 @@ export function ExportModal({
             <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50/80 px-3.5 py-2 text-xs text-emerald-900">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
               <span className="flex flex-wrap items-center gap-x-1">
-                <span>Готово · Дверь:</span>
+                <span>{t('Готово · Дверь:')}</span>
                 <CadSummaryText text={layerDesc(state, 'door')} iconClassName="h-3.5 w-3.5 text-emerald-800" />
-                <span>· Динамик:</span>
+                <span>{t('· Динамик:')}</span>
                 <CadSummaryText text={layerDesc(state, 'spk')} iconClassName="h-3.5 w-3.5 text-emerald-800" />
               </span>
             </div>
@@ -173,8 +183,9 @@ export function ExportModal({
                 />
               </div>
               <p className="text-[11.5px] leading-snug text-blue-100">
-                Раскрой для ЧПУ и лазера · контур, вырез, дверь, динамик{cbCount ? ', цековка' : ''}
-                {cskCount ? ', зенковка' : ''} ({contourCount})
+                {t('Раскрой для ЧПУ и лазера · контур, вырез, дверь, динамик')}
+                {cbCount ? t(', цековка') : ''}
+                {cskCount ? t(', зенковка') : ''} ({contourCount})
               </p>
             </button>
 
@@ -187,10 +198,10 @@ export function ExportModal({
               <div className="flex w-full items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-2 text-sm font-bold">
                   <Box className={`h-4 w-4 ${stlDisabled ? 'text-red-500' : 'text-[#1e63c4]'}`} aria-hidden="true" />
-                  STL (мм)
+                  {t('STL (мм)')}
                 </span>
                 {analysis.nErr > 0 ? (
-                  <span className="font-mono-num text-[10.5px] font-semibold text-red-700">заблокирован</span>
+                  <span className="font-mono-num text-[10.5px] font-semibold text-red-700">{t('заблокирован')}</span>
                 ) : (
                   <Download
                     className="h-4 w-4 text-slate-500 group-hover:text-[#1e63c4] transition-transform group-hover:translate-y-0.5"
@@ -200,8 +211,8 @@ export function ExportModal({
               </div>
               <p className="text-[11.5px] leading-snug text-slate-600">
                 {analysis.nErr > 0
-                  ? 'Исправьте конфликты геометрии для построения 3D-сетки'
-                  : 'Бинарная 3D-модель с цековками и зенковками для 3D-печати'}
+                  ? t('Исправьте конфликты геометрии для построения 3D-сетки')
+                  : t('Бинарная 3D-модель с цековками и зенковками для 3D-печати')}
               </p>
             </button>
 
@@ -221,7 +232,7 @@ export function ExportModal({
                 />
               </div>
               <p className="text-[11.5px] leading-snug text-slate-600">
-                Векторный чертёж с выносными размерами и штампом детали
+                {t('Векторный чертёж с выносными размерами и штампом детали')}
               </p>
             </button>
 
@@ -243,8 +254,8 @@ export function ExportModal({
               </div>
               <p className="text-[11.5px] leading-snug text-slate-600">
                 {state.view === '2d'
-                  ? 'Растровый снимок текущего 2D-чертежа (1400×1400)'
-                  : 'Растровый снимок текущего 3D-ракурса сцены'}
+                  ? t('Растровый снимок текущего 2D-чертежа (1400×1400)')
+                  : t('Растровый снимок текущего 3D-ракурса сцены')}
               </p>
             </button>
           </div>
@@ -252,13 +263,15 @@ export function ExportModal({
 
         {/* Footer */}
         <div className="flex items-center justify-between gap-3 border-t border-slate-100 bg-[#f8fafc] px-5 py-3">
-          <span className="font-mono-num text-[11px] text-slate-500">Все размеры в миллиметрах · масштаб 1:1</span>
+          <span className="font-mono-num text-[11px] text-slate-500">
+            {t('Все размеры в миллиметрах · масштаб 1:1')}
+          </span>
           <button
             type="button"
             onClick={onClose}
             className="rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
           >
-            Закрыть
+            {t('Закрыть')}
           </button>
         </div>
       </div>

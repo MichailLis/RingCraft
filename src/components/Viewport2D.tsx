@@ -1,3 +1,4 @@
+import { locale, t } from '../i18n';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { clamp, D2R, f2, fmtN, TAU } from '../core/geometry';
 import { applyExportFrame, DRAWING_MARGIN_MM, exportFrame } from '../core/svgExport';
@@ -169,7 +170,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
       `<text x="${f2(x)}" y="${f2(y)}" fill="${col}" font-family="IBM Plex Mono, monospace" font-size="${size}" font-weight="${weight}" text-anchor="${anchor}" paint-order="stroke" stroke="${C_SHEET}" stroke-width="1.7" stroke-linejoin="round">${str}</text>`;
 
     const fastLabel = (fa: FastenerSummary, n: number, holeD: number, slots: boolean) => {
-      const head = slots ? 'пазы ' : '';
+      const head = slots ? t('пазы ') : '';
       const rec = !fa.active
         ? ''
         : fa.recessType === 'csk'
@@ -274,7 +275,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
       g += txtHalo(
         lElbow + 2,
         ly + 1.6,
-        `Дверь Ø${fmtN(s.doorBCD, 0)} · ${fastLabel(a.fd, s.doorN, s.doorHoleD, s.doorSlots)}`,
+        t('Дверь Ø{0} · {1}', fmtN(s.doorBCD, 0), fastLabel(a.fd, s.doorN, s.doorHoleD, s.doorSlots)),
         C_BLUE,
         4.8,
         'start'
@@ -290,7 +291,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
       g += txtHalo(
         sElbow - 2,
         sy + 1.6,
-        `Динамик Ø${fmtN(s.spkBCD, 0)} · ${fastLabel(a.fs, s.spkN, s.spkHoleD, s.spkSlots)}`,
+        t('Динамик Ø{0} · {1}', fmtN(s.spkBCD, 0), fastLabel(a.fs, s.spkN, s.spkHoleD, s.spkSlots)),
         C_ORANGE,
         4.8,
         'end'
@@ -299,13 +300,13 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
 
     const bx = E - 76;
     const by = E - 22;
-    const dt = new Date().toLocaleDateString('ru-RU');
+    const dt = new Date().toLocaleDateString(locale);
     g += `<g>
       <rect x="${f2(bx)}" y="${f2(by)}" width="84" height="24" rx="1.5" fill="#ffffff" stroke="${C_DIM}" stroke-width=".6"/>
       <line x1="${f2(bx)}" y1="${f2(by + 10.5)}" x2="${f2(bx + 84)}" y2="${f2(by + 10.5)}" stroke="${C_DIM}" stroke-width=".35" stroke-opacity=".5"/>
-      ${txt(bx + 4.5, by + 7.5, `ПРОСТАВКА Ø${fmtN(s.outerD, 0)} × ${fmtN(s.thick, 0)}`, C_INK, 4.8, 'start', 700)}
-      ${txt(bx + 4.5, by + 16, 'RingCraft · масштаб 1:1 · мм', C_GRID, 3.4, 'start')}
-      ${txt(bx + 4.5, by + 21.3, `Вырез Ø${fmtN(s.innerD, 0)} мм · ${dt} · 2 слоя`, C_GRID, 3.4, 'start')}
+      ${txt(bx + 4.5, by + 7.5, t('ПРОСТАВКА Ø{0} × {1}', fmtN(s.outerD, 0), fmtN(s.thick, 0)), C_INK, 4.8, 'start', 700)}
+      ${txt(bx + 4.5, by + 16, t('RingCraft · масштаб 1:1 · мм'), C_GRID, 3.4, 'start')}
+      ${txt(bx + 4.5, by + 21.3, t('Вырез Ø{0} мм · {1} · 2 слоя', fmtN(s.innerD, 0), dt), C_GRID, 3.4, 'start')}
     </g>`;
 
     return g;
@@ -335,7 +336,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
         preserveAspectRatio="xMidYMid meet"
         viewBox={vb ? `${f2(vb.x)} ${f2(vb.y)} ${f2(vb.w)} ${f2(vb.h)}` : '-130 -130 260 260'}
         role="img"
-        aria-label="Чертёж проставки, вид сверху"
+        aria-label={t('Чертёж проставки, вид сверху')}
         className={`block h-full w-full select-none touch-none ${panning ? 'cursor-grabbing' : 'cursor-crosshair'}`}
         onPointerDown={(e) => {
           if (e.button !== 0 && e.button !== 1) return;
@@ -426,21 +427,21 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
           style={{ left: tipPos.left, top: tipPos.top }}
         >
           <div className={`font-semibold ${hoveredHole.kind === 'door' ? 'text-[#154b96]' : 'text-[#b8431a]'}`}>
-            {hoveredHole.kind === 'door' ? 'Крепление к двери' : 'Крепление динамика'} ·{' '}
-            {hoveredHole.type === 'slot' ? 'паз' : 'отв.'} {hoveredHole.idx}
+            {hoveredHole.kind === 'door' ? t('Крепление к двери') : t('Крепление динамика')} ·{' '}
+            {hoveredHole.type === 'slot' ? t('паз') : t('отв.')} {hoveredHole.idx}
           </div>
           <div className="mt-0.5 inline-flex items-center gap-1 text-slate-600">
             {hoveredHole.type === 'slot' ? (
-              <span>{`паз ${fmtN(hoveredHole.span, 0)}° × ${fmtN(hoveredHole.w)} мм`}</span>
+              <span>{t('паз {0}° × {1} мм', fmtN(hoveredHole.span, 0), fmtN(hoveredHole.w))}</span>
             ) : (
               <>
                 <DiameterIcon className="h-3.5 w-3.5 shrink-0 text-slate-500" />
-                <span>{`${fmtN(hoveredHole.r * 2)} мм`}</span>
+                <span>{t('{0} мм', fmtN(hoveredHole.r * 2))}</span>
               </>
             )}
             {!hoveredHole.valid && (
               <span className="ml-1 font-semibold text-red-600">
-                · {hoveredHole.overlap ? 'пересечение' : 'вне материала'}
+                · {hoveredHole.overlap ? t('пересечение') : t('вне материала')}
               </span>
             )}
           </div>
@@ -450,21 +451,32 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
                 <>
                   <CountersinkIcon className="h-3.5 w-3.5 shrink-0 text-slate-500" />
                   <span>
-                    {`${fmtN(hoveredHole.cbR * 2)} × 90° (глуб. ${fmtN(hoveredHole.cbDepth, 1)} мм) · ${hoveredHole.bolt !== 'custom' ? `болт ${hoveredHole.bolt}` : 'под саморез'}`}
+                    {t(
+                      '{0} × 90° (глуб. {1} мм) · {2}',
+                      fmtN(hoveredHole.cbR * 2),
+                      fmtN(hoveredHole.cbDepth, 1),
+                      hoveredHole.bolt !== 'custom' ? t('болт {0}', hoveredHole.bolt) : t('под саморез')
+                    )}
                   </span>
                 </>
               ) : (
                 <>
                   <CounterboreIcon className="h-3.5 w-3.5 shrink-0 text-slate-500" />
                   <span>
-                    {`${fmtN(hoveredHole.cbR * 2)} × ${fmtN(hoveredHole.cbDepth, 1)} мм · болт ${hoveredHole.bolt}`}
+                    {t(
+                      '{0} × {1} мм · болт {2}',
+                      fmtN(hoveredHole.cbR * 2),
+                      fmtN(hoveredHole.cbDepth, 1),
+                      hoveredHole.bolt
+                    )}
                   </span>
                 </>
               )}
             </div>
           )}
           <div className="text-slate-400">
-            X {fmtN(hoveredHole.cx)} · Y {fmtN(hoveredHole.cy)} мм
+            X {fmtN(hoveredHole.cx)} · Y {fmtN(hoveredHole.cy)}
+            {t(' мм')}
           </div>
         </div>
       )}

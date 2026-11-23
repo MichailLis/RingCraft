@@ -1,3 +1,4 @@
+import { locale, t } from '../i18n';
 import { BOLTS, DEFAULTS, LIMITS, MATS } from './constants';
 import type { AnalysisResult, CheckItem, FastenerSummary, HoleInfo, LayerKind, Point2D, SpacerState } from './types';
 
@@ -8,7 +9,7 @@ export const clamp = (v: number, a: number, b: number): number => Math.min(b, Ma
 
 export const fmtN = (v: number, d = 1): string => {
   const n = +v.toFixed(d);
-  return n.toLocaleString('ru-RU', { maximumFractionDigits: d });
+  return n.toLocaleString(locale, { maximumFractionDigits: d });
 };
 
 export const f2 = (v: number): number => +v.toFixed(2);
@@ -340,9 +341,9 @@ export function analyze(s: SpacerState): AnalysisResult {
 
   if (!cutValid) {
     err(
-      `Проходное отверстие Ø${fmtN(s.innerD, 0)} перекрывает контур — уменьшите вырез или увеличьте внешний Ø.`,
+      t('Проходное отверстие Ø{0} перекрывает контур — уменьшите вырез или увеличьте внешний Ø.', fmtN(s.innerD, 0)),
       undefined,
-      `Вырез Ø${fmtN(s.innerD, 0)} перекрывает контур`
+      t('Вырез Ø{0} перекрывает контур', fmtN(s.innerD, 0))
     );
   }
   const badDoor = holes.filter((h) => h.kind === 'door' && !h.valid && !h.overlap).length;
@@ -352,37 +353,51 @@ export function analyze(s: SpacerState): AnalysisResult {
 
   if (badDoor) {
     err(
-      `Крепление к двери${fd.active ? ' (с головкой)' : ''}: вне кольца ${badDoor} отв. Увеличьте внешний диаметр, уменьшите окружность отверстий или включите ушки.`,
+      t(
+        'Крепление к двери{0}: вне кольца {1} отв. Увеличьте внешний диаметр, уменьшите окружность отверстий или включите ушки.',
+        fd.active ? t(' (с головкой)') : '',
+        badDoor
+      ),
       'door',
-      `Дверь: вне кольца ${badDoor} отв.`
+      t('Дверь: вне кольца {0} отв.', badDoor)
     );
   }
   if (badSpk) {
     err(
-      `Крепление динамика${fs.active ? ' (с головкой)' : ''}: вне кольца или в вырезе ${badSpk} отв. Проверьте окружность отверстий и вырез.`,
+      t(
+        'Крепление динамика{0}: вне кольца или в вырезе {1} отв. Проверьте окружность отверстий и вырез.',
+        fs.active ? t(' (с головкой)') : '',
+        badSpk
+      ),
       'spk',
-      `Динамик: вне кольца ${badSpk} отв.`
+      t('Динамик: вне кольца {0} отв.', badSpk)
     );
   }
   if (badOvD) {
     err(
-      `Крепление к двери: ${badOvD} отв. пересекаются с крепежом динамика и исключены. Поверните группу или разведите окружности отверстий.`,
+      t(
+        'Крепление к двери: {0} отв. пересекаются с крепежом динамика и исключены. Поверните группу или разведите окружности отверстий.',
+        badOvD
+      ),
       'door',
-      `Пересечение отверстий (${badOvD} отв.)`
+      t('Пересечение отверстий ({0} отв.)', badOvD)
     );
   }
   if (badOvS) {
     err(
-      `Крепление динамика: ${badOvS} отв. пересекаются с крепежом к двери и исключены. Поверните группу или разведите окружности отверстий.`,
+      t(
+        'Крепление динамика: {0} отв. пересекаются с крепежом к двери и исключены. Поверните группу или разведите окружности отверстий.',
+        badOvS
+      ),
       'spk',
-      `Пересечение отверстий (${badOvS} отв.)`
+      t('Пересечение отверстий ({0} отв.)', badOvS)
     );
   }
 
   (
     [
-      ['door', 'Крепление к двери', 'Дверь', fd],
-      ['spk', 'Крепление динамика', 'Динамик', fs],
+      ['door', t('Крепление к двери'), t('Дверь'), fd],
+      ['spk', t('Крепление динамика'), t('Динамик'), fs],
     ] as const
   ).forEach(([k, label, shortTag, fa]) => {
     if (fa.active) {
@@ -390,21 +405,28 @@ export function analyze(s: SpacerState): AnalysisResult {
       const actualFloor = Math.max(0, s.thick - fa.actualCbDepth);
       const isClamped = fa.actualCbDepth < fa.cbDepth - 1e-3;
       const isCsk = fa.recessType === 'csk';
-      const recessNoun = isCsk ? 'зенковка' : 'цековка';
-      const recessInstr = isCsk ? 'зенковкой 90°' : 'цековкой';
+      const recessNoun = isCsk ? t('зенковка') : t('цековка');
+      const recessInstr = isCsk ? t('зенковкой 90°') : t('цековкой');
       const boltTag = fa.bolt !== 'custom' ? ` ${fa.bolt}` : '';
       if (nominalFloor < 2) {
-        const clampNote = isClamped ? ` (${recessNoun} подрезана до ${fmtN(fa.actualCbDepth, 1)}\u00A0мм)` : '';
+        const clampNote = isClamped ? t(' ({0} подрезана до {1} мм)', recessNoun, fmtN(fa.actualCbDepth, 1)) : '';
         err(
-          `${label}: под ${recessInstr}${boltTag} остаётся ${fmtN(actualFloor, 1)}\u00A0мм дна${clampNote} — увеличьте толщину (≥\u00A02\u00A0мм) или выберите меньший крепёж.`,
+          t(
+            '{0}: под {1}{2} остаётся {3} мм дна{4} — увеличьте толщину (≥ 2 мм) или выберите меньший крепёж.',
+            label,
+            recessInstr,
+            boltTag,
+            fmtN(actualFloor, 1),
+            clampNote
+          ),
           k,
-          `${shortTag}: дно ${fmtN(actualFloor, 1)}\u00A0мм (≥\u00A02\u00A0мм)`
+          t('{0}: дно {1} мм (≥ 2 мм)', shortTag, fmtN(actualFloor, 1))
         );
       } else if (nominalFloor < 3) {
         warn(
-          `${label}: тонкое дно под ${recessInstr} — ${fmtN(actualFloor, 1)}\u00A0мм (рекомендуется ≥\u00A03\u00A0мм).`,
+          t('{0}: тонкое дно под {1} — {2} мм (рекомендуется ≥ 3 мм).', label, recessInstr, fmtN(actualFloor, 1)),
           k,
-          `${shortTag}: дно ${fmtN(actualFloor, 1)}\u00A0мм (≥\u00A03\u00A0мм)`
+          t('{0}: дно {1} мм (≥ 3 мм)', shortTag, fmtN(actualFloor, 1))
         );
       }
     }
@@ -434,35 +456,35 @@ export function analyze(s: SpacerState): AnalysisResult {
   if (!Number.isFinite(minWeb)) minWeb = (s.outerD - s.innerD) / 2;
   if (nErr === 0 && thinPairs) {
     warn(
-      `Отверстия/головки почти сливаются (пар: ${thinPairs}) — перемычка менее 0,8\u00A0мм.`,
+      t('Отверстия/головки почти сливаются (пар: {0}) — перемычка менее 0,8 мм.', thinPairs),
       undefined,
-      `Сближение (< 0,8\u00A0мм)`
+      t('Сближение (< 0,8 мм)')
     );
   }
   if (nErr === 0 && minWeb < 2.5) {
     warn(
-      `Тонкая перемычка ${fmtN(Math.max(minWeb, 0))}\u00A0мм — рекомендуется не менее 3\u00A0мм.`,
+      t('Тонкая перемычка {0} мм — рекомендуется не менее 3 мм.', fmtN(Math.max(minWeb, 0))),
       undefined,
-      `Перемычка ${fmtN(Math.max(minWeb, 0))}\u00A0мм (≥\u00A03\u00A0мм)`
+      t('Перемычка {0} мм (≥ 3 мм)', fmtN(Math.max(minWeb, 0)))
     );
   }
   const ringW = (s.outerD - s.innerD) / 2;
   if (nErr === 0 && ringW < 8) {
     warn(
-      `Узкое кольцо: ${fmtN(ringW)}\u00A0мм — проверьте жёсткость проставки.`,
+      t('Узкое кольцо: {0} мм — проверьте жёсткость проставки.', fmtN(ringW)),
       undefined,
-      `Полка ${fmtN(ringW)}\u00A0мм (≥\u00A08\u00A0мм)`
+      t('Полка {0} мм (≥ 8 мм)', fmtN(ringW))
     );
   }
   if (s.material === 'mdf' && s.thick < 6) {
     warn(
-      'МДФ тоньше 6\u00A0мм склонен к сколам — возьмите фанеру или увеличьте толщину.',
+      t('МДФ тоньше 6 мм склонен к сколам — возьмите фанеру или увеличьте толщину.'),
       undefined,
-      'МДФ < 6\u00A0мм — риск сколов'
+      t('МДФ < 6 мм — риск сколов')
     );
   }
   if (!checks.length) {
-    checks.push({ lv: 'ok', t: 'Геометрия корректна — оба слоя независимы и готовы к раскрою / печати.' });
+    checks.push({ lv: 'ok', t: t('Геометрия корректна — оба слоя независимы и готовы к раскрою / печати.') });
   }
 
   return {
@@ -489,7 +511,7 @@ export function layerDesc(s: SpacerState, kind: LayerKind): string {
   const n = kind === 'door' ? s.doorN : s.spkN;
   const slots = kind === 'door' ? s.doorSlots : s.spkSlots;
   const holeD = kind === 'door' ? s.doorHoleD : s.spkHoleD;
-  const head = slots ? 'пазы ' : '';
+  const head = slots ? t('пазы ') : '';
   const recessStr = !fa.active
     ? ''
     : fa.recessType === 'csk'
@@ -506,7 +528,7 @@ export function layerTabDesc(s: SpacerState, kind: LayerKind): string {
   const n = kind === 'door' ? s.doorN : s.spkN;
   const slots = kind === 'door' ? s.doorSlots : s.spkSlots;
   const holeD = kind === 'door' ? s.doorHoleD : s.spkHoleD;
-  const head = slots ? 'паз ' : '';
+  const head = slots ? t('паз ') : '';
   const sym = !fa.active ? '' : fa.recessType === 'csk' ? ' ⌵' : ' ⌴';
   if (fa.bolt !== 'custom') {
     return `${head}${n}×${fa.bolt}${sym}`;

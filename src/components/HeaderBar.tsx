@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { AlertCircle, Download, LayoutGrid } from 'lucide-react';
 
 interface HeaderBarProps {
@@ -30,7 +31,7 @@ export function HeaderBar({ hasErrors, wizardActive = false, onOpenPresets, onOp
         </svg>
         <h1 className="text-[13.5px] sm:text-[15px] font-bold tracking-[0.09em] sm:tracking-[0.14em] text-[#16202b] whitespace-nowrap shrink-0">
           RingCraft
-          <span className="sr-only"> — конструктор проставок для автодинамиков</span>
+          <span className="sr-only">{t(' — конструктор проставок для автодинамиков')}</span>
         </h1>
       </div>
 
@@ -41,13 +42,13 @@ export function HeaderBar({ hasErrors, wizardActive = false, onOpenPresets, onOp
           className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-[#cfd8e3] bg-white px-2.5 sm:px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:border-[#1e63c4] hover:text-[#154b96] transition-colors cursor-pointer whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45"
         >
           <LayoutGrid className="h-4 w-4 shrink-0 text-[#1e63c4]" aria-hidden="true" />
-          <span>Пресеты</span>
+          <span>{t('Пресеты')}</span>
         </button>
 
         <button
           type="button"
           onClick={onOpenExport}
-          title={hasErrors ? 'Экспорт (STL заблокирован: есть ошибки геометрии)' : undefined}
+          title={hasErrors ? t('Экспорт (STL заблокирован: есть ошибки геометрии)') : undefined}
           className={`inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 sm:px-3.5 text-xs transition-colors cursor-pointer whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/50 focus-visible:ring-offset-1 ${
             wizardActive
               ? hasErrors
@@ -60,7 +61,7 @@ export function HeaderBar({ hasErrors, wizardActive = false, onOpenPresets, onOp
             className={`h-4 w-4 shrink-0 ${wizardActive ? (hasErrors ? 'text-red-700' : 'text-[#1e63c4]') : ''}`}
             aria-hidden="true"
           />
-          <span>Экспорт</span>
+          <span>{t('Экспорт')}</span>
           {hasErrors && (
             <>
               {wizardActive ? (
@@ -73,7 +74,7 @@ export function HeaderBar({ hasErrors, wizardActive = false, onOpenPresets, onOp
                   <AlertCircle className="h-3.5 w-3.5 stroke-[2.4]" />
                 </span>
               )}
-              <span className="sr-only"> — есть ошибки геометрии, экспорт STL заблокирован</span>
+              <span className="sr-only">{t(' — есть ошибки геометрии, экспорт STL заблокирован')}</span>
             </>
           )}
         </button>
