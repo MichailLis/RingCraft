@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
 
+// Ensures %VITE_SITE_URL% in index.html always resolves (override via Vercel env).
+process.env.VITE_SITE_URL ??= 'https://ringcraft.vercel.app';
+
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
