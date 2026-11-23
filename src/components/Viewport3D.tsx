@@ -130,14 +130,7 @@ function buildPartGroup(
   const meshes: THREE.Mesh[] = [];
   const lines: THREE.LineSegments[] = [];
 
-  const { geometry, edgeGeometry } = buildSpacerSolid(
-    s,
-    a,
-    seg,
-    outCount,
-    forExport,
-    !forExport && edgeMat !== null
-  );
+  const { geometry, edgeGeometry } = buildSpacerSolid(s, a, seg, outCount, forExport, !forExport && edgeMat !== null);
 
   const mesh = new THREE.Mesh(geometry, mat);
   mesh.castShadow = true;
@@ -552,10 +545,7 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
             controls.target.x = THREE.MathUtils.damp(controls.target.x, camGoalTarget.x, 10, dt);
             controls.target.y = THREE.MathUtils.damp(controls.target.y, camGoalTarget.y, 10, dt);
             controls.target.z = THREE.MathUtils.damp(controls.target.z, camGoalTarget.z, 10, dt);
-            if (
-              camera.position.distanceTo(camGoalPos) < 0.06 &&
-              controls.target.distanceTo(camGoalTarget) < 0.04
-            ) {
+            if (camera.position.distanceTo(camGoalPos) < 0.06 && controls.target.distanceTo(camGoalTarget) < 0.04) {
               camera.position.copy(camGoalPos);
               controls.target.copy(camGoalTarget);
               camTransitioning = false;

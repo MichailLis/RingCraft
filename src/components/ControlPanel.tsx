@@ -58,11 +58,7 @@ import type {
   SpacerState,
   UIState,
 } from '../core/types';
-import type {
-  ConstrainedField,
-  ConstraintJumpTarget,
-  ConstraintNotice,
-} from '../core/constraints';
+import type { ConstrainedField, ConstraintJumpTarget, ConstraintNotice } from '../core/constraints';
 import {
   BcdDiameterIcon,
   CadSummaryText,
@@ -78,13 +74,7 @@ import {
   ThicknessIcon,
   WizardStepsIcon,
 } from './CadIcons';
-import {
-  ConstraintHint,
-  SelectField,
-  SliderField,
-  StepperField,
-  ToggleField,
-} from './FormControls';
+import { ConstraintHint, SelectField, SliderField, StepperField, ToggleField } from './FormControls';
 
 interface ControlPanelProps {
   state: SpacerState;
@@ -120,7 +110,6 @@ const Q_LABELS: Record<QualityMode, string> = {
   std: 'Стандарт',
   high: 'Высокое',
 };
-
 
 interface CollapsibleCardProps {
   id: string;
@@ -160,9 +149,7 @@ function CollapsibleCard({
       >
         <div className="flex items-center gap-2 min-w-0">
           {icon}
-          <span className="text-[12px] font-bold tracking-wide uppercase text-slate-800 truncate">
-            {title}
-          </span>
+          <span className="text-[12px] font-bold tracking-wide uppercase text-slate-800 truncate">{title}</span>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <span
@@ -245,11 +232,7 @@ function LayerCardBody({
             <span>{isDoor ? 'На динамик' : 'На дверь'}</span>
           </button>
         </div>
-        <ConstraintHint
-          notice={noticeFor('copyLayer')}
-          onJumpTarget={onFocusTarget}
-          onDismiss={onDismissConstraint}
-        />
+        <ConstraintHint notice={noticeFor('copyLayer')} onJumpTarget={onFocusTarget} onDismiss={onDismissConstraint} />
       </div>
 
       <SelectField<BoltSize>
@@ -287,10 +270,14 @@ function LayerCardBody({
                   <span>(глуб. {fmtN(fa.actualCbDepth, 1)})</span>
                   {cbClamped ? (
                     <span className="font-semibold text-red-700">
-                      · подрезано с {fmtN(fa.cbDepth, 1)} · дно {fmtN(floorMm, 1)}{'\u00A0'}мм
+                      · подрезано с {fmtN(fa.cbDepth, 1)} · дно {fmtN(floorMm, 1)}
+                      {'\u00A0'}мм
                     </span>
                   ) : (
-                    <span>· дно {fmtN(floorMm, 1)}{'\u00A0'}мм</span>
+                    <span>
+                      · дно {fmtN(floorMm, 1)}
+                      {'\u00A0'}мм
+                    </span>
                   )}
                 </>
               ) : (
@@ -298,19 +285,27 @@ function LayerCardBody({
                   <span>·</span>
                   <span className="inline-flex items-center gap-0.5" title="Цековка">
                     <CounterboreIcon className="h-3.5 w-3.5 text-slate-600" />
-                    <span>{fmtN(fa.cbD)}×{fmtN(fa.actualCbDepth, 1)}</span>
+                    <span>
+                      {fmtN(fa.cbD)}×{fmtN(fa.actualCbDepth, 1)}
+                    </span>
                   </span>
                   {cbClamped ? (
                     <span className="font-semibold text-red-700">
-                      · подрезано с {fmtN(fa.cbDepth, 0)} · дно {fmtN(floorMm, 1)}{'\u00A0'}мм
+                      · подрезано с {fmtN(fa.cbDepth, 0)} · дно {fmtN(floorMm, 1)}
+                      {'\u00A0'}мм
                     </span>
                   ) : (
-                    <span>· дно {fmtN(floorMm, 1)}{'\u00A0'}мм</span>
+                    <span>
+                      · дно {fmtN(floorMm, 1)}
+                      {'\u00A0'}мм
+                    </span>
                   )}
                 </>
               )
             ) : (
-              <span>· головка Ø{fmtN(boltSpec.dk)}×{fmtN(boltSpec.k, 0)} · снаружи</span>
+              <span>
+                · головка Ø{fmtN(boltSpec.dk)}×{fmtN(boltSpec.k, 0)} · снаружи
+              </span>
             )}
           </>
         ) : fa.active && fa.recessType === 'csk' ? (
@@ -322,7 +317,10 @@ function LayerCardBody({
               <CountersinkIcon className="h-3.5 w-3.5 text-slate-600" />
               <span>{fmtN(fa.cbD)}×90°</span>
             </span>
-            <span>(глуб. {fmtN(fa.actualCbDepth, 1)}) · дно {fmtN(floorMm, 1)}{'\u00A0'}мм</span>
+            <span>
+              (глуб. {fmtN(fa.actualCbDepth, 1)}) · дно {fmtN(floorMm, 1)}
+              {'\u00A0'}мм
+            </span>
           </>
         ) : (
           <span>Произвольный Ø отверстия · без углубления</span>
@@ -337,7 +335,9 @@ function LayerCardBody({
             <div className="flex flex-col gap-1.5">
               <SliderField
                 label="Окружность отверстий"
-                icon={<BcdDiameterIcon className={`h-4 w-4 shrink-0 ${isDoor ? 'text-[#1e63c4]' : 'text-[#d9541e]'}`} />}
+                icon={
+                  <BcdDiameterIcon className={`h-4 w-4 shrink-0 ${isDoor ? 'text-[#1e63c4]' : 'text-[#d9541e]'}`} />
+                }
                 value={state[bcdKey]}
                 min={(wideRange ? WIDE_RANGES : STD_RANGES)[bcdKey][0]}
                 max={(wideRange ? WIDE_RANGES : STD_RANGES)[bcdKey][1]}
@@ -418,9 +418,7 @@ function LayerCardBody({
               ? `Шаг ${fmtN(360 / state[nKey], 0)}° · мин. ${fmtN(minGap, 1)}°`
               : `Симметрия: ${fmtN(optRot, 1)}° · мин. ${fmtN(minGap, 1)}°`;
 
-          const confirmedLabel = strictIncompatible
-            ? 'Оптимально'
-            : 'Симметрия';
+          const confirmedLabel = strictIncompatible ? 'Оптимально' : 'Симметрия';
 
           return (
             <div className="flex flex-col gap-2 pt-1 border-t border-slate-100">
@@ -671,17 +669,13 @@ function RingControlsBody({
     <div className="p-3 space-y-3">
       {showRangeToggle && (
         <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-100">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">
-            Диапазон шкалы
-          </span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">Диапазон шкалы</span>
           <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5">
             <button
               type="button"
               onClick={() => onToggleCustomRange(false)}
               className={`rounded-md px-2 py-1 text-[11px] font-semibold transition-colors cursor-pointer ${
-                !wideRange
-                  ? 'bg-white text-[#154b96] shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                !wideRange ? 'bg-white text-[#154b96] shadow-2xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               120–260
@@ -690,9 +684,7 @@ function RingControlsBody({
               type="button"
               onClick={() => onToggleCustomRange(true)}
               className={`rounded-md px-2 py-1 text-[11px] font-semibold transition-colors cursor-pointer ${
-                wideRange
-                  ? 'bg-white text-[#154b96] shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                wideRange ? 'bg-white text-[#154b96] shadow-2xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Произвольный
@@ -817,12 +809,8 @@ export function ControlPanel({
       </span>
     </span>
   );
-  const doorSummary = (
-    <CadSummaryText text={`Ø${fmtN(state.doorBCD, 0)} · ${layerTabDesc(state, 'door')}`} />
-  );
-  const spkSummary = (
-    <CadSummaryText text={`Ø${fmtN(state.spkBCD, 0)} · ${layerTabDesc(state, 'spk')}`} />
-  );
+  const doorSummary = <CadSummaryText text={`Ø${fmtN(state.doorBCD, 0)} · ${layerTabDesc(state, 'door')}`} />;
+  const spkSummary = <CadSummaryText text={`Ø${fmtN(state.spkBCD, 0)} · ${layerTabDesc(state, 'spk')}`} />;
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollDown, setCanScrollDown] = useState(false);
@@ -900,9 +888,7 @@ export function ControlPanel({
         {/* Header aligned with viewport toolbar rail */}
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-200 bg-white px-2.5 py-3">
           <div className="flex items-center gap-2 min-w-0 pl-0.5">
-            <h2 className="text-[12px] font-bold tracking-wider uppercase text-slate-800 truncate">
-              Мастер создания
-            </h2>
+            <h2 className="text-[12px] font-bold tracking-wider uppercase text-slate-800 truncate">Мастер создания</h2>
             <span className="font-mono-num text-[11px] font-semibold text-[#154b96] shrink-0">
               {stepIndex + 1}/{WIZARD_STEPS.length}
             </span>
@@ -917,10 +903,7 @@ export function ControlPanel({
         </div>
 
         {/* Clickable 4-step progress rail */}
-        <nav
-          aria-label="Шаги мастера"
-          className="shrink-0 border-b border-slate-200/80 bg-[#f8fafc] px-2.5 py-2"
-        >
+        <nav aria-label="Шаги мастера" className="shrink-0 border-b border-slate-200/80 bg-[#f8fafc] px-2.5 py-2">
           <ol className="grid grid-cols-4 gap-1.5">
             {WIZARD_STEPS.map((step, idx) => {
               const isActive = idx === stepIndex;
@@ -980,9 +963,7 @@ export function ControlPanel({
                     {currentStep.title}
                   </h3>
                 </div>
-                <p className="mt-1 text-[11.5px] leading-snug text-slate-600">
-                  {currentStep.subtitle}
-                </p>
+                <p className="mt-1 text-[11.5px] leading-snug text-slate-600">{currentStep.subtitle}</p>
               </div>
 
               {currentStep.id === 'ring' && (
@@ -1033,9 +1014,7 @@ export function ControlPanel({
                             : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300'
                         }`}
                       >
-                        <span className="text-[12px] font-bold leading-tight whitespace-nowrap">
-                          Произвольный
-                        </span>
+                        <span className="text-[12px] font-bold leading-tight whitespace-nowrap">Произвольный</span>
                         <span className="font-mono-num text-[10px] text-slate-600 mt-0.5 whitespace-nowrap">
                           Ø50–500 · любой
                         </span>
@@ -1084,215 +1063,212 @@ export function ControlPanel({
                 />
               )}
 
-              {currentStep.id === 'export' && (() => {
-                const isPrintMode = state.material === 'abs';
-                const stlDisabled = !ready3d || analysis.nErr > 0;
-                const cbCount = analysis.holes.filter((h) => h.valid && h.cbDepth > 0 && h.recessType === 'cb').length;
-                const cskCount = analysis.holes.filter((h) => h.valid && h.cbDepth > 0 && h.recessType === 'csk').length;
-                const contourCount =
-                  1 + (analysis.cutValid ? 1 : 0) + analysis.holes.filter((h) => h.valid).length + cbCount + cskCount;
-                const dxfLayers = [
-                  'Контур',
-                  'Вырез',
-                  'Дверь',
-                  'Динамик',
-                  cbCount > 0 ? 'Цековка' : null,
-                  cskCount > 0 ? 'Зенковка' : null,
-                ].filter(Boolean);
+              {currentStep.id === 'export' &&
+                (() => {
+                  const isPrintMode = state.material === 'abs';
+                  const stlDisabled = !ready3d || analysis.nErr > 0;
+                  const cbCount = analysis.holes.filter(
+                    (h) => h.valid && h.cbDepth > 0 && h.recessType === 'cb'
+                  ).length;
+                  const cskCount = analysis.holes.filter(
+                    (h) => h.valid && h.cbDepth > 0 && h.recessType === 'csk'
+                  ).length;
+                  const contourCount =
+                    1 + (analysis.cutValid ? 1 : 0) + analysis.holes.filter((h) => h.valid).length + cbCount + cskCount;
+                  const dxfLayers = [
+                    'Контур',
+                    'Вырез',
+                    'Дверь',
+                    'Динамик',
+                    cbCount > 0 ? 'Цековка' : null,
+                    cskCount > 0 ? 'Зенковка' : null,
+                  ].filter(Boolean);
 
-                return (
-                  <div className="p-3 space-y-3">
-                    {/* 2-way production target */}
-                    <div className="grid grid-cols-2 gap-2" role="group" aria-label="Способ изготовления">
-                      <button
-                        type="button"
-                        aria-pressed={isPrintMode}
-                        onClick={() => onPatch({ material: 'abs', tint: '#ffffff' })}
-                        className={`flex items-center gap-2.5 rounded-lg border p-2.5 text-left transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45 ${
-                          isPrintMode
-                            ? 'border-[#1e63c4] bg-[#eaf1fb]/80'
-                            : 'border-slate-200 bg-white hover:border-slate-300'
-                        }`}
-                      >
-                        <span
-                          className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors ${
+                  return (
+                    <div className="p-3 space-y-3">
+                      {/* 2-way production target */}
+                      <div className="grid grid-cols-2 gap-2" role="group" aria-label="Способ изготовления">
+                        <button
+                          type="button"
+                          aria-pressed={isPrintMode}
+                          onClick={() => onPatch({ material: 'abs', tint: '#ffffff' })}
+                          className={`flex items-center gap-2.5 rounded-lg border p-2.5 text-left transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45 ${
                             isPrintMode
-                              ? 'border-[#1e63c4]/25 bg-white text-[#1e63c4]'
-                              : 'border-slate-200 bg-slate-50 text-slate-500'
+                              ? 'border-[#1e63c4] bg-[#eaf1fb]/80'
+                              : 'border-slate-200 bg-white hover:border-slate-300'
                           }`}
                         >
-                          <Box className="h-4 w-4" aria-hidden="true" />
-                        </span>
-                        <div className="min-w-0">
-                          <div
-                            className={`text-[12px] font-semibold leading-tight ${
-                              isPrintMode ? 'text-[#154b96]' : 'text-slate-800'
+                          <span
+                            className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors ${
+                              isPrintMode
+                                ? 'border-[#1e63c4]/25 bg-white text-[#1e63c4]'
+                                : 'border-slate-200 bg-slate-50 text-slate-500'
                             }`}
                           >
-                            3D-печать
+                            <Box className="h-4 w-4" aria-hidden="true" />
+                          </span>
+                          <div className="min-w-0">
+                            <div
+                              className={`text-[12px] font-semibold leading-tight ${
+                                isPrintMode ? 'text-[#154b96]' : 'text-slate-800'
+                              }`}
+                            >
+                              3D-печать
+                            </div>
+                            <div className="text-[10.5px] text-slate-600 mt-0.5">Модель STL · мм</div>
                           </div>
-                          <div className="text-[10.5px] text-slate-600 mt-0.5">
-                            Модель STL · мм
-                          </div>
-                        </div>
-                      </button>
+                        </button>
 
-                      <button
-                        type="button"
-                        aria-pressed={!isPrintMode}
-                        onClick={() => onPatch({ material: 'fanera', tint: '#ffffff' })}
-                        className={`flex items-center gap-2.5 rounded-lg border p-2.5 text-left transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45 ${
-                          !isPrintMode
-                            ? 'border-[#1e63c4] bg-[#eaf1fb]/80'
-                            : 'border-slate-200 bg-white hover:border-slate-300'
-                        }`}
-                      >
-                        <span
-                          className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors ${
+                        <button
+                          type="button"
+                          aria-pressed={!isPrintMode}
+                          onClick={() => onPatch({ material: 'fanera', tint: '#ffffff' })}
+                          className={`flex items-center gap-2.5 rounded-lg border p-2.5 text-left transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45 ${
                             !isPrintMode
-                              ? 'border-[#1e63c4]/25 bg-white text-[#1e63c4]'
-                              : 'border-slate-200 bg-slate-50 text-slate-500'
+                              ? 'border-[#1e63c4] bg-[#eaf1fb]/80'
+                              : 'border-slate-200 bg-white hover:border-slate-300'
                           }`}
                         >
-                          <Layers className="h-4 w-4" aria-hidden="true" />
-                        </span>
-                        <div className="min-w-0">
-                          <div
-                            className={`text-[12px] font-semibold leading-tight ${
-                              !isPrintMode ? 'text-[#154b96]' : 'text-slate-800'
+                          <span
+                            className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors ${
+                              !isPrintMode
+                                ? 'border-[#1e63c4]/25 bg-white text-[#1e63c4]'
+                                : 'border-slate-200 bg-slate-50 text-slate-500'
                             }`}
                           >
-                            Фрезеровка
-                          </div>
-                          <div className="text-[10.5px] text-slate-600 mt-0.5">
-                            Фанера · DXF / ЧПУ
-                          </div>
-                        </div>
-                      </button>
-                    </div>
-
-                    {isPrintMode ? (
-                      <div className="space-y-2.5 pt-2 border-t border-slate-100">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[11.5px] font-medium text-slate-700">
-                            Детализация STL
+                            <Layers className="h-4 w-4" aria-hidden="true" />
                           </span>
-                          <div
-                            className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5"
-                            role="group"
-                            aria-label="Детализация 3D-сетки"
-                          >
-                            {QUALITY_OPTS.map(([val, lbl]) => {
-                              const active = state.quality === val;
-                              return (
-                                <button
-                                  key={val}
-                                  type="button"
-                                  aria-pressed={active}
-                                  onClick={() => onPatch({ quality: val })}
-                                  className={`rounded-md px-2 py-1 text-[11px] font-semibold transition-colors cursor-pointer ${
-                                    active
-                                      ? 'bg-white text-[#154b96] shadow-2xs'
-                                      : 'text-slate-600 hover:text-slate-900'
-                                  }`}
-                                >
-                                  {lbl}
-                                </button>
-                              );
-                            })}
+                          <div className="min-w-0">
+                            <div
+                              className={`text-[12px] font-semibold leading-tight ${
+                                !isPrintMode ? 'text-[#154b96]' : 'text-slate-800'
+                              }`}
+                            >
+                              Фрезеровка
+                            </div>
+                            <div className="text-[10.5px] text-slate-600 mt-0.5">Фанера · DXF / ЧПУ</div>
                           </div>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={onExportSTL}
-                          disabled={stlDisabled}
-                          className="flex w-full items-center justify-between gap-2 rounded-lg bg-[#1e63c4] px-3.5 py-2.5 text-left text-white shadow-2xs hover:bg-[#154b96] disabled:bg-red-50 disabled:text-red-800 disabled:border disabled:border-red-200 disabled:shadow-none disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/50"
-                        >
-                          <span className="flex items-center gap-2 min-w-0">
-                            <Box className="h-4 w-4 shrink-0" aria-hidden="true" />
-                            <span className="text-[12.5px] font-semibold">
-                              {analysis.nErr > 0 ? 'STL заблокирован — исправьте ошибки' : 'Скачать STL (3D-печать)'}
-                            </span>
-                          </span>
-                          <Download className="h-4 w-4 shrink-0 opacity-90" aria-hidden="true" />
                         </button>
-
-                        <p className="text-[11px] leading-snug text-slate-500">
-                          Замкнутая 3D-сетка в миллиметрах — включает цековки и зенковки обоих слоёв.
-                        </p>
-
-                        <div className="grid grid-cols-2 gap-1.5 pt-1">
-                          <button
-                            type="button"
-                            onClick={onExportDXF}
-                            className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] transition-colors cursor-pointer"
-                          >
-                            <Layers className="h-4 w-4 shrink-0" aria-hidden="true" />
-                            <span>DXF R12 (ЧПУ)</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={onExportSVG}
-                            className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] transition-colors cursor-pointer"
-                          >
-                            <FileCode2 className="h-4 w-4 shrink-0" aria-hidden="true" />
-                            <span>Чертёж SVG 1:1</span>
-                          </button>
-                        </div>
                       </div>
-                    ) : (
-                      <div className="space-y-2.5 pt-2 border-t border-slate-100">
-                        <div className="rounded-lg bg-slate-50 px-2.5 py-2 text-[11px] text-slate-600">
+
+                      {isPrintMode ? (
+                        <div className="space-y-2.5 pt-2 border-t border-slate-100">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-semibold text-slate-700">В файле DXF R12</span>
-                            <span className="font-mono-num text-[10.5px] text-slate-500">
-                              {contourCount} контуров
-                            </span>
+                            <span className="text-[11.5px] font-medium text-slate-700">Детализация STL</span>
+                            <div
+                              className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5"
+                              role="group"
+                              aria-label="Детализация 3D-сетки"
+                            >
+                              {QUALITY_OPTS.map(([val, lbl]) => {
+                                const active = state.quality === val;
+                                return (
+                                  <button
+                                    key={val}
+                                    type="button"
+                                    aria-pressed={active}
+                                    onClick={() => onPatch({ quality: val })}
+                                    className={`rounded-md px-2 py-1 text-[11px] font-semibold transition-colors cursor-pointer ${
+                                      active
+                                        ? 'bg-white text-[#154b96] shadow-2xs'
+                                        : 'text-slate-600 hover:text-slate-900'
+                                    }`}
+                                  >
+                                    {lbl}
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
-                          <div className="font-mono-num mt-1 text-[10.5px] text-slate-600 leading-relaxed">
-                            {dxfLayers.join(' · ')}
-                          </div>
-                        </div>
 
-                        <button
-                          type="button"
-                          onClick={onExportDXF}
-                          className="flex w-full items-center justify-between gap-2 rounded-lg bg-[#1e63c4] px-3.5 py-2.5 text-left text-white shadow-2xs hover:bg-[#154b96] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/50"
-                        >
-                          <span className="flex items-center gap-2 min-w-0">
-                            <Layers className="h-4 w-4 shrink-0" aria-hidden="true" />
-                            <span className="text-[12.5px] font-semibold">
-                              Скачать DXF R12 (ЧПУ)
-                            </span>
-                          </span>
-                          <Download className="h-4 w-4 shrink-0 opacity-90" aria-hidden="true" />
-                        </button>
-
-                        <div className="grid grid-cols-2 gap-1.5">
-                          <button
-                            type="button"
-                            onClick={onExportSVG}
-                            className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] transition-colors cursor-pointer"
-                          >
-                            <FileCode2 className="h-4 w-4 shrink-0" aria-hidden="true" />
-                            <span>Шаблон SVG 1:1</span>
-                          </button>
                           <button
                             type="button"
                             onClick={onExportSTL}
                             disabled={stlDisabled}
-                            className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            className="flex w-full items-center justify-between gap-2 rounded-lg bg-[#1e63c4] px-3.5 py-2.5 text-left text-white shadow-2xs hover:bg-[#154b96] disabled:bg-red-50 disabled:text-red-800 disabled:border disabled:border-red-200 disabled:shadow-none disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/50"
                           >
-                            <Box className="h-4 w-4 shrink-0" aria-hidden="true" />
-                            <span>3D-модель STL</span>
+                            <span className="flex items-center gap-2 min-w-0">
+                              <Box className="h-4 w-4 shrink-0" aria-hidden="true" />
+                              <span className="text-[12.5px] font-semibold">
+                                {analysis.nErr > 0 ? 'STL заблокирован — исправьте ошибки' : 'Скачать STL (3D-печать)'}
+                              </span>
+                            </span>
+                            <Download className="h-4 w-4 shrink-0 opacity-90" aria-hidden="true" />
                           </button>
+
+                          <p className="text-[11px] leading-snug text-slate-500">
+                            Замкнутая 3D-сетка в миллиметрах — включает цековки и зенковки обоих слоёв.
+                          </p>
+
+                          <div className="grid grid-cols-2 gap-1.5 pt-1">
+                            <button
+                              type="button"
+                              onClick={onExportDXF}
+                              className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] transition-colors cursor-pointer"
+                            >
+                              <Layers className="h-4 w-4 shrink-0" aria-hidden="true" />
+                              <span>DXF R12 (ЧПУ)</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={onExportSVG}
+                              className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] transition-colors cursor-pointer"
+                            >
+                              <FileCode2 className="h-4 w-4 shrink-0" aria-hidden="true" />
+                              <span>Чертёж SVG 1:1</span>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })()}
+                      ) : (
+                        <div className="space-y-2.5 pt-2 border-t border-slate-100">
+                          <div className="rounded-lg bg-slate-50 px-2.5 py-2 text-[11px] text-slate-600">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="font-semibold text-slate-700">В файле DXF R12</span>
+                              <span className="font-mono-num text-[10.5px] text-slate-500">
+                                {contourCount} контуров
+                              </span>
+                            </div>
+                            <div className="font-mono-num mt-1 text-[10.5px] text-slate-600 leading-relaxed">
+                              {dxfLayers.join(' · ')}
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={onExportDXF}
+                            className="flex w-full items-center justify-between gap-2 rounded-lg bg-[#1e63c4] px-3.5 py-2.5 text-left text-white shadow-2xs hover:bg-[#154b96] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/50"
+                          >
+                            <span className="flex items-center gap-2 min-w-0">
+                              <Layers className="h-4 w-4 shrink-0" aria-hidden="true" />
+                              <span className="text-[12.5px] font-semibold">Скачать DXF R12 (ЧПУ)</span>
+                            </span>
+                            <Download className="h-4 w-4 shrink-0 opacity-90" aria-hidden="true" />
+                          </button>
+
+                          <div className="grid grid-cols-2 gap-1.5">
+                            <button
+                              type="button"
+                              onClick={onExportSVG}
+                              className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] transition-colors cursor-pointer"
+                            >
+                              <FileCode2 className="h-4 w-4 shrink-0" aria-hidden="true" />
+                              <span>Шаблон SVG 1:1</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={onExportSTL}
+                              disabled={stlDisabled}
+                              className="inline-flex h-8.5 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[11.5px] font-semibold text-slate-700 hover:border-[#1e63c4] hover:text-[#154b96] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            >
+                              <Box className="h-4 w-4 shrink-0" aria-hidden="true" />
+                              <span>3D-модель STL</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
             </section>
 
             {/* Compact Model Summary on Final Step */}
@@ -1302,9 +1278,7 @@ export function ControlPanel({
                 className="rounded-xl border border-slate-200 bg-white p-3 space-y-2.5"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
-                    Итог модели
-                  </span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">Итог модели</span>
                   <button
                     type="button"
                     onClick={onOpenExport}
@@ -1317,9 +1291,7 @@ export function ControlPanel({
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   <div className="rounded-lg bg-slate-50 px-2.5 py-1.5">
                     <div className="text-[10px] font-medium text-slate-500">Кольцо</div>
-                    <div className="font-mono-num font-semibold text-slate-800 mt-0.5">
-                      {ringSummary}
-                    </div>
+                    <div className="font-mono-num font-semibold text-slate-800 mt-0.5">{ringSummary}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 px-2.5 py-1.5">
                     <div className="text-[10px] font-medium text-slate-500">Полка и кромка</div>
@@ -1329,15 +1301,11 @@ export function ControlPanel({
                   </div>
                   <div className="rounded-lg bg-slate-50 px-2.5 py-1.5">
                     <div className="text-[10px] font-medium text-slate-500">Крепёж к двери</div>
-                    <div className="font-mono-num font-semibold text-[#154b96] mt-0.5">
-                      {doorSummary}
-                    </div>
+                    <div className="font-mono-num font-semibold text-[#154b96] mt-0.5">{doorSummary}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 px-2.5 py-1.5">
                     <div className="text-[10px] font-medium text-slate-500">Крепёж динамика</div>
-                    <div className="font-mono-num font-semibold text-[#b8431a] mt-0.5">
-                      {spkSummary}
-                    </div>
+                    <div className="font-mono-num font-semibold text-[#b8431a] mt-0.5">{spkSummary}</div>
                   </div>
                 </div>
 
@@ -1357,13 +1325,9 @@ export function ControlPanel({
                       ) : (
                         <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" aria-hidden="true" />
                       )}
-                      <span className="truncate">
-                        {analysis.checks[0]?.short ?? analysis.checks[0]?.t}
-                      </span>
+                      <span className="truncate">{analysis.checks[0]?.short ?? analysis.checks[0]?.t}</span>
                     </span>
-                    <span className="shrink-0 font-semibold underline underline-offset-2">
-                      Контроль
-                    </span>
+                    <span className="shrink-0 font-semibold underline underline-offset-2">Контроль</span>
                   </button>
                 ) : (
                   <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/70 px-2.5 py-2 text-[11.5px] font-medium text-emerald-900">
@@ -1453,7 +1417,11 @@ export function ControlPanel({
             aria-label={anyOpen ? 'Свернуть все карточки' : 'Развернуть все карточки'}
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-[#1e63c4] hover:bg-blue-50/50 hover:text-[#1e63c4] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1e63c4]/45"
           >
-            {anyOpen ? <ChevronsDownUp className="h-4 w-4" aria-hidden="true" /> : <ChevronsUpDown className="h-4 w-4" aria-hidden="true" />}
+            {anyOpen ? (
+              <ChevronsDownUp className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <ChevronsUpDown className="h-4 w-4" aria-hidden="true" />
+            )}
           </button>
           <button
             type="button"
@@ -1469,11 +1437,7 @@ export function ControlPanel({
 
       {/* Scrollable stacked independent cards with subtle bottom scroll affordance */}
       <div className="relative flex flex-col lg:flex-1 lg:min-h-0">
-        <div
-          ref={scrollRef}
-          onScroll={checkScroll}
-          className="p-2.5 space-y-2 lg:flex-1 lg:min-h-0 lg:overflow-y-auto"
-        >
+        <div ref={scrollRef} onScroll={checkScroll} className="p-2.5 space-y-2 lg:flex-1 lg:min-h-0 lg:overflow-y-auto">
           {/* 1. Ring dimensions */}
           <CollapsibleCard
             id="card-ring"
@@ -1557,9 +1521,7 @@ export function ControlPanel({
           >
             <div className="p-3 flex flex-col gap-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[12px] font-medium text-slate-700">
-                  Вид заготовки в 3D
-                </span>
+                <span className="text-[12px] font-medium text-slate-700">Вид заготовки в 3D</span>
                 <div
                   className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5"
                   role="group"

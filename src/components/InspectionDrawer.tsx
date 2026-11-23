@@ -23,7 +23,11 @@ export function InspectionDrawer({ tab, analysis, onChangeTab, onFocusLayer }: I
       <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-200 px-3 py-2 bg-slate-50/90">
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-bold tracking-wider uppercase text-slate-500">Контроль</span>
-          <div className="flex items-center gap-1 rounded-md bg-slate-200/70 p-0.5" role="tablist" aria-label="Раздел контроля">
+          <div
+            className="flex items-center gap-1 rounded-md bg-slate-200/70 p-0.5"
+            role="tablist"
+            aria-label="Раздел контроля"
+          >
             <button
               type="button"
               role="tab"

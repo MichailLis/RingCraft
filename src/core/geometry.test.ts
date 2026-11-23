@@ -266,10 +266,7 @@ test('optimalLayerRotation evenly and symmetrically distributes holes relative t
   // 4 door @ 0° with 8 speaker holes: exact 22.5° stagger avoids collision and maximizes clearance
   const rot8 = optimalLayerRotation({ ...DEFAULTS, doorN: 4, doorRot: 0, spkN: 8, spkRot: 45 }, 'spk');
   assert.equal(rot8 % 45, 22.5, `Expected 22.5 mod 45 for 4x8 stagger, got ${rot8}`);
-  assert.equal(
-    analyze(sanitizeState({ ...DEFAULTS, doorN: 4, doorRot: 0, spkN: 8, spkRot: rot8 })).nErr,
-    0
-  );
+  assert.equal(analyze(sanitizeState({ ...DEFAULTS, doorN: 4, doorRot: 0, spkN: 8, spkRot: rot8 })).nErr, 0);
 
   // 6 door holes with 4 speaker @ 45°: 30 mod 60 gives 15° symmetric clearance
   const rotDoor6 = optimalLayerRotation({ ...DEFAULTS, doorN: 6 }, 'door');
@@ -305,7 +302,10 @@ test('doorAutoSpace eliminates tight cross-layer crowding without bunching ears 
 
   const auto5x4 = sanitizeState({ ...DEFAULTS, doorN: 5, doorRot: 90, doorAutoSpace: true });
   assert.equal(isDoorAutoShifted(auto5x4), true);
-  assert.ok(minActualCrossLayerGapDeg(auto5x4) >= 15, `Expected >=15° clearance on 5x4, got ${minActualCrossLayerGapDeg(auto5x4)}`);
+  assert.ok(
+    minActualCrossLayerGapDeg(auto5x4) >= 15,
+    `Expected >=15° clearance on 5x4, got ${minActualCrossLayerGapDeg(auto5x4)}`
+  );
   const angles5x4 = layerHoleAnglesDeg(auto5x4, 'door');
   assert.ok(minSameGap(angles5x4) >= 56, `Expected no bunched ears on 5x4 (>=56°), got ${minSameGap(angles5x4)}`);
   assert.ok(ySymErr(angles5x4) <= 0.5, 'Expected left-right Y symmetry for 5x4');
@@ -314,15 +314,29 @@ test('doorAutoSpace eliminates tight cross-layer crowding without bunching ears 
   assert.equal(an5x4.nWarn, 0);
 
   // 6 door vs 5 speaker (regression for user screenshot: must NOT tilt spk to 48° or crush bottom ears to 34°!)
-  const pair6x5 = optimalLayerPairRotations({ ...DEFAULTS, doorN: 6, doorRot: 90, spkN: 5, spkRot: 45, doorAutoSpace: true }, 'spk');
+  const pair6x5 = optimalLayerPairRotations(
+    { ...DEFAULTS, doorN: 6, doorRot: 90, spkN: 5, spkRot: 45, doorAutoSpace: true },
+    'spk'
+  );
   assert.equal(pair6x5.spkRot % 72, 54, `Expected Y-symmetric 54 mod 72 for 6x5 spkRot, got ${pair6x5.spkRot}`);
-  const st6x5 = sanitizeState({ ...DEFAULTS, doorN: 6, spkN: 5, spkBCD: 166, doorRot: pair6x5.doorRot, spkRot: pair6x5.spkRot, doorAutoSpace: true });
+  const st6x5 = sanitizeState({
+    ...DEFAULTS,
+    doorN: 6,
+    spkN: 5,
+    spkBCD: 166,
+    doorRot: pair6x5.doorRot,
+    spkRot: pair6x5.spkRot,
+    doorAutoSpace: true,
+  });
   const door6x5 = layerHoleAnglesDeg(st6x5, 'door');
   const spk6x5 = layerHoleAnglesDeg(st6x5, 'spk');
   assert.ok(ySymErr(door6x5) <= 0.5, `Expected Y-symmetric door ears on 6x5, err=${ySymErr(door6x5)}`);
   assert.ok(ySymErr(spk6x5) <= 0.5, `Expected Y-symmetric speaker holes on 6x5, err=${ySymErr(spk6x5)}`);
   assert.ok(minSameGap(door6x5) >= 46, `Expected no bunched twin ears on 6x5 (>=46°), got ${minSameGap(door6x5)}`);
-  assert.ok(minActualCrossLayerGapDeg(st6x5) >= 12, `Expected >=12° clearance on 6x5, got ${minActualCrossLayerGapDeg(st6x5)}`);
+  assert.ok(
+    minActualCrossLayerGapDeg(st6x5) >= 12,
+    `Expected >=12° clearance on 6x5, got ${minActualCrossLayerGapDeg(st6x5)}`
+  );
   assert.equal(analyze(st6x5).nErr, 0);
 
   // Speaker holes always remain strict regular 360°/N regardless of doorAutoSpace
@@ -342,16 +356,20 @@ test('doorAutoSpace eliminates tight cross-layer crowding without bunching ears 
     [7, 8],
   ] as const) {
     const pair = optimalLayerPairRotations({ ...DEFAULTS, doorN: dN, spkN: sN, doorAutoSpace: true }, 'spk');
-    const finalSt = sanitizeState({ ...DEFAULTS, doorN: dN, spkN: sN, doorRot: pair.doorRot, spkRot: pair.spkRot, doorAutoSpace: true });
+    const finalSt = sanitizeState({
+      ...DEFAULTS,
+      doorN: dN,
+      spkN: sN,
+      doorRot: pair.doorRot,
+      spkRot: pair.spkRot,
+      doorAutoSpace: true,
+    });
     const dAng = layerHoleAnglesDeg(finalSt, 'door');
     assert.ok(
       minActualCrossLayerGapDeg(finalSt) >= 9,
       `Expected >=9° clearance for ${dN}x${sN}, got ${minActualCrossLayerGapDeg(finalSt)}`
     );
-    assert.ok(
-      minSameGap(dAng) >= (360 / dN) * 0.74,
-      `Expected >=74% pitch on ${dN}x${sN}, got ${minSameGap(dAng)}`
-    );
+    assert.ok(minSameGap(dAng) >= (360 / dN) * 0.74, `Expected >=74% pitch on ${dN}x${sN}, got ${minSameGap(dAng)}`);
     assert.ok(ySymErr(dAng) <= 0.5, `Expected Y-symmetry on ${dN}x${sN}, err=${ySymErr(dAng)}`);
     assert.equal(analyze(finalSt).nErr, 0, `Expected 0 errors for ${dN}x${sN}`);
   }

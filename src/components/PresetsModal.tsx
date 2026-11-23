@@ -112,9 +112,7 @@ export function PresetsModal({
         <div className="flex-1 min-h-0 overflow-y-auto space-y-4 p-5">
           {/* Built-in presets */}
           <div>
-            <div className="mb-2 text-[11px] font-bold tracking-wider uppercase text-slate-400">
-              Типовые размеры
-            </div>
+            <div className="mb-2 text-[11px] font-bold tracking-wider uppercase text-slate-400">Типовые размеры</div>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {PRESETS.map((p, idx) => {
                 const key = `builtin:${idx}`;
@@ -218,9 +216,7 @@ export function PresetsModal({
                     <div
                       key={`${sp.name}-${idx}`}
                       className={`flex items-center justify-between rounded-xl border transition-colors ${
-                        active
-                          ? 'border-[#1e63c4] bg-[#eaf1fb]'
-                          : 'border-slate-200 bg-white hover:border-[#1e63c4]/60'
+                        active ? 'border-[#1e63c4] bg-[#eaf1fb]' : 'border-slate-200 bg-white hover:border-[#1e63c4]/60'
                       }`}
                     >
                       <button
@@ -232,9 +228,7 @@ export function PresetsModal({
                         aria-pressed={active}
                         className="flex min-w-0 flex-1 flex-col items-start px-3.5 py-2.5 text-left cursor-pointer"
                       >
-                        <span className="truncate w-full text-[13px] font-bold text-[#154b96]">
-                          {sp.name}
-                        </span>
+                        <span className="truncate w-full text-[13px] font-bold text-[#154b96]">{sp.name}</span>
                         <span className="font-mono-num mt-0.5 text-[11px] text-slate-500">
                           Ø{fmtN(sp.p.outerD || 180, 0)} × {fmtN(sp.p.thick || 16, 0)} мм
                         </span>
@@ -255,7 +249,8 @@ export function PresetsModal({
             ) : (
               !saving && (
                 <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50/70 px-3.5 py-3 text-center text-xs text-slate-500">
-                  Текущие размеры: Ø{fmtN(currentOuterD, 0)} × {fmtN(currentThick, 0)} мм — можно сохранить как собственный шаблон.
+                  Текущие размеры: Ø{fmtN(currentOuterD, 0)} × {fmtN(currentThick, 0)} мм — можно сохранить как
+                  собственный шаблон.
                 </p>
               )
             )}

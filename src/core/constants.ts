@@ -12,7 +12,15 @@ import type {
 
 export const MATS: Record<MaterialId, MaterialDef> = {
   mdf: { name: 'МДФ', shortName: 'МДФ', color: '#c9a06b', rough: 0.92, metal: 0.02, env: 0.4, tex: 'wood' },
-  fanera: { name: 'Фанера берёзовая', shortName: 'Фанера', color: '#d8b47e', rough: 0.85, metal: 0.02, env: 0.45, tex: 'ply' },
+  fanera: {
+    name: 'Фанера берёзовая',
+    shortName: 'Фанера',
+    color: '#d8b47e',
+    rough: 0.85,
+    metal: 0.02,
+    env: 0.45,
+    tex: 'ply',
+  },
   abs: { name: 'ABS-пластик', shortName: 'ABS', color: '#39414b', rough: 0.5, metal: 0.08, env: 0.7, tex: 'noise' },
   alu: { name: 'Алюминий', shortName: 'Алюм.', color: '#b9c5d0', rough: 0.32, metal: 0.92, env: 1.1, tex: 'brush' },
 };
@@ -127,9 +135,7 @@ export const WIDE_RANGES = {
   spkBCD: [35, 490] as [number, number],
 };
 
-export function isOutsideStdRange(
-  s: Pick<SpacerState, 'outerD' | 'innerD' | 'thick' | 'doorBCD' | 'spkBCD'>
-): boolean {
+export function isOutsideStdRange(s: Pick<SpacerState, 'outerD' | 'innerD' | 'thick' | 'doorBCD' | 'spkBCD'>): boolean {
   return (
     s.outerD < STD_RANGES.outerD[0] ||
     s.outerD > STD_RANGES.outerD[1] ||

@@ -16,12 +16,7 @@ interface ConstraintHintProps {
   onDismiss?: () => void;
 }
 
-export function ConstraintHint({
-  notice,
-  onJumpTarget,
-  onAutoFitHoles,
-  onDismiss,
-}: ConstraintHintProps) {
+export function ConstraintHint({ notice, onJumpTarget, onAutoFitHoles, onDismiss }: ConstraintHintProps) {
   if (!notice) return null;
   const target = notice.blockingTarget ?? notice.blockingLayer;
   const showAutoFit = Boolean(notice.canAutoFitHoles && notice.attemptedPatch && onAutoFitHoles);
@@ -193,11 +188,7 @@ export function SliderField({
               disabled ? 'text-slate-600' : 'text-slate-900'
             }`}
           />
-          {unit && (
-            <span className="font-mono-num text-[10.5px] font-medium text-slate-600 select-none">
-              {unit}
-            </span>
-          )}
+          {unit && <span className="font-mono-num text-[10.5px] font-medium text-slate-600 select-none">{unit}</span>}
         </div>
       </div>
       <input
@@ -258,22 +249,13 @@ export function ToggleField({
   return (
     <div className="flex flex-col gap-1.5 py-0.5">
       <div className="flex items-center justify-between gap-3">
-        <label
-          htmlFor={id}
-          className={`flex-1 select-none ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-        >
+        <label htmlFor={id} className={`flex-1 select-none ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
           <span
-            className={`block text-[12px] font-medium leading-snug ${
-              disabled ? 'text-slate-500' : 'text-slate-700'
-            }`}
+            className={`block text-[12px] font-medium leading-snug ${disabled ? 'text-slate-500' : 'text-slate-700'}`}
           >
             {label}
           </span>
-          {hint && (
-            <span className="block text-[11px] text-slate-600 leading-tight mt-0.5">
-              {hint}
-            </span>
-          )}
+          {hint && <span className="block text-[11px] text-slate-600 leading-tight mt-0.5">{hint}</span>}
         </label>
         <button
           id={id}
@@ -294,11 +276,7 @@ export function ToggleField({
           />
         </button>
       </div>
-      <ConstraintHint
-        notice={constraint}
-        onJumpTarget={onJumpTarget}
-        onDismiss={onDismissConstraint}
-      />
+      <ConstraintHint notice={constraint} onJumpTarget={onJumpTarget} onDismiss={onDismissConstraint} />
     </div>
   );
 }
@@ -344,10 +322,7 @@ export function StepperField({
           >
             <Minus className="h-4 w-4" aria-hidden="true" />
           </button>
-          <span
-            className="font-mono-num min-w-7 text-center text-[13px] font-bold"
-            style={{ color: accent }}
-          >
+          <span className="font-mono-num min-w-7 text-center text-[13px] font-bold" style={{ color: accent }}>
             {value}
           </span>
           <button
@@ -361,11 +336,7 @@ export function StepperField({
           </button>
         </div>
       </div>
-      <ConstraintHint
-        notice={constraint}
-        onJumpTarget={onJumpTarget}
-        onDismiss={onDismissConstraint}
-      />
+      <ConstraintHint notice={constraint} onJumpTarget={onJumpTarget} onDismiss={onDismissConstraint} />
     </div>
   );
 }
@@ -417,11 +388,7 @@ export function SelectField<T extends string>({
           </option>
         ))}
       </select>
-      <ConstraintHint
-        notice={constraint}
-        onJumpTarget={onJumpTarget}
-        onDismiss={onDismissConstraint}
-      />
+      <ConstraintHint notice={constraint} onJumpTarget={onJumpTarget} onDismiss={onDismissConstraint} />
     </div>
   );
 }

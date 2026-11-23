@@ -165,15 +165,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
       if (h.valid) fillD += holePath(h);
     });
 
-    const txt = (
-      x: number,
-      y: number,
-      str: string,
-      col: string,
-      size: number,
-      anchor = 'middle',
-      weight = 600
-    ) =>
+    const txt = (x: number, y: number, str: string, col: string, size: number, anchor = 'middle', weight = 600) =>
       `<text x="${f2(x)}" y="${f2(y)}" fill="${col}" font-family="IBM Plex Mono, monospace" font-size="${size}" font-weight="${weight}" text-anchor="${anchor}" paint-order="stroke" stroke="${C_SHEET}" stroke-width="1.7" stroke-linejoin="round">${str}</text>`;
 
     const fastLabel = (fa: FastenerSummary, n: number, holeD: number, slots: boolean) => {
@@ -258,9 +250,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
         let bestScore = -1;
         for (const deg of candidatesDeg) {
           const rad = deg * D2R;
-          const minSep = holeAngles.length
-            ? Math.min(...holeAngles.map((ha) => angDist(rad, ha)))
-            : Math.PI;
+          const minSep = holeAngles.length ? Math.min(...holeAngles.map((ha) => angDist(rad, ha))) : Math.PI;
           if (minSep > bestScore) {
             bestScore = minSep;
             best = rad;
@@ -269,15 +259,7 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
         return best;
       };
 
-      const txtHalo = (
-        x: number,
-        y: number,
-        str: string,
-        col: string,
-        size: number,
-        anchor = 'middle',
-        weight = 600
-      ) =>
+      const txtHalo = (x: number, y: number, str: string, col: string, size: number, anchor = 'middle', weight = 600) =>
         `<text x="${f2(x)}" y="${f2(y)}" fill="${col}" font-family="IBM Plex Mono, monospace" font-size="${size}" font-weight="${weight}" text-anchor="${anchor}" paint-order="stroke" stroke="${C_SHEET}" stroke-width="2.9" stroke-linejoin="round">${str}</text>`;
 
       const calloutR = a.maxR + 12;
@@ -289,7 +271,14 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
       const lElbow = lx + 6;
       g += `<polyline points="${f2(ld * Math.cos(la))},${f2(-ld * Math.sin(la))} ${f2(lx)},${f2(ly)} ${f2(lElbow)},${f2(ly)}" fill="none" stroke="${C_BLUE}" stroke-opacity=".75" stroke-width=".6" vector-effect="non-scaling-stroke"/>`;
       g += `<circle cx="${f2(ld * Math.cos(la))}" cy="${f2(-ld * Math.sin(la))}" r="1.2" fill="${C_BLUE}"/>`;
-      g += txtHalo(lElbow + 2, ly + 1.6, `Дверь Ø${fmtN(s.doorBCD, 0)} · ${fastLabel(a.fd, s.doorN, s.doorHoleD, s.doorSlots)}`, C_BLUE, 4.8, 'start');
+      g += txtHalo(
+        lElbow + 2,
+        ly + 1.6,
+        `Дверь Ø${fmtN(s.doorBCD, 0)} · ${fastLabel(a.fd, s.doorN, s.doorHoleD, s.doorSlots)}`,
+        C_BLUE,
+        4.8,
+        'start'
+      );
 
       const sa = pickClearAngle([152, 208, 138, 222]);
       const sd = s.spkBCD / 2;
@@ -298,7 +287,14 @@ export const Viewport2D = forwardRef<Viewport2DHandle, Viewport2DProps>(function
       const sElbow = sx - 6;
       g += `<polyline points="${f2(sd * Math.cos(sa))},${f2(-sd * Math.sin(sa))} ${f2(sx)},${f2(sy)} ${f2(sElbow)},${f2(sy)}" fill="none" stroke="${C_ORANGE}" stroke-opacity=".75" stroke-width=".6" vector-effect="non-scaling-stroke"/>`;
       g += `<circle cx="${f2(sd * Math.cos(sa))}" cy="${f2(-sd * Math.sin(sa))}" r="1.2" fill="${C_ORANGE}"/>`;
-      g += txtHalo(sElbow - 2, sy + 1.6, `Динамик Ø${fmtN(s.spkBCD, 0)} · ${fastLabel(a.fs, s.spkN, s.spkHoleD, s.spkSlots)}`, C_ORANGE, 4.8, 'end');
+      g += txtHalo(
+        sElbow - 2,
+        sy + 1.6,
+        `Динамик Ø${fmtN(s.spkBCD, 0)} · ${fastLabel(a.fs, s.spkN, s.spkHoleD, s.spkSlots)}`,
+        C_ORANGE,
+        4.8,
+        'end'
+      );
     }
 
     const bx = E - 76;

@@ -1,12 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  AlertCircle,
-  AlertTriangle,
-  ListChecks,
-  Maximize2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { AlertCircle, AlertTriangle, ListChecks, Maximize2, ZoomIn, ZoomOut } from 'lucide-react';
 import { CounterboreIcon, CountersinkIcon, DiameterIcon } from './components/CadIcons';
 import { ControlPanel } from './components/ControlPanel';
 import { ExportModal } from './components/ExportModal';
@@ -25,18 +18,8 @@ import {
   type ConstraintJumpTarget,
   type ConstraintNotice,
 } from './core/constraints';
-import {
-  analyze,
-  buildDXF,
-  buildFileBase,
-  fmtN,
-  sanitizeState,
-} from './core/geometry';
-import {
-  clampWizardStep,
-  resolveInitialPanelMode,
-  wizardStepForLayer,
-} from './core/wizard';
+import { analyze, buildDXF, buildFileBase, fmtN, sanitizeState } from './core/geometry';
+import { clampWizardStep, resolveInitialPanelMode, wizardStepForLayer } from './core/wizard';
 import type {
   DrawerTab,
   LayerKind,
@@ -138,9 +121,7 @@ export default function App() {
   const [state, setState] = useState<SpacerState>(initial.state);
   const [ui, setUi] = useState<UIState>(loadInitialUI);
   const [savedPresets, setSavedPresets] = useState<SavedPreset[]>(loadSavedPresets);
-  const [activePresetKey, setActivePresetKey] = useState<string | null>(
-    initial.restored ? null : 'builtin:0'
-  );
+  const [activePresetKey, setActivePresetKey] = useState<string | null>(initial.restored ? null : 'builtin:0');
   const [drawerTab, setDrawerTab] = useState<DrawerTab>(null);
   const [presetsOpen, setPresetsOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
@@ -182,18 +163,18 @@ export default function App() {
     [clearToasts]
   );
 
-  const pushToast = useCallback(
-    (msg: string, type: ToastItem['type'] = 'info', action: ToastAction | null = null) => {
-      const id = toastIdRef.current++;
-      setToasts((prev) => [...prev.slice(-2), { id, msg, type, action }]);
-      const timer = window.setTimeout(() => {
+  const pushToast = useCallback((msg: string, type: ToastItem['type'] = 'info', action: ToastAction | null = null) => {
+    const id = toastIdRef.current++;
+    setToasts((prev) => [...prev.slice(-2), { id, msg, type, action }]);
+    const timer = window.setTimeout(
+      () => {
         toastTimersRef.current.delete(id);
         setToasts((prev) => prev.filter((t) => t.id !== id));
-      }, action ? 6000 : 4200);
-      toastTimersRef.current.set(id, timer);
-    },
-    []
-  );
+      },
+      action ? 6000 : 4200
+    );
+    toastTimersRef.current.set(id, timer);
+  }, []);
 
   useEffect(() => {
     const t = window.setTimeout(() => {
@@ -256,40 +237,37 @@ export default function App() {
 
   const autoFitHolesActive = ui.mode === 'wizard' && ui.wizardStep === 0 && !holesCustomized;
 
-  const handlePatch = useCallback(
-    (patch: Partial<SpacerState>, field?: ConstrainedField) => {
-      const isRingResizeField = field === 'outerD' || field === 'innerD' || field === 'thick';
-      const useAutoFit =
-        isRingResizeField &&
-        uiRef.current.mode === 'wizard' &&
-        uiRef.current.wizardStep === 0 &&
-        !holesCustomizedRef.current;
+  const handlePatch = useCallback((patch: Partial<SpacerState>, field?: ConstrainedField) => {
+    const isRingResizeField = field === 'outerD' || field === 'innerD' || field === 'thick';
+    const useAutoFit =
+      isRingResizeField &&
+      uiRef.current.mode === 'wizard' &&
+      uiRef.current.wizardStep === 0 &&
+      !holesCustomizedRef.current;
 
-      const res = useAutoFit
-        ? applyRingResizeWithAutoFit(stateRef.current, patch, field, true)
-        : applyConstrainedPatch(stateRef.current, patch, field);
+    const res = useAutoFit
+      ? applyRingResizeWithAutoFit(stateRef.current, patch, field, true)
+      : applyConstrainedPatch(stateRef.current, patch, field);
 
-      if (res.applied) {
-        setActivePresetKey(null);
-        setState(res.state);
-        if (
-          field &&
-          (field.startsWith('door') ||
-            field.startsWith('spk') ||
-            field === 'ears' ||
-            field === 'earMargin' ||
-            field === 'slotAngle')
-        ) {
-          setHolesCustomized(true);
-        }
-        if (isOutsideStdRange(res.state) && !uiRef.current.customRange) {
-          setUi((prev) => ({ ...prev, customRange: true }));
-        }
+    if (res.applied) {
+      setActivePresetKey(null);
+      setState(res.state);
+      if (
+        field &&
+        (field.startsWith('door') ||
+          field.startsWith('spk') ||
+          field === 'ears' ||
+          field === 'earMargin' ||
+          field === 'slotAngle')
+      ) {
+        setHolesCustomized(true);
       }
-      setConstraint(res.notice);
-    },
-    []
-  );
+      if (isOutsideStdRange(res.state) && !uiRef.current.customRange) {
+        setUi((prev) => ({ ...prev, customRange: true }));
+      }
+    }
+    setConstraint(res.notice);
+  }, []);
 
   const handleSelectQuickSize = useCallback((patch: Partial<SpacerState>) => {
     const res = applyConstrainedPatch(stateRef.current, patch);
@@ -456,8 +434,7 @@ export default function App() {
       setActivePresetKey(null);
       setHolesCustomized(true);
       setState(res.state);
-      const label =
-        from === 'door' ? 'Дверь → Динамик' : 'Динамик → Дверь';
+      const label = from === 'door' ? 'Дверь → Динамик' : 'Динамик → Дверь';
       pushToast(`Крепёж скопирован: ${label}`, 'ok', {
         label: 'Отменить',
         fn: () => {
@@ -497,9 +474,7 @@ export default function App() {
           }
     );
     window.requestAnimationFrame(() => {
-      document
-        .getElementById(`card-${target}`)
-        ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      document.getElementById(`card-${target}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
   }, []);
 
@@ -641,12 +616,7 @@ export default function App() {
                 onSwitchTo2D={() => setState((prev) => ({ ...prev, view: '2d' }))}
                 onCameraSync={(m) => viewCubeRef.current?.syncFromCamera(m)}
               />
-              <Viewport2D
-                ref={vp2dRef}
-                state={state}
-                analysis={analysis}
-                visible={state.view === '2d'}
-              />
+              <Viewport2D ref={vp2dRef} state={state} analysis={analysis} visible={state.view === '2d'} />
 
               {/* Top Viewport Toolbar: left = mode + inspection, center = warning/spec, right = 2D zoom (3D reserves top-right exclusively for ViewCube) */}
               <div
@@ -657,9 +627,7 @@ export default function App() {
                 <div className="pointer-events-auto flex shrink-0 items-center gap-2">
                   <div
                     className={`inline-flex h-9 shrink-0 items-center gap-0.5 rounded-lg border p-0.5 shadow-xs transition-colors ${
-                      isDark3d
-                        ? 'border-slate-600/80 bg-[#1a2028]/95'
-                        : 'border-[#cfd8e3] bg-white/95'
+                      isDark3d ? 'border-slate-600/80 bg-[#1a2028]/95' : 'border-[#cfd8e3] bg-white/95'
                     }`}
                     role="tablist"
                     aria-label="Режим просмотра"
@@ -732,7 +700,11 @@ export default function App() {
                       <ListChecks className="h-4 w-4 shrink-0" aria-hidden="true" />
                     )}
                     <span className="hidden min-[360px]:inline">
-                      {issueIsErr ? `Ошибки: ${analysis.nErr}` : analysis.nWarn > 0 ? `Замечания: ${analysis.nWarn}` : 'Контроль'}
+                      {issueIsErr
+                        ? `Ошибки: ${analysis.nErr}`
+                        : analysis.nWarn > 0
+                          ? `Замечания: ${analysis.nWarn}`
+                          : 'Контроль'}
                     </span>
                     <span className="font-mono-num font-bold opacity-85">
                       {issueIsErr || analysis.nWarn > 0 ? (
@@ -761,13 +733,17 @@ export default function App() {
                       }`}
                     >
                       {issueIsErr ? (
-                        <AlertCircle className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-red-400' : 'text-red-600'}`} aria-hidden="true" />
+                        <AlertCircle
+                          className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-red-400' : 'text-red-600'}`}
+                          aria-hidden="true"
+                        />
                       ) : (
-                        <AlertTriangle className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-amber-400' : 'text-amber-600'}`} aria-hidden="true" />
+                        <AlertTriangle
+                          className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-amber-400' : 'text-amber-600'}`}
+                          aria-hidden="true"
+                        />
                       )}
-                      <span className="truncate font-medium">
-                        {analysis.checks[0]?.short ?? analysis.checks[0]?.t}
-                      </span>
+                      <span className="truncate font-medium">{analysis.checks[0]?.short ?? analysis.checks[0]?.t}</span>
                       <span className="shrink-0 font-semibold underline underline-offset-2 whitespace-nowrap">
                         Подробнее
                       </span>
@@ -786,22 +762,28 @@ export default function App() {
                           {fmtN(state.outerD, 0)}/{fmtN(state.innerD, 0)} × {fmtN(state.thick, 0)} мм
                         </span>
                       </span>
-                      {(state.doorBolt !== 'custom' || state.spkBolt !== 'custom' || analysis.fd.active || analysis.fs.active) && (
+                      {(state.doorBolt !== 'custom' ||
+                        state.spkBolt !== 'custom' ||
+                        analysis.fd.active ||
+                        analysis.fs.active) && (
                         <>
-                          <span aria-hidden="true" className={isDark3d ? 'text-slate-400' : 'text-slate-500'}>·</span>
-                          <span className={`inline-flex items-center gap-2 ${isDark3d ? 'text-slate-300' : 'text-slate-600'}`}>
+                          <span aria-hidden="true" className={isDark3d ? 'text-slate-400' : 'text-slate-500'}>
+                            ·
+                          </span>
+                          <span
+                            className={`inline-flex items-center gap-2 ${isDark3d ? 'text-slate-300' : 'text-slate-600'}`}
+                          >
                             {(state.doorBolt !== 'custom' || analysis.fd.active) && (
                               <span className="inline-flex items-center gap-1">
                                 <span>
                                   Дверь: {state.doorBolt !== 'custom' ? state.doorBolt : `Ø${fmtN(state.doorHoleD)}`}
                                 </span>
-                                {analysis.fd.active && (
-                                  analysis.fd.recessType === 'csk' ? (
+                                {analysis.fd.active &&
+                                  (analysis.fd.recessType === 'csk' ? (
                                     <CountersinkIcon className="h-3.5 w-3.5 shrink-0" />
                                   ) : (
                                     <CounterboreIcon className="h-3.5 w-3.5 shrink-0" />
-                                  )
-                                )}
+                                  ))}
                               </span>
                             )}
                             {(state.spkBolt !== 'custom' || analysis.fs.active) && (
@@ -809,13 +791,12 @@ export default function App() {
                                 <span>
                                   Динамик: {state.spkBolt !== 'custom' ? state.spkBolt : `Ø${fmtN(state.spkHoleD)}`}
                                 </span>
-                                {analysis.fs.active && (
-                                  analysis.fs.recessType === 'csk' ? (
+                                {analysis.fs.active &&
+                                  (analysis.fs.recessType === 'csk' ? (
                                     <CountersinkIcon className="h-3.5 w-3.5 shrink-0" />
                                   ) : (
                                     <CounterboreIcon className="h-3.5 w-3.5 shrink-0" />
-                                  )
-                                )}
+                                  ))}
                               </span>
                             )}
                           </span>
@@ -893,13 +874,17 @@ export default function App() {
                     }`}
                   >
                     {issueIsErr ? (
-                      <AlertCircle className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-red-400' : 'text-red-600'}`} aria-hidden="true" />
+                      <AlertCircle
+                        className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-red-400' : 'text-red-600'}`}
+                        aria-hidden="true"
+                      />
                     ) : (
-                      <AlertTriangle className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-amber-400' : 'text-amber-600'}`} aria-hidden="true" />
+                      <AlertTriangle
+                        className={`h-4 w-4 shrink-0 ${isDark3d ? 'text-amber-400' : 'text-amber-600'}`}
+                        aria-hidden="true"
+                      />
                     )}
-                    <span className="truncate font-medium">
-                      {analysis.checks[0]?.short ?? analysis.checks[0]?.t}
-                    </span>
+                    <span className="truncate font-medium">{analysis.checks[0]?.short ?? analysis.checks[0]?.t}</span>
                     <span className="shrink-0 font-semibold underline underline-offset-2 whitespace-nowrap">
                       Подробнее
                     </span>
@@ -920,12 +905,10 @@ export default function App() {
                       Контур
                     </span>
                     <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                      <span className="h-0.5 w-3 rounded bg-[#1e63c4]" />
-                      К двери
+                      <span className="h-0.5 w-3 rounded bg-[#1e63c4]" />К двери
                     </span>
                     <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                      <span className="h-0.5 w-3 rounded bg-[#d9541e]" />
-                      К динамику
+                      <span className="h-0.5 w-3 rounded bg-[#d9541e]" />К динамику
                     </span>
                     <span className="inline-flex items-center gap-1 whitespace-nowrap">
                       <span className="w-3 border-t-2 border-dashed border-slate-500" />
