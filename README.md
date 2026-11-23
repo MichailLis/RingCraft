@@ -52,25 +52,6 @@ Dev-сервер откроется на http://localhost:3000.
 - `e2e` — сквозные тесты Playwright.
 - `vercel.json` — конфигурация деплоя и заголовки безопасности.
 
-## Деплой
-
-Деплой через Vercel Git Integration. Шаги для владельца:
-
-1. vercel.com → Add New Project → импортируйте `MichailLis/RingCraft` (Framework определится как Vite, остальное берётся из `vercel.json`).
-2. При смене основного домена задайте `VITE_SITE_URL` для production и preview. Из него сборка формирует канонический адрес, ссылки в карточках соцсетей, `robots.txt` и `sitemap.xml`. По умолчанию используется `https://ringcraft-audio.vercel.app`.
-3. Analytics → Enable Web Analytics.
-4. После первого деплоя откройте сайт, проверьте экспорт и превью ссылки.
-
-Изменения в `main` проходят через pull request с проверками `check` и `e2e`. Перед слиянием проверьте preview-деплой ветки на Vercel.
-
-- Vercel Web Analytics отключена в локальной разработке, в `vite preview` и в e2e; активна на preview-деплоях Vercel и в production.
-- Vercel Toolbar на preview-деплоях блокируется CSP (скрипт с vercel.live): отключите toolbar в настройках проекта или игнорируйте; production не затронут.
-- Сохранённые в браузере пресеты привязаны к адресу сайта: при переезде на новый домен пользователи начинают с чистого листа.
-
-### Заголовки безопасности
-
-`vercel.json` задаёт CSP (`default-src 'self'`, без внешних источников), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` и `Permissions-Policy`. `vite.config.ts` читает эти же заголовки из `vercel.json` и применяет их к `vite preview`, поэтому e2e проверяет CSP. К dev-серверу они не применяются (HMR требует inline/eval). Исключения из CSP: `style-src 'unsafe-inline'` (inline-стили React и three.js), `img-src data: blob:` (PNG-снимок и текстуры), `worker-src blob:`.
-
 ## Лицензия
 
 MIT, см. [LICENSE](LICENSE).
