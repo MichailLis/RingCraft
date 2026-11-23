@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, AlertTriangle, ListChecks, Maximize2, ZoomIn, ZoomOut } from 'lucide-react';
 import { CounterboreIcon, CountersinkIcon, DiameterIcon } from './components/CadIcons';
 import { ControlPanel } from './components/ControlPanel';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { ExportModal } from './components/ExportModal';
 import { HeaderBar } from './components/HeaderBar';
 import { InspectionDrawer } from './components/InspectionDrawer';
@@ -109,6 +110,13 @@ function downloadBlob(blob: Blob, filename: string): void {
   a.click();
   a.remove();
   window.setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+function Viewport3DCrashed({ onFailed }: { onFailed: (ok: boolean) => void }) {
+  useEffect(() => {
+    onFailed(false);
+  }, [onFailed]);
+  return <div className="absolute inset-0" />;
 }
 
 export default function App() {
@@ -590,15 +598,17 @@ export default function App() {
             } ${drawerTab ? 'h-[520px] sm:h-[560px]' : 'h-[360px] sm:h-[420px]'}`}
           >
             <div className="relative flex-1 min-h-0 overflow-hidden">
-              <Viewport3D
-                ref={vp3dRef}
-                state={state}
-                analysis={analysis}
-                visible={state.view === '3d'}
-                onReady={onViewport3DReady}
-                onSwitchTo2D={() => setState((prev) => ({ ...prev, view: '2d' }))}
-                onCameraSync={(m) => viewCubeRef.current?.syncFromCamera(m)}
-              />
+              <ErrorBoundary fallback={() => <Viewport3DCrashed onFailed={onViewport3DReady} />}>
+                <Viewport3D
+                  ref={vp3dRef}
+                  state={state}
+                  analysis={analysis}
+                  visible={state.view === '3d'}
+                  onReady={onViewport3DReady}
+                  onSwitchTo2D={() => setState((prev) => ({ ...prev, view: '2d' }))}
+                  onCameraSync={(m) => viewCubeRef.current?.syncFromCamera(m)}
+                />
+              </ErrorBoundary>
               <Viewport2D ref={vp2dRef} state={state} analysis={analysis} visible={state.view === '2d'} />
 
               {/* Top Viewport Toolbar: left = mode + inspection, center = warning/spec, right = 2D zoom (3D reserves top-right exclusively for ViewCube) */}
