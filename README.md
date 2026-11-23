@@ -1,10 +1,12 @@
 # RingCraft
 
-Параметрический конструктор проставок и переходных рамок для автомобильных динамиков: задайте размеры в пошаговом мастере, посмотрите деталь в 3D и 2D и выгрузите чертёж или модель для печати. Всё работает на клиенте, без сервера; ваши параметры не загружаются никуда — кроме анонимной статистики посещений (Vercel Web Analytics, без cookie).
+Параметрический онлайн-конструктор проставочных колец и переходных рамок для автомобильных динамиков. Задайте размеры и крепёж, проверьте модель в 3D и скачайте чертёж для фрезеровки или модель для 3D-печати.
 
-![RingCraft](public/og.png)
+Browser-based CAD for car speaker spacer rings and adapters. Preview your design in 3D or as a 2D drawing and export DXF, STL, SVG, or PNG. The interface is available in English and Russian.
 
-Сайт: [ringcraft-audio.vercel.app](https://ringcraft-audio.vercel.app/).
+**[Открыть RingCraft · Open live demo](https://ringcraft-audio.vercel.app/)**
+
+![Редактор RingCraft с 3D-моделью проставки и панелью размеров](docs/images/ringcraft-editor.png)
 
 ## Возможности
 
@@ -14,10 +16,14 @@
 - Пресеты и сохранение параметров в браузере.
 - Русский и английский интерфейсы с автоматическим выбором по языковым настройкам браузера.
 
+Параметры модели и пользовательские пресеты хранятся локально в браузере. На размещённом сайте Vercel Web Analytics собирает статистику посещений без cookies.
+
 ## Запуск
 
+Для локального запуска установите Bun 1.3.x и Node.js 22.12 или новее.
+
 ```sh
-bun install
+bun install --frozen-lockfile
 bun run dev
 ```
 
@@ -51,10 +57,9 @@ Dev-сервер откроется на http://localhost:3000.
 1. vercel.com → Add New Project → импортируйте `MichailLis/RingCraft` (Framework определится как Vite, остальное берётся из `vercel.json`).
 2. При смене основного домена задайте `VITE_SITE_URL` для production и preview. Из него сборка формирует канонический адрес, ссылки в карточках соцсетей, `robots.txt` и `sitemap.xml`. По умолчанию используется `https://ringcraft-audio.vercel.app`.
 3. Analytics → Enable Web Analytics.
-4. GitHub → Settings → Branches: защитите `main`, требуйте PR и зелёные проверки `check` и `e2e`.
-5. После первого деплоя откройте сайт, проверьте экспорт и превью ссылки (например, в Telegram).
+4. После первого деплоя откройте сайт, проверьте экспорт и превью ссылки.
 
-Перед слиянием в `main` сделайте один preview-деплой ветки на Vercel.
+Изменения в `main` проходят через pull request с проверками `check` и `e2e`. Перед слиянием проверьте preview-деплой ветки на Vercel.
 
 - Vercel Web Analytics отключена в локальной разработке, в `vite preview` и в e2e; активна на preview-деплоях Vercel и в production.
 - Vercel Toolbar на preview-деплоях блокируется CSP (скрипт с vercel.live): отключите toolbar в настройках проекта или игнорируйте; production не затронут.
