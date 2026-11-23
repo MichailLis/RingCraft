@@ -28,9 +28,10 @@ export function HeaderBar({ hasErrors, wizardActive = false, onOpenPresets, onOp
           <circle cx="13.9" cy="26.1" r="1.5" fill="#d9541e" />
           <circle cx="26.1" cy="26.1" r="1.5" fill="#d9541e" />
         </svg>
-        <span className="text-[13.5px] sm:text-[15px] font-bold tracking-[0.09em] sm:tracking-[0.14em] text-[#16202b] whitespace-nowrap shrink-0">
+        <h1 className="text-[13.5px] sm:text-[15px] font-bold tracking-[0.09em] sm:tracking-[0.14em] text-[#16202b] whitespace-nowrap shrink-0">
           RingCraft
-        </span>
+          <span className="sr-only"> — конструктор проставок для автодинамиков</span>
+        </h1>
       </div>
 
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">

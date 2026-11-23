@@ -4,7 +4,7 @@
 
 ![RingCraft](public/og.png)
 
-Сайт: _ссылка появится после первого деплоя_
+Сайт: [ringcraft-audio.vercel.app](https://ringcraft-audio.vercel.app/).
 
 ## Возможности
 
@@ -49,7 +49,7 @@ Dev-сервер откроется на http://localhost:3000.
 Деплой через Vercel Git Integration. Шаги для владельца:
 
 1. vercel.com → Add New Project → импортируйте `MichailLis/RingCraft` (Framework определится как Vite, остальное берётся из `vercel.json`).
-2. (Необязательно) задайте переменную окружения `VITE_SITE_URL` — адрес сайта для мета-тегов и превью ссылок. По умолчанию берётся production-хост проекта Vercel (`VERCEL_PROJECT_PRODUCTION_URL`), а без него — `https://ringcraft.vercel.app`.
+2. При смене основного домена задайте `VITE_SITE_URL` для production и preview. Из него сборка формирует канонический адрес, ссылки в карточках соцсетей, `robots.txt` и `sitemap.xml`. По умолчанию используется `https://ringcraft-audio.vercel.app`.
 3. Analytics → Enable Web Analytics.
 4. GitHub → Settings → Branches: защитите `main`, требуйте PR и зелёные проверки `check` и `e2e`.
 5. После первого деплоя откройте сайт, проверьте экспорт и превью ссылки (например, в Telegram).
