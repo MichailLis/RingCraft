@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="RINGFORGE — параметрический конструктор проставок и переходных рамок для автомобильных динамиков: раздельные слои крепежа, 3D, чертёж, DXF, STL.">
+<title>RINGFORGE — конструктор проставок для автодинамиков</title>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+<style>
+/* ---------- FONTS: IBM Plex (technical) ---------- */
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:400;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-400-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:400;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:500;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-500-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:500;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:600;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-600-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:600;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:700;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-700-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:700;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-mono@latest/cyrillic-400-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-mono@latest/latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-mono@latest/cyrillic-500-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-mono@latest/latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:600;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-mono@latest/cyrillic-600-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:600;font-display:swap;src:url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-mono@latest/latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+
+/* ---------- PALETTE: drafting / machining ---------- */
+:root{
+  --paper:#e9edf1;--sheet:#fcfdfe;--panel:#f7f9fb;--card:#ffffff;
+  --line:#d4dbe3;--line2:#b9c3cd;
+  --ink:#1d2733;--ink2:#4a5a6a;--ink3:#6b7a89;--steel:#33475c;
+  --blue:#1e63c4;--blueD:#1854ab;--blueT:#eaf1fb;
+  --orange:#d9541e;--orangeD:#b8431a;--orangeT:#fdeee6;
+  --wood:#b98a44;--woodD:#8a6428;
+  --ok:#2e8b46;--okT:#e8f4ec;--warn:#b45309;--warnT:#fdf3e3;--err:#c23434;--errT:#fbe9e9;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
+  --ease:cubic-bezier(.25,.8,.35,1);
+  --hdr:52px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--sans);font-size:13.5px;color:var(--ink);background-color:var(--paper);
+  background-image:linear-gradient(rgba(30,99,196,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(30,99,196,.05) 1px,transparent 1px);
+  background-size:28px 28px;height:100vh;height:100dvh;display:flex;flex-direction:column;
+  -webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+*{scrollbar-width:thin;scrollbar-color:#b6c0cb #eef1f4}
+::-webkit-scrollbar{width:10px;height:7px}
+::-webkit-scrollbar-track{background:#eef1f4;border-radius:6px}
+::-webkit-scrollbar-thumb{background:#b6c0cb;border-radius:6px;border:2px solid #eef1f4}
+::-webkit-scrollbar-thumb:hover{background:var(--blue)}
+::-webkit-scrollbar-corner{background:#eef1f4}
+::selection{background:rgba(30,99,196,.22)}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select{font-family:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:1px;border-radius:4px}
+[hidden]{display:none!important}
+.rv{opacity:0;transform:translateY(6px);animation:rise .35s var(--ease) forwards;animation-delay:var(--d,0s)}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* ---------- TITLEBAR ---------- */
+header{position:relative;z-index:40;flex:none;height:var(--hdr);display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(12px,2.4vw,24px);background:var(--panel);border-bottom:1px solid var(--line2)}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand-logo{width:30px;height:30px;flex:none;transition:transform .5s var(--ease)}
+.brand:hover .brand-logo{transform:rotate(90deg)}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:.14em;color:var(--ink);white-space:nowrap}
+.brand-name small{font-weight:600;font-size:10px;letter-spacing:.1em;color:var(--blue);border:1px solid var(--blue);border-radius:3px;padding:1px 4px;margin-left:7px;vertical-align:2px}
+.brand-tag{font-size:11px;color:var(--ink3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-actions{display:flex;gap:8px;align-items:center}
+.unit-badge{font-family:var(--mono);font-size:10.5px;color:var(--ink3);border:1px solid var(--line2);border-radius:5px;padding:4px 9px;background:var(--card);white-space:nowrap}
+.icon-btn{width:32px;height:32px;border-radius:6px;border:1px solid var(--line2);background:var(--card);
+  display:inline-flex;align-items:center;justify-content:center;color:var(--ink2);transition:.15s var(--ease);flex:none}
+.icon-btn:hover{color:var(--blue);border-color:var(--blue);background:var(--blueT)}
+.icon-btn:active{background:#dde8f7}
+.icon-btn[aria-pressed="true"]{color:var(--blue);border-color:var(--blue)}
+.icon-btn svg{width:17px;height:17px}
+
+/* ---------- APP SHELL ---------- */
+.app{position:relative;z-index:1;flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 352px;
+  gap:10px;padding:12px clamp(12px,2.4vw,24px);max-width:1720px;width:100%;margin:0 auto}
+.stage{min-width:0;min-height:0;display:flex;flex-direction:column;gap:10px}
+
+/* ---------- PRESET CHIPS ---------- */
+.chips-row{flex:none;display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;padding:5px 8px 5px 1px;min-height:50px}
+.chips-row::-webkit-scrollbar{height:6px}
+.chip{flex:none;display:flex;flex-direction:column;gap:1px;text-align:left;padding:6px 11px;border-radius:6px;
+  border:1px solid var(--line2);background:var(--card);transition:.15s var(--ease);position:relative}
+.chip:hover{border-color:var(--blue);background:var(--blueT)}
+.chip:active{background:#dde8f7}
+.chip[data-active="1"]{border-color:var(--blue);background:var(--blueT);box-shadow:inset 0 -2px 0 var(--blue)}
+.chip-name{font-size:12px;font-weight:600;white-space:nowrap;color:var(--ink)}
+.chip-meta{font-family:var(--mono);font-size:9.8px;color:var(--ink3);white-space:nowrap}
+.chip.saved .chip-name{color:var(--blueD)}
+.chip-x{position:absolute;top:-5px;right:-5px;width:17px;height:17px;border-radius:50%;background:var(--card);
+  border:1px solid var(--line2);color:var(--ink3);font-size:10px;line-height:1;display:flex;align-items:center;justify-content:center;z-index:2}
+.chip-x:hover{color:#fff;background:var(--err);border-color:var(--err)}
+.chip-save{flex:none;align-self:center;display:flex;align-items:center;gap:6px;padding:8px 11px;border-radius:6px;
+  border:1px dashed var(--line2);color:var(--ink2);font-size:11.5px;font-weight:600;transition:.15s;white-space:nowrap;background:transparent}
+.chip-save:hover{color:var(--blue);border-color:var(--blue);background:var(--blueT)}
+.save-form{flex:none;display:flex;gap:6px;align-items:center}
+.save-form input{width:140px;background:var(--card);border:1px solid var(--blue);border-radius:5px;padding:7px 9px;font-size:12px;color:var(--ink)}
+.save-form button{padding:7px 10px;border-radius:5px;border:1px solid var(--line2);font-size:11.5px;font-weight:600;background:var(--card)}
+.save-form .ok{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ---------- VIEWPORT ---------- */
+.viewport-card{position:relative;flex:1;min-height:0;border-radius:8px;overflow:hidden;
+  border:1px solid var(--line2);background:#d8dce1;box-shadow:0 1px 3px rgba(16,24,32,.1)}
+.vp-wrap{position:absolute;inset:0}
+#wrap3d canvas{display:block;width:100%;height:100%}
+#wrap2d{background:var(--sheet)}
+#draw{width:100%;height:100%;display:block;cursor:crosshair;touch-action:none;user-select:none;-webkit-user-select:none}
+#draw.panning{cursor:grabbing}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 95% at 50% 42%,transparent 62%,rgba(20,28,38,.13) 100%)}
+.vp-top{position:absolute;top:10px;left:10px;right:10px;z-index:6;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
+.vp-top>*{pointer-events:auto}
+.seg{display:flex;padding:2px;gap:2px;border-radius:6px;background:var(--panel);border:1px solid var(--line2);box-shadow:0 1px 2px rgba(16,24,32,.08)}
+.seg button{padding:5px 13px;border-radius:4px;font-size:12px;font-weight:600;color:var(--ink2);transition:.15s;white-space:nowrap}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--card);color:var(--blueD);box-shadow:0 1px 2px rgba(16,24,32,.12);border:1px solid var(--line)}
+.vp-spec{position:absolute;left:50%;transform:translateX(-50%);top:13px;z-index:5;pointer-events:none;
+  font-family:var(--mono);font-size:11px;font-weight:500;color:var(--ink);white-space:nowrap;
+  padding:5px 11px;border-radius:5px;background:rgba(252,253,254,.92);border:1px solid var(--line2)}
+.vp-spec em{font-style:normal;color:var(--ink3)}
+.vp-tools{display:flex;gap:5px}
+.vp-tools .icon-btn{width:30px;height:30px;background:rgba(252,253,254,.92)}
+[data-view="3d"] #tools2d{display:none}
+[data-view="2d"] #tools3d{display:none}
+[data-view="3d"] #wrap2d{display:none}
+[data-view="2d"] #wrap3d{display:none}
+.vp-legend{position:absolute;left:10px;bottom:10px;right:10px;z-index:5;display:flex;gap:12px;flex-wrap:wrap;
+  padding:6px 11px;border-radius:5px;background:rgba(252,253,254,.92);border:1px solid var(--line2);width:fit-content;max-width:calc(100% - 20px)}
+.lg{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--ink2);font-weight:500;white-space:nowrap}
+.lg i{width:14px;height:3px;border-radius:1px;flex:none}
+.lg i.dash{background:repeating-linear-gradient(90deg,currentColor 0 3px,transparent 3px 5px)!important;height:2px}
+.vp-hint{position:absolute;left:50%;transform:translateX(-50%);bottom:44px;z-index:5;font-size:10.5px;color:var(--ink3);
+  padding:4px 10px;border-radius:4px;background:rgba(252,253,254,.85);border:1px solid var(--line);white-space:nowrap;pointer-events:none}
+.loader{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;
+  background:var(--panel);transition:opacity .4s;color:var(--ink3);font-size:12px}
+.loader.off{opacity:0;pointer-events:none}
+.spin{width:38px;height:38px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--blue);animation:sp .9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.fail-box{display:none;position:absolute;inset:0;z-index:8;flex-direction:column;gap:12px;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--ink2);background:var(--panel)}
+.fail-box.show{display:flex}
+.fail-box p{font-size:12.5px;max-width:340px;line-height:1.55}
+.tip{position:absolute;z-index:9;pointer-events:none;padding:7px 10px;border-radius:5px;background:var(--card);
+  border:1px solid var(--line2);font-family:var(--mono);font-size:11px;color:var(--ink);white-space:nowrap;
+  box-shadow:0 3px 10px rgba(16,24,32,.15);opacity:0;transition:opacity .12s}
+.tip.show{opacity:1}
+.tip b{color:var(--blueD)}
+.tip.mag b{color:var(--orangeD)}
+.vp-tiny .vp-legend,.vp-tiny .vp-hint,.vp-tiny .vp-spec{display:none}
+.vp-tiny .vp-top{top:6px;left:6px;right:6px}
+.vp-tiny .seg button{padding:3px 8px;font-size:10.5px}
+.vp-tiny .vp-tools .icon-btn{width:26px;height:26px}
+
+/* ---------- INFO DRAWER ---------- */
+.vp-drawer{position:absolute;left:10px;right:10px;bottom:10px;z-index:7;max-height:46%;
+  display:flex;flex-direction:column;border:1px solid var(--line2);border-radius:7px;
+  background:rgba(252,253,254,.97);box-shadow:0 6px 24px rgba(16,24,32,.2);animation:dup .2s var(--ease)}
+@keyframes dup{from{opacity:0;transform:translateY(8px)}}
+.drawer-h{flex:none;display:flex;align-items:center;gap:6px;padding:7px 9px;border-bottom:1px solid var(--line)}
+.drawer-h svg{width:14px;height:14px;color:var(--steel);flex:none}
+.drawer-h b{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-right:4px}
+.info-tabs{display:flex;gap:4px}
+.info-tabs button{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:4px;border:1px solid var(--line2);color:var(--ink3);transition:.15s;white-space:nowrap;background:var(--card)}
+.info-tabs button:hover{color:var(--ink)}
+.info-tabs button.on{color:var(--blueD);border-color:var(--blue);background:var(--blueT)}
+.drawer-x{margin-left:auto;width:24px;height:24px;border-radius:5px;border:1px solid var(--line2);background:var(--card);
+  color:var(--ink3);font-size:12px;display:flex;align-items:center;justify-content:center;transition:.15s}
+.drawer-x:hover{color:var(--err);border-color:var(--err);background:var(--errT)}
+.info-pane{flex:1;min-height:0;overflow:auto;padding:9px 12px}
+.checks-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.checks-list li{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.45;color:var(--ink2)}
+.checks-list li i{width:7px;height:7px;border-radius:2px;flex:none;margin-top:5px}
+.checks-list li.ok i{background:var(--ok)}.checks-list li.ok{color:#226b39}
+.checks-list li.warn i{background:var(--warn)}.checks-list li.warn{color:#8a5a00}
+.checks-list li.err i{background:var(--err)}.checks-list li.err{color:#a02626}
+.tbl-cap{font-size:9.6px;color:var(--ink3);font-family:var(--mono);margin-bottom:4px}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.3px}
+th{font-family:var(--sans);font-size:9.3px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);text-align:left;padding:4px 8px;position:sticky;top:0;background:#f4f6f8;z-index:1;border-bottom:1px solid var(--line2)}
+td{padding:4.5px 8px;border-top:1px solid var(--line);color:var(--ink2);white-space:nowrap}
+tbody tr:nth-child(even){background:#f7f9fb}
+td:first-child{color:var(--ink);font-weight:500}
+.dot{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:6px;vertical-align:1px}
+
+/* ---------- STATUS STRIP ---------- */
+.status-strip{flex:none;height:38px;display:flex;align-items:center;gap:10px;padding:0 12px;
+  border:1px solid var(--line2);border-radius:7px;background:var(--card);box-shadow:0 1px 2px rgba(16,24,32,.06);min-width:0}
+.st-dot{width:9px;height:9px;border-radius:2px;flex:none;background:var(--ok)}
+.status-strip.warn .st-dot{background:var(--warn)}
+.status-strip.err .st-dot{background:var(--err);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.35}}
+.st-label{font-size:12px;font-weight:700;color:#226b39;white-space:nowrap;flex:none}
+.status-strip.warn .st-label{color:#8a5a00}
+.status-strip.err .st-label{color:#a02626}
+.st-msg{flex:1;min-width:0;font-size:11.5px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-btn{flex:none;display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:5px 10px;border-radius:5px;
+  border:1px solid var(--line2);color:var(--ink2);background:var(--card);transition:.15s;white-space:nowrap}
+.st-btn:hover{color:var(--blueD);border-color:var(--blue);background:var(--blueT)}
+.st-btn.on{color:var(--blueD);border-color:var(--blue);background:var(--blueT)}
+.st-btn .cnt{font-family:var(--mono);font-weight:600}
+
+/* ---------- CONTROL PANEL ---------- */
+.panel{min-height:0;display:flex;flex-direction:column;border:1px solid var(--line2);border-radius:8px;
+  background:var(--panel);overflow:hidden;box-shadow:0 1px 3px rgba(16,24,32,.1)}
+.panel-head{flex:none;display:flex;align-items:center;gap:7px;padding:10px 13px;border-bottom:1px solid var(--line2);background:var(--card)}
+.panel-title{font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);flex:1}
+.panel-head .icon-btn{width:30px;height:30px}
+.panel-scroll{flex:1;min-height:0;overflow-y:auto;padding:10px 11px 14px;display:flex;flex-direction:column;gap:9px}
+
+/* ring basics — always visible */
+.ring-card{border:1px solid var(--line2);border-radius:7px;background:var(--card);padding:9px 11px 4px;flex:none}
+.ring-card .rc-h{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:2px}
+.ring-card .rc-h svg{width:14px;height:14px;color:var(--steel)}
+.ring-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 9px}
+.ring-grid .ctl{padding:5px 0 6px;border-top:none}
+.ring-grid .ctl-head{flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:2px}
+.ring-grid .ctl-head label{font-size:10.3px;color:var(--ink3);font-weight:600;letter-spacing:.02em}
+.ring-grid .ctl-val{font-size:12.5px}
+.ring-grid .ctl-val input{width:52px;font-size:12.5px}
+.ring-grid input[type=range]{height:18px}
+.ring-chamfer{border-top:1px solid var(--line);padding:6px 0 7px}
+
+/* layer tabs */
+.layer-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:none}
+.layer-tab{display:flex;flex-direction:column;gap:2px;text-align:left;padding:8px 11px;border-radius:7px;
+  border:1px solid var(--line2);background:var(--card);transition:.15s var(--ease);position:relative;overflow:hidden}
+.layer-tab::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--lc)}
+.layer-tab:hover{background:var(--panel)}
+.layer-tab .lt-t{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ink)}
+.layer-tab .lt-t svg{width:14px;height:14px;color:var(--lc)}
+.layer-tab .lt-s{font-family:var(--mono);font-size:9.6px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.layer-tab.on{border-color:var(--lc);background:var(--lct);box-shadow:inset 0 -2px 0 var(--lc)}
+.layer-tab.on .lt-t{color:var(--lcd)}
+.layer-tab[data-layer="door"]{--lc:var(--blue);--lcd:var(--blueD);--lct:var(--blueT)}
+.layer-tab[data-layer="spk"]{--lc:var(--orange);--lcd:var(--orangeD);--lct:var(--orangeT)}
+
+/* active layer card */
+.layer-card{--lc:var(--blue);--lcd:var(--blueD);--lct:var(--blueT);
+  border:1px solid var(--line2);border-top:3px solid var(--lc);border-radius:7px;background:var(--card);flex:none;overflow:hidden}
+.layer-card[data-layer="spk"]{--lc:var(--orange);--lcd:var(--orangeD);--lct:var(--orangeT)}
+.layer-h{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--lct)}
+.layer-h svg{width:15px;height:15px;color:var(--lc);flex:none}
+.layer-h b{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--lcd);flex:1;min-width:0}
+.layer-h .lh-sub{font-size:9.6px;color:var(--ink3);font-weight:500;letter-spacing:0;text-transform:none;display:block;margin-top:1px}
+.copy-btn{flex:none;display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:5px 8px;border-radius:5px;
+  border:1px solid var(--line2);background:var(--card);color:var(--ink2);transition:.15s;white-space:nowrap}
+.copy-btn:hover{color:var(--lcd);border-color:var(--lc)}
+.copy-btn svg{width:13px;height:13px;color:inherit}
+.layer-body{padding:4px 12px 8px;animation:lin .18s var(--ease)}
+@keyframes lin{from{opacity:0;transform:translateX(6px)}}
+.lgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 11px}
+.lgrid .ctl{padding:6px 0 7px}
+.lgrid .ctl-head{margin-bottom:2px}
+.lgrid .ctl-head label{font-size:11.3px}
+.lgrid .ctl-val input{width:50px}
+.lgrid input[type=range]{height:20px}
+.ctl.full{padding:7px 0 6px}
+.ctl{border-top:1px solid var(--line)}
+.layer-body>.ctl.full:first-child{border-top:none}
+.lgrid .ctl:nth-child(-n+2){border-top:none}
+.ctl.dim{opacity:.45;pointer-events:none}
+.ctl-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:3px}
+.ctl-head label{font-size:12.5px;font-weight:500;color:var(--ink)}
+.ctl-val{display:flex;align-items:baseline;gap:3px;font-family:var(--mono);font-size:12px;color:var(--acc2,var(--steel))}
+.layer-card .ctl-val{color:var(--lcd)}
+.ring-card .ctl-val{color:var(--steel)}
+.ctl-val input{width:58px;text-align:right;background:transparent;border:none;border-bottom:1px solid var(--line2);
+  font-family:var(--mono);font-size:12px;font-weight:500;color:inherit;padding:1px 2px;-moz-appearance:textfield}
+.ctl-val input::-webkit-outer-spin-button,.ctl-val input::-webkit-inner-spin-button{-webkit-appearance:none}
+.ctl-val input:focus{outline:none;border-bottom-color:var(--lc,var(--steel))}
+.ctl-val em{font-style:normal;color:var(--ink3);font-size:10.5px}
+.fast-note{font-family:var(--mono);font-size:9.8px;line-height:1.5;color:var(--ink2);background:var(--panel);
+  border:1px dashed var(--line2);border-radius:5px;padding:6px 8px;margin:2px 0 4px}
+.fast-note b{color:var(--lcd);font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer;display:block;--acc:var(--lc,var(--steel))}
+.ring-card input[type=range]{--acc:var(--steel)}
+.grp input[type=range]{--acc:var(--gacc,var(--steel))}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--acc) var(--p,50%),#d7dee6 var(--p,50%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;margin-top:-6px;border-radius:50%;
+  background:#fff;border:2px solid var(--acc);box-shadow:0 1px 2px rgba(16,24,32,.25);transition:transform .12s}
+input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.12)}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2);background:var(--acc)}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--acc) var(--p,50%),#d7dee6 var(--p,50%))}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--acc);box-shadow:0 1px 2px rgba(16,24,32,.25)}
+.tgl-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:24px}
+.tgl-row label{font-size:11.8px;font-weight:500;cursor:pointer;flex:1;color:var(--ink)}
+.tgl{position:relative;width:34px;height:19px;flex:none;cursor:pointer;--acc:var(--lc,var(--steel))}
+.ring-card .tgl{--acc:var(--steel)}
+.grp .tgl{--acc:var(--gacc,var(--steel))}
+.tgl input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.tgl i{position:absolute;inset:0;border-radius:4px;background:#d7dee6;border:1px solid var(--line2);transition:.18s var(--ease)}
+.tgl i::after{content:'';position:absolute;left:2px;top:2px;width:13px;height:13px;border-radius:3px;background:#fff;border:1px solid var(--line2);transition:.18s var(--ease);box-shadow:0 1px 1px rgba(16,24,32,.15)}
+.tgl input:checked+i{background:var(--acc);border-color:var(--acc)}
+.tgl input:checked+i::after{transform:translateX(15px);border-color:#fff}
+.tgl input:focus-visible+i{outline:2px solid var(--blue);outline-offset:2px}
+.stepper{display:flex;align-items:center;gap:5px}
+.stepper button{width:25px;height:25px;border-radius:5px;border:1px solid var(--line2);background:var(--card);
+  color:var(--ink2);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;transition:.15s}
+.stepper button:hover{color:var(--lcd,var(--steel));border-color:var(--lc,var(--steel));background:var(--panel)}
+.stepper button:active{background:#e6ebf1}
+.stepper b{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--lcd,var(--steel));min-width:20px;text-align:center}
+select{width:100%;appearance:none;-webkit-appearance:none;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%234a5a6a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+  border:1px solid var(--line2);border-radius:5px;padding:7px 28px 7px 10px;font-size:12px;font-weight:500;cursor:pointer;transition:.15s;color:var(--ink)}
+select:hover{border-color:var(--lc,var(--steel))}
+.color-row{display:flex;align-items:center;gap:9px}
+input[type=color]{width:42px;height:26px;border:1px solid var(--line2);border-radius:5px;background:var(--card);padding:2px;cursor:pointer}
+input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+input[type=color]::-webkit-color-swatch{border:none;border-radius:3px}
+.color-row code{font-family:var(--mono);font-size:10.8px;color:var(--ink3)}
+
+/* shared accordion */
+.grp{--gacc:var(--steel);border:1px solid var(--line2);border-radius:7px;background:var(--card);flex:none;overflow:hidden}
+.grp[data-acc="wood"]{--gacc:var(--wood)}
+.grp-h{width:100%;display:flex;align-items:center;gap:8px;padding:10px 12px;text-align:left;transition:background .15s;min-height:38px}
+.grp-h:hover{background:var(--panel)}
+.grp-h:active{background:#eef2f6}
+.grp-n{font-family:var(--mono);font-style:normal;font-size:10px;font-weight:500;color:var(--ink3);flex:none}
+.grp-h>svg{width:15px;height:15px;color:var(--gacc);flex:none}
+.grp-h b{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grp-s{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--gacc);white-space:nowrap;flex:none;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.grp-c{width:14px;height:14px;color:var(--ink3);flex:none;transition:transform .25s var(--ease)}
+.grp.collapsed .grp-c{transform:rotate(-90deg)}
+.grp-b{display:grid;grid-template-rows:1fr;transition:grid-template-rows .28s var(--ease)}
+.grp.collapsed .grp-b{grid-template-rows:0fr}
+.grp-bi{overflow:hidden;min-height:0;padding:0 12px 5px}
+.grp-bi .ctl{padding:8px 0 9px}
+.grp-bi .ctl:first-child{border-top:none}
+.grp .ctl-val{color:var(--gacc)}
+.grp .stepper b{color:var(--gacc)}
+
+/* ---------- EXPORT BAR ---------- */
+.export-bar{flex:none;border-top:1px solid var(--line2);padding:9px 12px 11px;background:var(--card)}
+.exp-summary{font-family:var(--mono);font-size:9.8px;line-height:1.5;color:var(--ink3);margin-bottom:7px;word-break:break-word}
+.exp-summary .a{color:var(--ink)}.exp-summary .c{color:var(--blueD)}.exp-summary .m{color:var(--orangeD)}
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.exp-btn{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;border:1px solid var(--line2);
+  background:var(--card);transition:.15s var(--ease);text-align:left;min-width:0}
+.exp-btn svg{width:16px;height:16px;flex:none;color:var(--blue)}
+.exp-btn b{font-size:12.5px;font-weight:700;display:block;line-height:1.15;color:var(--ink)}
+.exp-btn small{font-size:9.3px;color:var(--ink3);font-family:var(--mono);display:block;margin-top:1px;white-space:nowrap}
+.exp-btn:hover:not(:disabled){border-color:var(--blue);background:var(--blueT)}
+.exp-btn:active:not(:disabled){background:#dde8f7}
+.exp-btn:disabled{opacity:.45;cursor:not-allowed}
+.exp-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.exp-btn.primary svg{color:#fff}
+.exp-btn.primary b{color:#fff}
+.exp-btn.primary small{color:rgba(255,255,255,.78)}
+.exp-btn.primary:hover:not(:disabled){background:var(--blueD);border-color:var(--blueD)}
+.exp-note{font-size:9.6px;color:var(--ink3);font-family:var(--mono);margin-top:7px;line-height:1.45}
+
+/* ---------- TOASTS ---------- */
+.toasts{position:fixed;left:16px;bottom:16px;z-index:70;display:flex;flex-direction:column;gap:8px;max-width:min(380px,calc(100vw - 32px))}
+.toast{display:flex;align-items:center;gap:12px;padding:10px 13px;border-radius:6px;background:var(--card);
+  border:1px solid var(--line2);border-left:3px solid var(--blue);font-size:12.5px;font-weight:500;color:var(--ink);
+  box-shadow:0 4px 16px rgba(16,24,32,.16);animation:tin .3s var(--ease)}
+.toast.ok{border-left-color:var(--ok)}.toast.warn{border-left-color:var(--warn)}.toast.err{border-left-color:var(--err)}
+.toast.out{animation:tout .25s var(--ease) forwards}
+.toast button{color:var(--blueD);font-size:12px;font-weight:700;text-decoration:underline;flex:none}
+@keyframes tin{from{opacity:0;transform:translateX(-16px)}}
+@keyframes tout{to{opacity:0;transform:translateX(-16px)}}
+
+/* ---------- ADAPTATION ---------- */
+@media (max-height:720px){.exp-summary{display:none}.vp-hint{display:none}}
+@media (max-height:640px){.chips-row{min-height:46px;padding-top:4px;padding-bottom:4px}
+  .status-strip{height:34px}.exp-note{display:none}.vp-spec{display:none}}
+@media (max-width:1180px) and (min-width:941px){
+  .app{grid-template-columns:minmax(0,1fr) 320px}
+  .brand-tag{display:none}
+  .lgrid{gap:0 8px}
+}
+@media (max-width:940px){
+  :root{--hdr:48px}
+  .app{display:flex;flex-direction:column;gap:8px;padding:8px 10px}
+  .stage{display:contents}
+  .chips-row{min-height:44px;padding:4px 6px 4px 1px;order:0}
+  .viewport-card{flex:none;height:clamp(170px,36dvh,380px);order:1}
+  .status-strip{order:2;height:34px;gap:8px;padding:0 10px}
+  .st-msg{display:none}.st-label{font-size:11px}.st-btn{font-size:10.5px;padding:4px 8px}
+  .panel{order:3;flex:1;min-height:0}
+  .panel-head{padding:8px 12px}.panel-title{font-size:12px}
+  .panel-scroll{padding:8px 10px 12px;gap:8px}
+  .export-bar{padding:8px 10px 9px}
+  .exp-summary,.exp-note{display:none}
+  .brand-tag,.unit-badge{display:none}
+  .vp-hint,.vp-spec{display:none}
+  .vp-legend{gap:8px;padding:5px 8px}.lg{font-size:9.6px}
+  .seg button{padding:4px 10px;font-size:11.5px}
+  .vp-drawer{left:6px;right:6px;bottom:6px;max-height:62%}
+  .toasts{left:10px;bottom:10px}
+}
+@media (max-width:940px) and (max-height:660px){
+  .chips-row{min-height:40px}
+  .chip{padding:4px 10px}.chip-name{font-size:11px}.chip-meta{font-size:9px}
+  .viewport-card{height:clamp(140px,28dvh,240px)}
+  .status-strip{height:30px}.panel-head{padding:6px 12px}
+  .exp-grid{grid-template-columns:repeat(4,1fr);gap:6px}
+  .exp-btn{padding:7px 6px;justify-content:center;gap:5px}
+  .exp-btn small{display:none}.exp-btn b{font-size:11px}.exp-btn svg{width:14px;height:14px}
+}
+@media (max-width:940px) and (max-height:480px){
+  .chips-row{display:none}
+  .viewport-card{height:clamp(110px,24dvh,180px)}
+  .status-strip{height:28px}.st-label{display:none}
+  .vp-legend{display:none}.vp-top{top:6px;left:6px;right:6px}
+  .seg button{padding:3px 8px;font-size:10.5px}
+}
+@media (max-width:940px) and (max-height:400px){
+  .viewport-card{height:clamp(100px,22dvh,160px)}.status-strip{height:26px}
+}
+@media (prefers-reduced-motion:reduce){.rv{animation-duration:.01s}.spin{animation:none}.status-strip.err .st-dot{animation:none}.brand-logo{transition:none}.vp-drawer,.layer-body{animation:none}.grp-b,.grp-c{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="rv" style="--d:0s">
+  <div class="brand">
+    <svg class="brand-logo" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <circle cx="20" cy="20" r="17" stroke="#1d2733" stroke-width="2.2"/>
+      <circle cx="20" cy="20" r="8.6" stroke="#6b7a89" stroke-width="1.6"/>
+      <path d="M20 1v4M20 35v4M1 20h4M35 20h4" stroke="#6b7a89" stroke-width="1.2"/>
+      <circle cx="20" cy="6.6" r="2" fill="#1e63c4"/><circle cx="8.4" cy="26.7" r="2" fill="#1e63c4"/><circle cx="31.6" cy="26.7" r="2" fill="#1e63c4"/>
+      <circle cx="26.1" cy="13.9" r="1.5" fill="#d9541e"/><circle cx="13.9" cy="13.9" r="1.5" fill="#d9541e"/><circle cx="13.9" cy="26.1" r="1.5" fill="#d9541e"/><circle cx="26.1" cy="26.1" r="1.5" fill="#d9541e"/>
+    </svg>
+    <div>
+      <div class="brand-name">RINGFORGE<small>CAD</small></div>
+      <div class="brand-tag">проставки · два независимых слоя крепежа · DIN 912 · цековка</div>
+    </div>
+  </div>
+  <div class="top-actions">
+    <span class="unit-badge">мм · DXF R12 · STL</span>
+    <button class="icon-btn" id="sndBtn" aria-pressed="true" title="Звук включён"></button>
+  </div>
+</header>
+
+<main class="app">
+  <section class="stage">
+    <div class="chips-row rv" id="presetRow" style="--d:.04s"></div>
+
+    <div class="viewport-card rv" id="vpCard" data-view="3d" style="--d:.08s">
+      <div class="vp-wrap" id="wrap3d" role="tabpanel" aria-labelledby="tab3d">
+        <div class="vignette"></div>
+        <div class="loader" id="loader3d"><div class="spin"></div><div>Загрузка 3D-модуля…</div></div>
+        <div class="fail-box" id="fail3d">
+          <p><b>3D-просмотр недоступен</b> в этом браузере (нет WebGL или сети для модуля three.js).<br>Чертёж, проверки и экспорт DXF / SVG работают полностью.</p>
+          <button class="exp-btn" id="failTo2d" type="button"><b>Открыть чертёж</b></button>
+        </div>
+      </div>
+      <div class="vp-wrap" id="wrap2d" role="tabpanel" aria-labelledby="tab2d">
+        <svg id="draw" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Чертёж проставки, вид сверху">
+          <g id="baseG"></g><g id="hovG"></g>
+        </svg>
+        <div class="tip" id="tip"></div>
+      </div>
+      <div class="vp-top">
+        <div class="seg" role="tablist" aria-label="Режим просмотра">
+          <button id="tab3d" class="on" type="button" role="tab" aria-selected="true" aria-controls="wrap3d">3D-модель</button>
+          <button id="tab2d" type="button" role="tab" aria-selected="false" aria-controls="wrap2d">Чертёж</button>
+        </div>
+        <div class="vp-tools" id="tools3d"><button class="icon-btn" id="camReset" type="button" title="Сброс камеры"></button></div>
+        <div class="vp-tools" id="tools2d">
+          <button class="icon-btn" id="zOut" type="button" title="Отдалить"></button>
+          <button class="icon-btn" id="zIn" type="button" title="Приблизить"></button>
+          <button class="icon-btn" id="zFit" type="button" title="Вписать чертёж"></button>
+        </div>
+      </div>
+      <div class="vp-spec" id="vpSpec"></div>
+      <div class="vp-legend">
+        <span class="lg"><i style="background:#1d2733"></i>Контур</span>
+        <span class="lg"><i style="background:#1e63c4"></i>Слой 1 · дверь</span>
+        <span class="lg"><i style="background:#d9541e"></i>Слой 2 · динамик</span>
+        <span class="lg"><i class="dash" style="color:#6b7a89"></i>Цековка ⌴</span>
+      </div>
+      <div class="vp-hint" id="vpHint">ЛКМ — вращение · колесо — масштаб · ПКМ — панорама</div>
+
+      <div class="vp-drawer" id="vpDrawer" role="region" aria-label="Проверки и координаты отверстий" hidden>
+        <div class="drawer-h" id="drawerH">
+          <b>Контроль</b>
+          <span class="info-tabs">
+            <button type="button" id="dwTabChecks" class="on">Проверки</button>
+            <button type="button" id="dwTabTable">Отверстия</button>
+          </span>
+          <button type="button" class="drawer-x" id="drawerX" aria-label="Закрыть">✕</button>
+        </div>
+        <div class="info-pane" id="checksPane"><ul class="checks-list" id="checksList"></ul></div>
+        <div class="info-pane" id="tablePane" hidden>
+          <div class="tbl-cap">X/Y от центра · мм · D = слой двери, S = слой динамика · ⌴ цековка</div>
+          <table>
+            <thead><tr><th>№</th><th>Слой</th><th>X</th><th>Y</th><th>Отверстие</th><th>⌴ Цековка</th></tr></thead>
+            <tbody id="holeTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-strip rv" id="statusStrip" style="--d:.12s" role="status" aria-live="polite">
+      <span class="st-dot"></span>
+      <b class="st-label" id="stLabel">Готово к раскрою</b>
+      <span class="st-msg" id="stMsg"></span>
+      <button type="button" class="st-btn" id="openChecks" aria-expanded="false" aria-controls="vpDrawer">Проверки <span class="cnt" id="cntChecks"></span></button>
+      <button type="button" class="st-btn" id="openTable" aria-expanded="false" aria-controls="vpDrawer">Отверстия <span class="cnt" id="cntTable"></span></button>
+    </div>
+  </section>
+
+  <aside class="panel rv" style="--d:.1s">
+    <div class="panel-head">
+      <div class="panel-title">Параметры</div>
+      <button class="icon-btn" id="foldBtn" type="button" title="Развернуть общие категории"></button>
+      <button class="icon-btn" id="rndBtn" type="button" title="Случайный вариант"></button>
+      <button class="icon-btn" id="rstBtn" type="button" title="Сбросить к стандарту"></button>
+    </div>
+    <div class="panel-scroll" id="panelScroll">
+      <div class="ring-card">
+        <div class="rc-h" id="ringH">Кольцо · общие размеры</div>
+        <div class="ring-grid" id="ringGrid"></div>
+        <div class="ring-chamfer" id="ringChamfer"></div>
+      </div>
+
+      <div class="layer-tabs" role="tablist" aria-label="Слой крепежа">
+        <button type="button" class="layer-tab on" data-layer="door" id="lt_door" role="tab" aria-selected="true" aria-controls="layerCard">
+          <span class="lt-t" id="ltt_door">Слой 1 · К двери</span>
+          <span class="lt-s" id="lts_door"></span>
+        </button>
+        <button type="button" class="layer-tab" data-layer="spk" id="lt_spk" role="tab" aria-selected="false" aria-controls="layerCard">
+          <span class="lt-t" id="ltt_spk">Слой 2 · К динамику</span>
+          <span class="lt-s" id="lts_spk"></span>
+        </button>
+      </div>
+
+      <div class="layer-card" id="layerCard" data-layer="door" role="tabpanel" aria-labelledby="lt_door">
+        <div class="layer-h" id="layerH">
+          <span id="layerIco"></span>
+          <b id="layerTitle">К двери<span class="lh-sub" id="layerSub"></span></b>
+          <button type="button" class="copy-btn" id="copyBtn" title="Скопировать тип крепежа в другой слой"></button>
+        </div>
+        <div class="layer-body" id="layerBody"></div>
+      </div>
+
+      <div id="sharedGroups"></div>
+    </div>
+    <div class="export-bar">
+      <div class="exp-summary" id="expSummary"></div>
+      <div class="exp-grid">
+        <button class="exp-btn primary" id="expDxf" type="button"><span class="ic"></span><span><b>DXF</b><small>раскрой · R12</small></span></button>
+        <button class="exp-btn" id="expStl" type="button" disabled title="Загрузка 3D-модуля…"><span class="ic"></span><span><b>STL</b><small>печать · мм</small></span></button>
+        <button class="exp-btn" id="expSvg" type="button"><span class="ic"></span><span><b>SVG</b><small>чертёж 1:1</small></span></button>
+        <button class="exp-btn" id="expPng" type="button" disabled title="Загрузка 3D-модуля…"><span class="ic"></span><span><b>PNG</b><small>снимок 3D</small></span></button>
+      </div>
+      <div class="exp-note" id="expNote">DXF: CONTOUR · CUTOUT · DOOR · SPEAKER · CBORE</div>
+    </div>
+  </aside>
+</main>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script>
+/* ================================================================
+   RINGFORGE — main application
+   ================================================================ */
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const TAU=Math.PI*2, D2R=Math.PI/180;
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const fmtN=(v,d=1)=>{const n=+v.toFixed(d);return n.toLocaleString('ru-RU',{maximumFractionDigits:d});};
+const f2=v=>+v.toFixed(2);
+const REDUCED=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const IC={
+ruler:'<path d="M3 17 17 3l4 4L7 21l-4-4Z"/><path d="m8 16 1.5 1.5M11 13l1.5 1.5M14 10l1.5 1.5"/>',
+door:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><circle cx="15" cy="12" r="1.2"/><path d="M5 7h14"/>',
+speaker:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4"/><circle cx="12" cy="5" r=".9"/><circle cx="12" cy="19" r=".9"/><circle cx="5" cy="12" r=".9"/><circle cx="19" cy="12" r=".9"/>',
+layers:'<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12.5 9 5 9-5"/><path d="m3 17 9 5 9-5"/>',
+eye:'<circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z"/>',
+dl:'<path d="M12 3v11m0 0 4.5-4.5M12 14 7.5 9.5"/><path d="M4 17v3h16v-3"/>',
+dice:'<rect x="3.5" y="3.5" width="17" height="17" rx="3"/><circle cx="8.6" cy="8.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="15.4" cy="8.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.15" fill="currentColor" stroke="none"/><circle cx="8.6" cy="15.4" r="1.15" fill="currentColor" stroke="none"/><circle cx="15.4" cy="15.4" r="1.15" fill="currentColor" stroke="none"/>',
+reset:'<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 3.5V8h-4.5"/>',
+snd:'<path d="M4 9.5v5h3.5L13 19V5L7.5 9.5H4Z"/><path d="M16 9a4.5 4.5 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
+mute:'<path d="M4 9.5v5h3.5L13 19V5L7.5 9.5H4Z"/><path d="m16.5 9.5 5 5m0-5-5 5"/>',
+cam:'<circle cx="12" cy="12" r="7.5"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"/>',
+zin:'<circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.5-4.5M8 11h6M11 8v6"/>',
+zout:'<circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.5-4.5M8 11h6"/>',
+fit:'<path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>',
+save:'<path d="M5 3h11l3 3v15H5V3Z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/>',
+check:'<path d="m4.5 12.5 5 5 10-11"/>',
+chev:'<path d="m6 9 6 6 6-6"/>',
+unfold:'<path d="m7 9 5-5 5 5M7 15l5 5 5-5"/>',
+fold:'<path d="m7 4 5 5 5-5M7 20l5-5 5 5"/>',
+copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/><path d="m11 14 2 2 4-4"/>'
+};
+const ico=(n,w=17)=>`<svg viewBox="0 0 24 24" width="${w}" height="${w}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+
+const MATS={
+  mdf:{name:'МДФ',color:'#c9a06b',rough:.92,metal:.02,env:.4,tex:'wood'},
+  fanera:{name:'Фанера берёзовая',color:'#d8b47e',rough:.85,metal:.02,env:.45,tex:'ply'},
+  abs:{name:'ABS-пластик',color:'#39414b',rough:.5,metal:.08,env:.7,tex:'noise'},
+  alu:{name:'Алюминий',color:'#b9c5d0',rough:.32,metal:.92,env:1.1,tex:'brush'}
+};
+const BOLTS={
+  M3:{d:3,dk:5.5,k:3,hex:2.5,clear:3.4},
+  M4:{d:4,dk:7,k:4,hex:3,clear:4.5},
+  M5:{d:5,dk:8.5,k:5,hex:4,clear:5.5},
+  M6:{d:6,dk:10,k:6,hex:5,clear:6.6},
+  M8:{d:8,dk:13,k:8,hex:6,clear:9},
+  M10:{d:10,dk:16,k:10,hex:8,clear:11}
+};
+const BOLT_OPTS=[['custom','Своё отверстие'],['M3','M3 · DIN 912'],['M4','M4 · DIN 912'],['M5','M5 · DIN 912'],['M6','M6 · DIN 912'],['M8','M8 · DIN 912'],['M10','M10 · DIN 912']];
+const RECESS_OPTS=[['none','Без цековки'],['flush','Заподлицо (k)'],['deep','Утопленная (k + 1)']];
+
+const DEFAULTS={outerD:180,innerD:146,thick:16,chamfer:true,
+  doorBCD:168,doorN:3,doorHoleD:5.5,doorRot:90,doorSlots:false,slotAngle:18,ears:true,earMargin:6,
+  doorBolt:'M5',doorRecess:'flush',doorHeadClear:.5,
+  spkBCD:158,spkN:4,spkHoleD:4.2,spkRot:45,spkSlots:false,spkSlotAngle:14,
+  spkBolt:'custom',spkRecess:'none',spkHeadClear:.5,
+  material:'mdf',tint:'#ffffff',sceneBg:'light',quality:'std',grid:true,edges:true,autoRotate:true,rotSpeed:.6,showDims:true,
+  sound:true,view:'3d'};
+const LIMITS={outerD:[120,260],innerD:[80,230],thick:[3,30],doorBCD:[90,250],doorN:[2,8],doorHoleD:[2.5,12],
+  doorRot:[0,359],slotAngle:[6,40],earMargin:[4,12],spkBCD:[90,240],spkN:[2,8],spkHoleD:[2.5,12],spkRot:[0,359],
+  spkSlotAngle:[6,40],rotSpeed:[0,2],doorHeadClear:[.2,1.5],spkHeadClear:[.2,1.5]};
+const PRESETS=[
+ {name:'Универсал 16.5 см',meta:'Ø180 · M5⌴ / 4×Ø4.2',p:{}},
+ {name:'ВАЗ 2110 · дверь',meta:'Ø176 · M5⌴ / 4×Ø4',p:{outerD:176,innerD:141,thick:18,doorBCD:163,doorN:3,doorHoleD:5.5,doorRot:90,doorSlots:false,ears:false,doorBolt:'M5',doorRecess:'flush',doorHeadClear:.5,spkBCD:154,spkN:4,spkHoleD:4,spkRot:45,spkSlots:false,spkBolt:'custom',spkRecess:'none',material:'mdf',chamfer:true}},
+ {name:'Kia Rio · 16.5 см',meta:'Ø184 · M6 пазы / 4×Ø4.2',p:{outerD:184,innerD:146,thick:12,doorBCD:176,doorN:3,doorHoleD:6.6,doorRot:90,doorSlots:true,slotAngle:18,ears:true,earMargin:6,doorBolt:'M6',doorRecess:'flush',doorHeadClear:.6,spkBCD:158,spkN:4,spkHoleD:4.2,spkRot:45,spkSlots:false,spkBolt:'custom',spkRecess:'none',material:'fanera',chamfer:true}},
+ {name:'VAG · Golf IV',meta:'Ø180 · M4⌴ / M4⌴',p:{outerD:180,innerD:145,thick:14,doorBCD:171,doorN:4,doorHoleD:4.5,doorRot:45,doorSlots:false,ears:true,earMargin:5,doorBolt:'M4',doorRecess:'flush',doorHeadClear:.4,spkBCD:158,spkN:4,spkHoleD:4.5,spkRot:0,spkSlots:false,spkBolt:'M4',spkRecess:'flush',spkHeadClear:.4,material:'abs',chamfer:false}},
+ {name:'СЧ 13 см · 5.25"',meta:'Ø146 · M4⌴ / 4×Ø3.5',p:{outerD:146,innerD:116,thick:8,doorBCD:136,doorN:3,doorHoleD:4.5,doorRot:90,doorSlots:false,ears:true,earMargin:5,doorBolt:'M4',doorRecess:'flush',doorHeadClear:.4,spkBCD:126,spkN:4,spkHoleD:3.5,spkRot:45,spkSlots:false,spkBolt:'custom',spkRecess:'none',material:'fanera',chamfer:true}},
+ {name:'20 см · УАЗ / ГАЗель',meta:'Ø232 · M8⌴ / M5⌴',p:{outerD:232,innerD:183,thick:22,doorBCD:220,doorN:4,doorHoleD:9,doorRot:45,doorSlots:true,slotAngle:16,ears:true,earMargin:7,doorBolt:'M8',doorRecess:'deep',doorHeadClear:.8,spkBCD:197,spkN:4,spkHoleD:5.5,spkRot:45,spkSlots:false,spkBolt:'M5',spkRecess:'flush',spkHeadClear:.5,material:'mdf',chamfer:true}}
+];
+
+let restored=false;
+function sanitize(p){
+  const s={...DEFAULTS};
+  for(const k in DEFAULTS){
+    if(!(k in p))continue;
+    const v=p[k];
+    if(typeof DEFAULTS[k]==='number'&&typeof v==='number'&&isFinite(v))s[k]=LIMITS[k]?clamp(v,LIMITS[k][0],LIMITS[k][1]):v;
+    else if(typeof DEFAULTS[k]==='boolean'&&typeof v==='boolean')s[k]=v;
+    else if(typeof DEFAULTS[k]==='string'&&typeof v==='string')s[k]=v;
+  }
+  s.doorN=Math.round(s.doorN);s.spkN=Math.round(s.spkN);
+  if(!MATS[s.material])s.material='mdf';
+  if(!['draft','std','high'].includes(s.quality))s.quality='std';
+  if(!['light','gray','dark'].includes(s.sceneBg))s.sceneBg='light';
+  if(!['3d','2d'].includes(s.view))s.view='3d';
+  if(!/^#[0-9a-fA-F]{6}$/.test(s.tint))s.tint='#ffffff';
+  ['door','spk'].forEach(k=>{
+    if(s[k+'Bolt']!=='custom'&&!BOLTS[s[k+'Bolt']])s[k+'Bolt']='custom';
+    if(!['none','flush','deep'].includes(s[k+'Recess']))s[k+'Recess']='none';
+    if(s[k+'Bolt']!=='custom')s[k+'HoleD']=BOLTS[s[k+'Bolt']].clear;
+  });
+  return s;
+}
+function loadState(){
+  try{const raw=localStorage.getItem('ringforge.state');
+    if(raw){restored=true;return sanitize(JSON.parse(raw));}
+  }catch(e){}
+  return {...DEFAULTS};
+}
+let S=loadState();
+let saveT=0;
+function scheduleSave(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem('ringforge.state',JSON.stringify(S));}catch(e){}},400);}
+
+const OPEN_DEF={mat:false,scene:false};
+let UI={open:{...OPEN_DEF},layer:'door'};
+try{const raw=localStorage.getItem('ringforge.ui');
+  if(raw){const p=JSON.parse(raw);
+    if(p&&p.open)for(const k in OPEN_DEF)if(typeof p.open[k]==='boolean')UI.open[k]=p.open[k];
+    if(p&&(p.layer==='door'||p.layer==='spk'))UI.layer=p.layer;}
+}catch(e){}
+function saveUI(){try{localStorage.setItem('ringforge.ui',JSON.stringify(UI));}catch(e){}}
+
+/* ================= FASTENERS ================= */
+function fastFor(s,kind){
+  const bolt=s[kind+'Bolt'],rec=s[kind+'Recess'];
+  if(bolt==='custom'||rec==='none')return {active:false,bolt,cbD:0,cbDepth:0};
+  const B=BOLTS[bolt];
+  return {active:true,bolt,B,cbD:B.dk+s[kind+'HeadClear'],cbDepth:B.k+(rec==='deep'?1:0)};
+}
+const anyCb=s=>fastFor(s,'door').active||fastFor(s,'spk').active;
+
+/* ================= GEOMETRY ================= */
+function outlineRadiusFn(s){
+  const R=s.outerD/2, lobes=[];
+  if(s.ears){
+    const d=s.doorBCD/2, fa=fastFor(s,'door');
+    const baseR=(fa.active?fa.cbD:s.doorHoleD)/2;
+    if(s.doorSlots){
+      const h=s.slotAngle*D2R/2, rl=baseR+s.earMargin;
+      const step=2*Math.asin(Math.min(.8*rl/d,1)), n=Math.max(2,Math.ceil(2*h/step));
+      for(let i=0;i<s.doorN;i++){const a=s.doorRot*D2R+i*TAU/s.doorN;
+        for(let k=0;k<=n;k++)lobes.push([d,a-h+2*h*k/n,rl]);}
+    }else{
+      const rl=baseR+s.earMargin;
+      for(let i=0;i<s.doorN;i++)lobes.push([d,s.doorRot*D2R+i*TAU/s.doorN,rl]);
+    }
+  }
+  return th=>{let r=R;
+    for(let i=0;i<lobes.length;i++){const l=lobes[i],del=th-l[1],sn=l[0]*Math.sin(del);
+      if(Math.abs(sn)<l[2]){const c=l[0]*Math.cos(del)+Math.sqrt(l[2]*l[2]-sn*sn);if(c>r)r=c;}}
+    return r;};
+}
+function outlinePts(s,n){
+  const fn=outlineRadiusFn(s),pts=[];
+  for(let i=0;i<n;i++){const a=i*TAU/n,r=fn(a);pts.push([r*Math.cos(a),r*Math.sin(a)]);}
+  return pts;
+}
+function slotPts(d,a,half,w){
+  const n=Math.max(10,Math.ceil(half*2/D2R/2.5)),m=9,pts=[];
+  for(let t=0;t<=n;t++){const ang=a-half+2*half*t/n;pts.push([(d+w/2)*math_cos(ang),(d+w/2)*math_sin(ang)]);}
+  const ae=a+half,ce=[d*math_cos(ae),d*math_sin(ae)],ue=[math_cos(ae),math_sin(ae)],ve=[-ue[1],ue[0]];
+  for(let t=1;t<m;t++){const p=Math.PI*t/m;pts.push([ce[0]+w/2*(ue[0]*Math.cos(p)+ve[0]*Math.sin(p)),ce[1]+w/2*(ue[1]*Math.cos(p)+ve[1]*Math.sin(p))]);}
+  for(let t=0;t<=n;t++){const ang=a+half-2*half*t/n;pts.push([(d-w/2)*math_cos(ang),(d-w/2)*math_sin(ang)]);}
+  const as0=a-half,cs=[d*math_cos(as0),d*math_sin(as0)],us=[math_cos(as0),math_sin(as0)],vs=[-us[1],us[0]];
+  for(let t=1;t<m;t++){const p=Math.PI*t/m;pts.push([cs[0]+w/2*(-us[0]*Math.cos(p)-vs[0]*Math.sin(p)),cs[1]+w/2*(-us[1]*Math.cos(p)-vs[1]*Math.sin(p))]);}
+  return pts;
+}
+const math_cos=Math.cos, math_sin=Math.sin;
+function holeReps(h){
+  const r=h.effR;
+  if(h.type==='circle')return [[h.cx,h.cy,r]];
+  const out=[],d=h.d,ext=h.half+r/d;
+  for(let k=0;k<7;k++){const ang=h.ang-ext+2*ext*k/6;out.push([d*Math.cos(ang),d*Math.sin(ang),r]);}
+  return out;
+}
+function buildLayerHoles(s,kind,rf,ir,cutValid){
+  const p=kind, fa=fastFor(s,kind);
+  const N=s[p+'N'], d=s[p+'BCD']/2, rot=s[p+'Rot'], slots=s[p+'Slots'];
+  const slotAng=(kind==='door'?s.slotAngle:s.spkSlotAngle);
+  const holeD=s[p+'HoleD'];
+  const cbR=fa.active?fa.cbD/2:0, cbDepth=fa.active?Math.min(fa.cbDepth,s.thick-.5):0;
+  const holes=[];
+  for(let i=0;i<N;i++){
+    const a=rot*D2R+i*TAU/N,cx=d*Math.cos(a),cy=d*Math.sin(a);
+    if(slots){
+      const h=slotAng*D2R/2,w=holeD,effR=fa.active?fa.cbD/2:w/2;
+      const extE=h+effR/d;let ok=cutValid;
+      if(ok)for(let k=0;k<=10;k++){const ang=a-extE+2*extE*k/10;
+        if(d-effR-.35<ir||rf(ang)<d+effR+.35){ok=false;break;}}
+      holes.push({kind,idx:i+1,type:'slot',cx,cy,ang:a,d,half:h,w,span:slotAng,
+        pts:slotPts(d,a,h,w),cbR,cbW:fa.active?fa.cbD:0,cbPts:fa.active?slotPts(d,a,h,fa.cbD):null,
+        cbDepth,effR,valid:ok,bolt:fa.bolt});
+    }else{
+      const r=holeD/2,effR=fa.active?fa.cbD/2:r;
+      const ok=cutValid&&(d-effR-.35>=ir)&&(rf(a)>=d+effR+.35);
+      holes.push({kind,idx:i+1,type:'circle',cx,cy,r,cbR,cbDepth,effR,valid:ok,bolt:fa.bolt});
+    }
+  }
+  return holes;
+}
+function analyze(s){
+  const R=s.outerD/2,ir=s.innerD/2,rf=outlineRadiusFn(s);
+  let maxR=R;for(let i=0;i<720;i++){const r=rf(i*TAU/720);if(r>maxR)maxR=r;}
+  const cutValid=ir<R-1;
+  const fd=fastFor(s,'door'),fs=fastFor(s,'spk');
+  const holes=[...buildLayerHoles(s,'door',rf,ir,cutValid),...buildLayerHoles(s,'spk',rf,ir,cutValid)];
+  const repsArr=holes.map(holeReps);
+  for(let i=0;i<holes.length;i++){
+    if(!holes[i].valid)continue;
+    for(let j=i+1;j<holes.length;j++){
+      if(!holes[j].valid)continue;
+      let hit=false;
+      for(const ra of repsArr[i]){for(const rb of repsArr[j]){
+        if(Math.hypot(ra[0]-rb[0],ra[1]-rb[1])<ra[2]+rb[2]-.05){hit=true;break;}}if(hit)break;}
+      if(hit){holes[j].valid=false;holes[j].overlap=true;}
+    }
+  }
+  const checks=[];let nErr=0,nWarn=0;
+  const err=t=>{checks.push({lv:'err',t});nErr++;};
+  const warn=t=>{checks.push({lv:'warn',t});nWarn++;};
+  if(!cutValid)err(`Проходное отверстие Ø${fmtN(s.innerD,0)} перекрывает контур — уменьшите вырез или увеличьте внешний Ø.`);
+  const badDoor=holes.filter(h=>h.kind==='door'&&!h.valid&&!h.overlap).length;
+  const badSpk=holes.filter(h=>h.kind==='spk'&&!h.valid&&!h.overlap).length;
+  const badOvD=holes.filter(h=>h.overlap&&h.kind==='door').length;
+  const badOvS=holes.filter(h=>h.overlap&&h.kind==='spk').length;
+  if(badDoor)err(`Слой 1 (дверь)${fd.active?' с головкой':''}: вне материала ${badDoor} отв. Увеличьте Ø, уменьшите BCD или включите ушки.`);
+  if(badSpk)err(`Слой 2 (динамик)${fs.active?' с головкой':''}: вне материала / в вырезе ${badSpk} отв. Проверьте BCD и вырез.`);
+  if(badOvD)err(`Слой 1: ${badOvD} отв. пересекаются со слоем 2 и исключены. Разведите слои по углу или BCD.`);
+  if(badOvS)err(`Слой 2: ${badOvS} отв. пересекаются со слоем 1 и исключены. Разведите слои по углу или BCD.`);
+  [['door','Слой 1 (дверь)',fd],['spk','Слой 2 (динамик)',fs]].forEach(([k,label,fa])=>{
+    if(fa.active){
+      const floor=s.thick-fa.cbDepth;
+      if(floor<2)err(`${label}: под цековкой ${fa.bolt} остаётся ${fmtN(Math.max(floor,0))} мм пола — увеличьте толщину (≥ 2 мм) или меньший болт.`);
+      else if(floor<3)warn(`${label}: тонкий пол под цековкой ${fmtN(floor)} мм — для МДФ рекомендуется ≥ 3 мм.`);
+    }
+  });
+  const valid=holes.filter(h=>h.valid);
+  const vReps=valid.map(holeReps);
+  let minWeb=Infinity,thinPairs=0;
+  for(let i=0;i<valid.length;i++){
+    for(const ra of vReps[i]){
+      const dc=Math.hypot(ra[0],ra[1]);
+      minWeb=Math.min(minWeb,dc-ra[2]-ir,rf(Math.atan2(ra[1],ra[0]))-dc-ra[2]);
+    }
+    for(let j=i+1;j<valid.length;j++){
+      let gMin=Infinity;
+      for(const ra of vReps[i])for(const rb of vReps[j])
+        gMin=Math.min(gMin,Math.hypot(ra[0]-rb[0],ra[1]-rb[1])-ra[2]-rb[2]);
+      minWeb=Math.min(minWeb,gMin);
+      if(gMin<.8)thinPairs++;
+    }
+  }
+  if(!isFinite(minWeb))minWeb=(s.outerD-s.innerD)/2;
+  if(nErr===0&&thinPairs)warn(`Отверстия/головки почти сливаются (пар: ${thinPairs}) — перемычка менее 0.8 мм.`);
+  if(nErr===0&&minWeb<2.5)warn(`Тонкая перемычка ${fmtN(Math.max(minWeb,0))} мм — рекомендуется не менее 3 мм.`);
+  const ringW=(s.outerD-s.innerD)/2;
+  if(nErr===0&&ringW<8)warn(`Узкое кольцо: ${fmtN(ringW)} мм — проверьте жёсткость проставки.`);
+  if(s.material==='mdf'&&s.thick<6)warn('МДФ тоньше 6 мм склонен к сколам — возьмите фанеру или увеличьте толщину.');
+  if(!checks.length)checks.push({lv:'ok',t:'Геометрия корректна — оба слоя независимы и готовы к раскрою / печати.'});
+  return {R,ir,rf,maxR,cutValid,holes,checks,nErr,nWarn,minWeb,ringW,fd,fs,anyCb:fd.active||fs.active,oPts:outlinePts(s,720)};
+}
+let A=analyze(S);
+
+/* ================= 2D DRAWING ================= */
+const vpCard=$('#vpCard');
+const draw=$('#draw'),baseG=$('#baseG'),hovG=$('#hovG'),wrap2d=$('#wrap2d'),tip=$('#tip');
+let vb=null,hoverIdx=-1,userZoomed=false;
+const C_INK='#1d2733',C_BLUE='#1e63c4',C_ORANGE='#d9541e',C_ERR='#c23434',C_CUT='#55636f',C_DIM='#33475c',C_GRID='#6b7a89',C_SHEET='#fcfdfe';
+const pathFrom=pts=>pts.map((p,i)=>`${i?'L':'M'}${f2(p[0])},${f2(-p[1])}`).join('')+'Z';
+const circleSub=(cx,cy,r)=>`M${f2(cx+r)},${f2(-cy)}A${f2(r)},${f2(r)} 0 1 0 ${f2(cx-r)},${f2(-cy)}A${f2(r)},${f2(r)} 0 1 0 ${f2(cx+r)},${f2(-cy)}Z`;
+const holePath=h=>h.type==='circle'?circleSub(h.cx,h.cy,h.r):pathFrom(h.pts);
+function fit2D(){
+  const E=A.maxR+30;
+  const pxH=Math.max(vpCard.clientHeight||300,80);
+  vpCard.classList.toggle('vp-tiny',pxH<110);
+  let topPx,botPx;
+  if(pxH<110){topPx=24;botPx=16;}
+  else if(pxH<220){topPx=30;botPx=26;}
+  else{topPx=46;botPx=52;}
+  const k=clamp((topPx+botPx)/pxH,0,.55);
+  const size=2*E/(1-k);
+  const topMm=topPx*(size/pxH);
+  vb={x:-size/2,y:-E-topMm,w:size,h:size};
+  userZoomed=false;applyVB();
+}
+function applyVB(){if(vb)draw.setAttribute('viewBox',`${f2(vb.x)} ${f2(vb.y)} ${f2(vb.w)} ${f2(vb.h)}`);}
+function svgPt(cx,cy){
+  const m=draw.getScreenCTM();if(!m)return null;
+  const p=new DOMPoint(cx,cy).matrixTransform(m.inverse());return {x:p.x,y:-p.y};
+}
+function render2D(){
+  const s=S,E=A.maxR+28;
+  if(!vb)fit2D();else applyVB();
+  const oPath=pathFrom(A.oPts);
+  let fillD=oPath;
+  if(A.cutValid)fillD+=circleSub(0,0,A.ir);
+  A.holes.forEach(h=>{if(h.valid)fillD+=holePath(h);});
+  let g=`<defs>
+    <pattern id="g5" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M5 0H0V5" fill="none" stroke="#e6ebf1" stroke-width=".22"/></pattern>
+    <pattern id="g25" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M25 0H0V25" fill="none" stroke="#d3dce5" stroke-width=".35"/></pattern>
+    <marker id="mD" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto-start-reverse"><path d="M0 0 7 3 0 6Z" fill="${C_DIM}"/></marker>
+  </defs>`;
+  g+=`<rect x="-2000" y="-2000" width="4000" height="4000" fill="${C_SHEET}"/>
+      <rect x="-2000" y="-2000" width="4000" height="4000" fill="url(#g5)"/>
+      <rect x="-2000" y="-2000" width="4000" height="4000" fill="url(#g25)"/>`;
+  g+=`<path d="${fillD}" fill="rgba(29,39,51,.055)" fill-rule="evenodd"/>`;
+  g+=`<circle cx="0" cy="0" r="${f2(s.doorBCD/2)}" fill="none" stroke="${C_BLUE}" stroke-opacity=".55" stroke-width=".6" stroke-dasharray="4 2.4" vector-effect="non-scaling-stroke"/>`;
+  g+=`<circle cx="0" cy="0" r="${f2(s.spkBCD/2)}" fill="none" stroke="${C_ORANGE}" stroke-opacity=".55" stroke-width=".6" stroke-dasharray="4 2.4" vector-effect="non-scaling-stroke"/>`;
+  g+=`<path d="${oPath}" fill="none" stroke="${C_INK}" stroke-width="1.6" vector-effect="non-scaling-stroke"/>`;
+  g+=A.cutValid
+    ?`<circle cx="0" cy="0" r="${f2(A.ir)}" fill="none" stroke="${C_CUT}" stroke-width="1.1" vector-effect="non-scaling-stroke"/>`
+    :`<circle cx="0" cy="0" r="${f2(A.ir)}" fill="none" stroke="${C_ERR}" stroke-width="1.1" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"/>`;
+  A.holes.forEach(h=>{
+    const col=h.valid?(h.kind==='door'?C_BLUE:C_ORANGE):C_ERR;
+    const fill=h.valid?(h.kind==='door'?'rgba(30,99,196,.1)':'rgba(217,84,30,.1)'):'rgba(194,52,52,.12)';
+    const dash=h.valid?'':'stroke-dasharray="2.4 1.6"';
+    if(h.cbDepth>0){
+      const cbCol=h.valid?col:C_ERR;
+      if(h.type==='circle')g+=`<circle cx="${f2(h.cx)}" cy="${f2(-h.cy)}" r="${f2(h.cbR)}" fill="${h.valid?'rgba(29,39,51,.04)':'none'}" stroke="${cbCol}" stroke-opacity=".75" stroke-width=".9" stroke-dasharray="3 1.6" vector-effect="non-scaling-stroke"/>`;
+      else g+=`<path d="${pathFrom(h.cbPts)}" fill="${h.valid?'rgba(29,39,51,.04)':'none'}" stroke="${cbCol}" stroke-opacity=".75" stroke-width=".9" stroke-dasharray="3 1.6" vector-effect="non-scaling-stroke"/>`;
+    }
+    if(h.type==='circle')g+=`<circle cx="${f2(h.cx)}" cy="${f2(-h.cy)}" r="${f2(h.r)}" fill="${fill}" stroke="${col}" stroke-width="1.2" ${dash} vector-effect="non-scaling-stroke"/>`;
+    else g+=`<path d="${pathFrom(h.pts)}" fill="${fill}" stroke="${col}" stroke-width="1.2" ${dash} vector-effect="non-scaling-stroke"/>`;
+    g+=`<path d="M${f2(h.cx-2.2)},${f2(-h.cy)}H${f2(h.cx+2.2)}M${f2(h.cx)},${f2(-h.cy-2.2)}V${f2(-h.cy+2.2)}" stroke="${col}" stroke-width=".5" stroke-opacity=".9" vector-effect="non-scaling-stroke"/>`;
+  });
+  g+=`<path d="M-7 0H7M0 -7V7" stroke="${C_GRID}" stroke-width=".5" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0" r="1.6" fill="none" stroke="${C_GRID}" stroke-width=".5" vector-effect="non-scaling-stroke"/>`;
+  const txt=(x,y,str,col,size,anchor='middle',weight=600)=>`<text x="${f2(x)}" y="${f2(y)}" fill="${col}" font-family="IBM Plex Mono, monospace" font-size="${size}" font-weight="${weight}" text-anchor="${anchor}" paint-order="stroke" stroke="${C_SHEET}" stroke-width="1.6" stroke-linejoin="round">${str}</text>`;
+  const fastLabel=(fa,n,holeD,slots)=>{
+    const head=slots?'пазы ':'';
+    if(fa.bolt!=='custom'){
+      const cb=fa.active?` ⌴${fmtN(fa.cbD)}×${fmtN(fa.cbDepth,0)}`:'';
+      return `${head}${n}×${fa.bolt}${cb}`;
+    }
+    return `${head}${n}×Ø${fmtN(holeD)}`;
+  };
+  if(s.showDims){
+    const dy=A.maxR+16;
+    g+=`<path d="M${f2(-A.R)} 2V${f2(dy+3)}M${f2(A.R)} 2V${f2(dy+3)}" stroke="${C_DIM}" stroke-opacity=".5" stroke-width=".45" vector-effect="non-scaling-stroke"/>`;
+    g+=`<line x1="${f2(-A.R)}" y1="${f2(dy)}" x2="${f2(A.R)}" y2="${f2(dy)}" stroke="${C_DIM}" stroke-width=".7" marker-start="url(#mD)" marker-end="url(#mD)" vector-effect="non-scaling-stroke"/>`;
+    g+=txt(0,dy-3,`Ø ${fmtN(s.outerD,0)}`,C_DIM,6.2);
+    if(A.cutValid&&A.ir>12){
+      g+=`<line x1="${f2(-A.ir)}" y1="0" x2="${f2(A.ir)}" y2="0" stroke="${C_DIM}" stroke-width=".55" marker-start="url(#mD)" marker-end="url(#mD)" vector-effect="non-scaling-stroke"/>`;
+      g+=txt(0,-4,`Ø ${fmtN(s.innerD,0)}`,C_DIM,5.2);
+    }
+    const la=25*D2R,ld=s.doorBCD/2;
+    const lx=(ld+15)*Math.cos(la),ly=-(ld+15)*Math.sin(la);
+    g+=`<line x1="${f2(ld*Math.cos(la))}" y1="${f2(-ld*Math.sin(la))}" x2="${f2(lx)}" y2="${f2(ly)}" stroke="${C_BLUE}" stroke-opacity=".65" stroke-width=".45" vector-effect="non-scaling-stroke"/>`;
+    g+=txt(lx+2,ly-1.5,`С1 Ø${fmtN(s.doorBCD,0)} · ${fastLabel(A.fd,s.doorN,s.doorHoleD,s.doorSlots)}`,C_BLUE,4.4,'start');
+    const sa=205*D2R,sd=s.spkBCD/2;
+    const sx=(sd+15)*Math.cos(sa),sy=-(sd+15)*Math.sin(sa);
+    g+=`<line x1="${f2(sd*Math.cos(sa))}" y1="${f2(-sd*Math.sin(sa))}" x2="${f2(sx)}" y2="${f2(sy)}" stroke="${C_ORANGE}" stroke-opacity=".65" stroke-width=".45" vector-effect="non-scaling-stroke"/>`;
+    g+=txt(sx-2,sy+4,`С2 Ø${fmtN(s.spkBCD,0)} · ${fastLabel(A.fs,s.spkN,s.spkHoleD,s.spkSlots)}`,C_ORANGE,4.4,'end');
+  }
+  g+=`<g font-family="IBM Plex Sans, sans-serif" font-size="4.1" font-weight="600">
+    <line x1="${f2(-E+7)}" y1="${f2(-E+10)}" x2="${f2(-E+13)}" y2="${f2(-E+10)}" stroke="${C_BLUE}" stroke-width="1.1"/>
+    <text x="${f2(-E+15)}" y="${f2(-E+11.4)}" fill="${C_GRID}">слой 1 · дверь</text>
+    <line x1="${f2(-E+48)}" y1="${f2(-E+10)}" x2="${f2(-E+54)}" y2="${f2(-E+10)}" stroke="${C_ORANGE}" stroke-width="1.1"/>
+    <text x="${f2(-E+56)}" y="${f2(-E+11.4)}" fill="${C_GRID}">слой 2 · динамик</text>
+    <line x1="${f2(-E+96)}" y1="${f2(-E+10)}" x2="${f2(-E+102)}" y2="${f2(-E+10)}" stroke="${C_GRID}" stroke-width="1" stroke-dasharray="2 1.2"/>
+    <text x="${f2(-E+104)}" y="${f2(-E+11.4)}" fill="${C_GRID}">цековка ⌴</text></g>`;
+  const bx=E-88,by=E-31,dt=new Date().toLocaleDateString('ru-RU');
+  g+=`<g><rect x="${f2(bx)}" y="${f2(by)}" width="82" height="25" rx="1.5" fill="#ffffff" stroke="${C_DIM}" stroke-width=".6"/>
+    <line x1="${f2(bx)}" y1="${f2(by+11)}" x2="${f2(bx+82)}" y2="${f2(by+11)}" stroke="${C_DIM}" stroke-width=".35" stroke-opacity=".5"/>
+    ${txt(bx+5,by+8,`ПРОСТАВКА Ø${fmtN(s.outerD,0)} × ${fmtN(s.thick,0)}`,C_INK,5,'start',700)}
+    ${txt(bx+5,by+16.5,'RINGFORGE · масштаб 1:1 · мм',C_GRID,3.4,'start')}
+    ${txt(bx+5,by+22,`${MATS[s.material].name} · ${dt} · 2 слоя`,C_GRID,3.4,'start')}</g>`;
+  baseG.innerHTML=g;
+  renderHover();
+}
+function renderHover(){
+  if(hoverIdx<0||hoverIdx>=A.holes.length){hovG.innerHTML='';return;}
+  const h=A.holes[hoverIdx];
+  hovG.innerHTML=h.type==='circle'
+    ?`<circle cx="${f2(h.cx)}" cy="${f2(-h.cy)}" r="${f2(h.effR+1.2)}" fill="none" stroke="#16202b" stroke-width="1.4" vector-effect="non-scaling-stroke"/>`
+    :`<path d="${pathFrom(h.cbPts||h.pts)}" fill="none" stroke="#16202b" stroke-width="1.4" vector-effect="non-scaling-stroke"/>`;
+}
+let panning=false,lastClient=null;
+draw.addEventListener('pointerdown',e=>{
+  if(e.button!==0&&e.button!==1)return;
+  panning=true;lastClient=[e.clientX,e.clientY];draw.classList.add('panning');
+  try{draw.setPointerCapture(e.pointerId);}catch(err){}
+});
+draw.addEventListener('pointermove',e=>{
+  if(panning&&vb){
+    const p1=svgPt(lastClient[0],lastClient[1]),p2=svgPt(e.clientX,e.clientY);
+    if(p1&&p2){vb.x=clamp(vb.x-(p2.x-p1.x),-900,900);vb.y=clamp(vb.y+(p2.y-p1.y),-900,900);userZoomed=true;applyVB();}
+    lastClient=[e.clientX,e.clientY];hideTip();return;
+  }
+  const p=svgPt(e.clientX,e.clientY);if(!p)return;
+  let found=-1;
+  for(let i=0;i<A.holes.length;i++){const h=A.holes[i];
+    if(h.type==='circle'){if(Math.hypot(p.x-h.cx,p.y-h.cy)<=h.effR+1.6){found=i;break;}}
+    else{const d=Math.hypot(p.x,p.y),ang=Math.atan2(p.y,p.x);
+      let da=Math.abs(((ang-h.ang)%TAU+TAU)%TAU);if(da>Math.PI)da=TAU-da;
+      if(Math.abs(d-h.d)<=h.effR+1.6&&da<=h.span*D2R/2+h.effR/h.d){found=i;break;}}
+  }
+  if(found!==hoverIdx){hoverIdx=found;renderHover();}
+  if(found>=0){
+    const h=A.holes[found],door=h.kind==='door';
+    const desc=h.type==='slot'?`паз ${fmtN(h.span,0)}° × ${fmtN(h.w)} мм`:`Ø ${fmtN(h.r*2)} мм`;
+    const cb=h.cbDepth>0?`<br>⌴ ${fmtN(h.cbR*2)} × ${fmtN(h.cbDepth,0)} мм · ${h.bolt} DIN 912`:'';
+    const bad=h.valid?'':` · <span style="color:#c23434">${h.overlap?'пересечение!':'вне материала!'}</span>`;
+    tip.innerHTML=`<b>${door?'Слой 1 · дверь':'Слой 2 · динамик'} · ${h.type==='slot'?'паз':'отв.'} ${h.idx}</b> · ${desc}${bad}${cb}<br>X ${fmtN(h.cx)} · Y ${fmtN(h.cy)}`;
+    tip.classList.toggle('mag',!door);
+    const wr=wrap2d.getBoundingClientRect();
+    tip.style.left=clamp(e.clientX-wr.left+14,6,Math.max(wr.width-230,6))+'px';
+    tip.style.top=clamp(e.clientY-wr.top+12,6,Math.max(wr.height-70,6))+'px';
+    tip.classList.add('show');
+  }else hideTip();
+});
+const endPan=()=>{panning=false;draw.classList.remove('panning');};
+draw.addEventListener('pointerup',endPan);draw.addEventListener('pointercancel',endPan);
+draw.addEventListener('pointerleave',()=>{if(!panning){hoverIdx=-1;renderHover();hideTip();}});
+function hideTip(){tip.classList.remove('show');}
+function zoomAt(cx,cy,f){
+  if(!vb)return;const p=svgPt(cx,cy);if(!p)return;
+  const nw=clamp(vb.w*f,30,1600),k=nw/vb.w;
+  vb.x=p.x-(p.x-vb.x)*k;vb.y=-p.y-(-p.y-vb.y)*k;vb.w=nw;vb.h=nw;userZoomed=true;applyVB();
+}
+draw.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,Math.pow(1.14,e.deltaY>0?1:-1));},{passive:false});
+draw.addEventListener('dblclick',()=>fit2D());
+const vpCenter=()=>{const r=draw.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];};
+$('#zIn').addEventListener('click',()=>{const c=vpCenter();zoomAt(c[0],c[1],1/1.3);sfx.tick();});
+$('#zOut').addEventListener('click',()=>{const c=vpCenter();zoomAt(c[0],c[1],1.3);sfx.tick();});
+$('#zFit').addEventListener('click',()=>{fit2D();sfx.tick();});
+new ResizeObserver(()=>{if(S.view==='2d'&&!userZoomed)fit2D();}).observe(vpCard);
+
+/* ================= SPEC READOUT ================= */
+function layerDesc(s,kind){
+  const fa=fastFor(s,kind),n=s[kind+'N'],slots=s[kind+'Slots'];
+  const head=slots?'пазы ':'';
+  if(fa.bolt!=='custom')return `${head}${n}×${fa.bolt}${fa.active?' ⌴'+fmtN(fa.cbD)+'×'+fmtN(fa.cbDepth,0):''}`;
+  return `${head}${n}×Ø${fmtN(s[kind+'HoleD'])}`;
+}
+function renderSpec(){
+  $('#expSummary').innerHTML=`<span class="a">Ø${fmtN(S.outerD,0)}×${fmtN(S.thick,0)} · вырез Ø${fmtN(S.innerD,0)}</span><br><span class="c">С1 дверь Ø${fmtN(S.doorBCD,0)} ${layerDesc(S,'door')}</span> · <span class="m">С2 динамик Ø${fmtN(S.spkBCD,0)} ${layerDesc(S,'spk')}</span>`;
+  const tags=[];
+  if(S.doorBolt!=='custom')tags.push('С1:'+S.doorBolt+(A.fd.active?'⌴':''));
+  if(S.spkBolt!=='custom')tags.push('С2:'+S.spkBolt+(A.fs.active?'⌴':''));
+  $('#vpSpec').innerHTML=`Ø${fmtN(S.outerD,0)} × ${fmtN(S.thick,0)} <em>·</em> ${MATS[S.material].name}${tags.length?' <em>·</em> '+tags.join(' '):''}`;
+}
+
+/* ================= CHECKS / TABLE / DRAWER ================= */
+function renderChecks(){
+  $('#checksList').innerHTML=A.checks.map(c=>`<li class="${c.lv}"><i></i><span>${c.t}</span></li>`).join('');
+  $('#cntChecks').textContent=A.nErr?A.nErr:(A.nWarn?A.nWarn:'✓');
+  $('#cntChecks').style.color=A.nErr?'var(--err)':(A.nWarn?'var(--warn)':'var(--ok)');
+  const strip=$('#statusStrip');
+  strip.classList.toggle('err',A.nErr>0);
+  strip.classList.toggle('warn',!A.nErr&&A.nWarn>0);
+  $('#stLabel').textContent=A.nErr?`Ошибки: ${A.nErr}`:A.nWarn?`Замечания: ${A.nWarn}`:'Готово к раскрою';
+  $('#stMsg').textContent=A.checks[0]?A.checks[0].t:'';
+  const stl=$('#expStl');
+  stl.disabled=!api3d||A.nErr>0;
+  stl.title=A.nErr?'Исправьте ошибки геометрии':(api3d?'Бинарный STL, миллиметры':'3D-модуль недоступен');
+  const cbCount=A.holes.filter(h=>h.valid&&h.cbDepth>0).length;
+  const contours=1+(A.cutValid?1:0)+A.holes.filter(h=>h.valid).length+cbCount;
+  $('#expNote').textContent=A.nErr?'⚠ STL заблокирован: геометрия некорректна. DXF/SVG доступны.':`DXF · CONTOUR / CUTOUT / DOOR / SPEAKER${cbCount?' / CBORE':''} · контуров: ${contours}`;
+}
+function renderTable(){
+  $('#cntTable').textContent=A.holes.length;
+  $('#holeTable').innerHTML=A.holes.map(h=>{
+    const door=h.kind==='door';
+    const col=door?C_BLUE:C_ORANGE;
+    const desc=h.type==='slot'?`паз ${fmtN(h.span,0)}° × ${fmtN(h.w)}`:`Ø ${fmtN(h.r*2)}`;
+    const cb=h.cbDepth>0?`⌴ ${fmtN(h.cbR*2)} × ${fmtN(h.cbDepth,0)}`:'—';
+    const bad=h.valid?'':` <span style="color:var(--err)" title="${h.overlap?'пересекается с другим слоем':'вне материала кольца'}">✕</span>`;
+    return `<tr><td>${door?'D':'S'}${h.idx}${bad}</td>
+      <td><span class="dot" style="background:${col}"></span>${door?'С1 дверь':'С2 динамик'}</td>
+      <td>${fmtN(h.cx)}</td><td>${fmtN(h.cy)}</td><td>${desc}</td><td>${cb}</td></tr>`;
+  }).join('');
+}
+let drawerTab=null;
+function setDrawer(tab){
+  drawerTab=tab;
+  $('#vpDrawer').hidden=!tab;
+  $('#checksPane').hidden=tab!=='checks';
+  $('#tablePane').hidden=tab!=='table';
+  $('#dwTabChecks').classList.toggle('on',tab==='checks');
+  $('#dwTabTable').classList.toggle('on',tab==='table');
+  $('#openChecks').classList.toggle('on',tab==='checks');
+  $('#openTable').classList.toggle('on',tab==='table');
+  $('#openChecks').setAttribute('aria-expanded',tab==='checks');
+  $('#openTable').setAttribute('aria-expanded',tab==='table');
+}
+$('#openChecks').addEventListener('click',()=>{setDrawer(drawerTab==='checks'?null:'checks');sfx.tick();});
+$('#openTable').addEventListener('click',()=>{setDrawer(drawerTab==='table'?null:'table');sfx.tick();});
+$('#dwTabChecks').addEventListener('click',()=>{setDrawer('checks');sfx.tick();});
+$('#dwTabTable').addEventListener('click',()=>{setDrawer('table');sfx.tick();});
+$('#drawerX').addEventListener('click',()=>{setDrawer(null);sfx.tick();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drawerTab)setDrawer(null);});
+$('#drawerH').insertAdjacentHTML('afterbegin',ico('check',14));
+
+/* ================= CONTROL PANEL ================= */
+const REG={};
+const slider=(key,label,min,max,step,unit,opt={})=>({t:'slider',key,label,min,max,step,unit,...opt});
+const toggle=(key,label,opt={})=>({t:'toggle',key,label,...opt});
+const stepper=(key,label,min,max)=>({t:'stepper',key,label,min,max});
+const select=(key,label,opts,opt={})=>({t:'select',key,label,opts,...opt});
+const color=(key,label)=>({t:'color',key,label});
+const note=id=>({t:'note',id});
+
+const RING_ITEMS=[
+  slider('outerD','Ø наружный',120,260,1,'мм'),
+  slider('innerD','Ø вырез',80,230,1,'мм'),
+  slider('thick','Толщина',3,30,1,'мм')
+];
+const CHAMFER_ITEM=toggle('chamfer','Фаска по контуру 45°',{dep:s=>!anyCb(s)});
+function layerItems(p){
+  const isDoor=p==='door';
+  const angKey=isDoor?'slotAngle':'spkSlotAngle';
+  const items=[
+    select(p+'Bolt','Болт под шестигранник · DIN 912',BOLT_OPTS,{full:true}),
+    note(p),
+    slider(p+'BCD','BCD · Ø окружности',90,isDoor?250:240,1,'мм'),
+    stepper(p+'N','Количество',2,8),
+    slider(p+'HoleD','Ø отверстия',2.5,12,.1,'мм',{dep:s=>s[p+'Bolt']==='custom'}),
+    slider(p+'Rot','Поворот группы',0,359,1,'°'),
+    toggle(p+'Slots','Пазы вместо отв.'),
+    slider(angKey,'Угол паза',6,40,1,'°',{dep:s=>s[p+'Slots']}),
+    select(p+'Recess','Цековка под головку',RECESS_OPTS,{dep:s=>s[p+'Bolt']!=='custom'}),
+    slider(p+'HeadClear','Зазор головки ⌴',.2,1.5,.1,'мм',{dep:s=>s[p+'Bolt']!=='custom'&&s[p+'Recess']!=='none'})
+  ];
+  if(isDoor){
+    items.push(toggle('ears','Монтажные ушки'));
+    items.push(slider('earMargin','Вылет ушка',4,12,.5,'мм',{dep:s=>s.ears}));
+  }
+  return items;
+}
+const SHARED=[
+ {id:'mat',title:'Материал',icon:'layers',acc:'wood',items:[
+   select('material','Материал заготовки',[['mdf','МДФ'],['fanera','Фанера берёзовая'],['abs','ABS-пластик'],['alu','Алюминий']]),
+   color('tint','Тонировка поверхности')]},
+ {id:'scene',title:'Сцена и чертёж',icon:'eye',acc:'steel',items:[
+   select('quality','Качество рендера',[['draft','Черновик'],['std','Стандарт'],['high','Высокое']]),
+   select('sceneBg','Фон рабочей области',[['light','Светлый'],['gray','Серый'],['dark','Тёмный']]),
+   toggle('grid','Координатная сетка'),
+   toggle('edges','Кромки (каркас)'),
+   toggle('autoRotate','Автовращение'),
+   slider('rotSpeed','Скорость вращения',0,2,.1,'',{dep:s=>s.autoRotate}),
+   toggle('showDims','Размерные линии')]}
+];
+const QNAMES={draft:'Черновик',std:'Стандарт',high:'Высокое'};
+const SHARED_SUM={mat:s=>MATS[s.material].name,scene:s=>QNAMES[s.quality]||'Стандарт'};
+const LAYER_META={
+  door:{title:'Слой 1 · К двери',sub:'внутренний слой · болты в дверь',icon:'door',other:'spk',otherName:'Слой 2 · динамик'},
+  spk:{title:'Слой 2 · К динамику',sub:'лицевой слой · крепёж в рамку',icon:'speaker',other:'door',otherName:'Слой 1 · дверь'}
+};
+function fastNoteHTML(kind){
+  const bolt=S[kind+'Bolt'];
+  if(bolt==='custom')return 'Своё отверстие · диаметр задаётся вручную, цековка недоступна для этого слоя.';
+  const B=BOLTS[bolt],fa=fastFor(S,kind);
+  const cb=fa.active?` · цековка <b>⌴${fmtN(fa.cbD)}×${fmtN(fa.cbDepth,0)}</b> · пол ${fmtN(S.thick-fa.cbDepth,0)} мм`:' · головка выступает над поверхностью';
+  return `<b>${bolt} DIN 912</b> · головка Ø${fmtN(B.dk)}×${fmtN(B.k,0)} · шестигранник ${fmtN(B.hex)} · отв. <b>Ø${fmtN(B.clear)}</b> (ISO 273)${cb}`;
+}
+function renderItems(items){
+  let html='';
+  items.forEach(it=>{
+    if(it.t==='note'){html+=`<div class="fast-note" id="fn_${it.id}"></div>`;return;}
+    const id='c_'+it.key;
+    const full=it.full?' full':'';
+    if(it.t==='slider'){
+      html+=`<div class="ctl${full}" id="w_${it.key}"><div class="ctl-head"><label for="${id}">${it.label}</label>
+        <span class="ctl-val"><input type="number" id="${id}_n" min="${it.min}" max="${it.max}" step="${it.step}" inputmode="decimal" aria-label="${it.label}, число"><em>${it.unit}</em></span></div>
+        <input type="range" id="${id}" min="${it.min}" max="${it.max}" step="${it.step}"></div>`;
+    }else if(it.t==='toggle'){
+      html+=`<div class="ctl${full}" id="w_${it.key}"><div class="tgl-row"><label for="${id}">${it.label}</label>
+        <span class="tgl"><input type="checkbox" id="${id}"><i></i></span></div></div>`;
+    }else if(it.t==='stepper'){
+      html+=`<div class="ctl${full}" id="w_${it.key}"><div class="tgl-row"><label>${it.label}</label>
+        <span class="stepper"><button type="button" id="${id}_m" aria-label="${it.label}: меньше">−</button><b id="${id}_v"></b><button type="button" id="${id}_p" aria-label="${it.label}: больше">+</button></span></div></div>`;
+    }else if(it.t==='select'){
+      html+=`<div class="ctl${full}" id="w_${it.key}"><div class="ctl-head"><label for="${id}">${it.label}</label></div>
+        <div class="sel-wrap"><select id="${id}">${it.opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select></div></div>`;
+    }else if(it.t==='color'){
+      html+=`<div class="ctl${full}" id="w_${it.key}"><div class="tgl-row"><label for="${id}">${it.label}</label>
+        <span class="color-row"><code id="${id}_x"></code><input type="color" id="${id}"></span></div></div>`;
+    }
+  });
+  return html;
+}
+function wireItems(items,isLayer){
+  items.forEach(it=>{
+    if(it.t==='note')return;
+    const id='c_'+it.key,el=$('#'+id);
+    if(!el)return;
+    if(it.t==='slider'){
+      const num=$('#'+id+'_n');
+      REG[it.key]={...it,el,num,wrap:$('#w_'+it.key),labelEl:$('#w_'+it.key+' label'),layer:isLayer};
+      el.addEventListener('input',()=>{S[it.key]=parseFloat(el.value);userEdit();});
+      el.addEventListener('change',()=>sfx.tick());
+      num.addEventListener('change',()=>{
+        let v=parseFloat(num.value);if(!isFinite(v))v=S[it.key];
+        S[it.key]=clamp(v,it.min,it.max);userEdit();sfx.tick();
+      });
+    }else if(it.t==='toggle'){
+      REG[it.key]={...it,el,wrap:$('#w_'+it.key),labelEl:$('#w_'+it.key+' label'),layer:isLayer};
+      el.addEventListener('change',()=>{S[it.key]=el.checked;userEdit();sfx.toggle();});
+    }else if(it.t==='stepper'){
+      REG[it.key]={...it,valEl:$('#'+id+'_v'),wrap:$('#w_'+it.key),labelEl:$('#w_'+it.key+' label'),layer:isLayer};
+      $('#'+id+'_m').addEventListener('click',()=>{S[it.key]=clamp(S[it.key]-1,it.min,it.max);userEdit();sfx.tick();});
+      $('#'+id+'_p').addEventListener('click',()=>{S[it.key]=clamp(S[it.key]+1,it.min,it.max);userEdit();sfx.tick();});
+    }else if(it.t==='select'){
+      REG[it.key]={...it,el,wrap:$('#w_'+it.key),layer:isLayer};
+      el.addEventListener('change',()=>{
+        S[it.key]=el.value;
+        if(it.key==='doorBolt'||it.key==='spkBolt'){
+          const kind=it.key==='doorBolt'?'door':'spk';
+          if(el.value!=='custom')S[kind+'HoleD']=BOLTS[el.value].clear;
+        }
+        userEdit();sfx.toggle();
+      });
+    }else if(it.t==='color'){
+      REG[it.key]={...it,el,hex:$('#'+id+'_x'),wrap:$('#w_'+it.key),layer:isLayer};
+      el.addEventListener('input',()=>{S[it.key]=el.value;userEdit();});
+    }
+  });
+}
+function clearLayerReg(){for(const k in REG)if(REG[k].layer)delete REG[k];}
+function buildLayerCard(){
+  clearLayerReg();
+  const p=UI.layer,meta=LAYER_META[p];
+  const card=$('#layerCard');
+  card.dataset.layer=p;
+  card.setAttribute('aria-labelledby','lt_'+p);
+  $('#layerIco').innerHTML=ico(meta.icon,15);
+  $('#layerTitle').innerHTML=`${meta.title}<span class="lh-sub">${meta.sub}</span>`;
+  const items=layerItems(p);
+  const fullItems=items.filter(i=>i.full||i.t==='note');
+  const gridItems=items.filter(i=>!i.full&&i.t!=='note');
+  $('#layerBody').innerHTML=renderItems(fullItems)+`<div class="lgrid">${renderItems(gridItems)}</div>`;
+  wireItems(items,true);
+  $('#copyBtn').innerHTML=`${ico('copy',13)} В ${meta.otherName}`;
+  $('#copyBtn').title=`Скопировать тип крепежа этого слоя в ${meta.otherName}`;
+  $('#lt_door').classList.toggle('on',p==='door');
+  $('#lt_spk').classList.toggle('on',p==='spk');
+  $('#lt_door').setAttribute('aria-selected',p==='door');
+  $('#lt_spk').setAttribute('aria-selected',p==='spk');
+}
+function switchLayer(p){
+  if(UI.layer===p)return;
+  UI.layer=p;saveUI();buildLayerCard();syncControls();sfx.toggle();
+}
+$('#lt_door').addEventListener('click',()=>switchLayer('door'));
+$('#lt_spk').addEventListener('click',()=>switchLayer('spk'));
+$('#copyBtn').addEventListener('click',()=>{
+  const from=UI.layer,to=LAYER_META[from].other;
+  const map=[['Bolt','Bolt'],['Recess','Recess'],['HeadClear','HeadClear'],['HoleD','HoleD'],['Slots','Slots']];
+  const angFrom=from==='door'?'slotAngle':'spkSlotAngle', angTo=to==='door'?'slotAngle':'spkSlotAngle';
+  const prev={};
+  map.forEach(([a,b])=>{prev[to+b]=S[to+b];S[to+b]=S[from+a];});
+  prev[angTo]=S[angTo];S[angTo]=S[angFrom];
+  if(S[to+'Bolt']!=='custom')S[to+'HoleD']=BOLTS[S[to+'Bolt']].clear;
+  clearActiveChip();refresh();
+  toast(`Тип крепежа скопирован: ${LAYER_META[from].title} → ${LAYER_META[to].title}`,'ok',
+    {label:'Отменить',fn:()=>{Object.assign(S,prev);refresh();}});
+  sfx.save();
+});
+function buildPanel(){
+  $('#ringH').insertAdjacentHTML('afterbegin',ico('ruler',14));
+  $('#ringGrid').innerHTML=renderItems(RING_ITEMS);
+  wireItems(RING_ITEMS,false);
+  $('#ringChamfer').innerHTML=renderItems([CHAMFER_ITEM]);
+  wireItems([CHAMFER_ITEM],false);
+  $('#ltt_door').insertAdjacentHTML('afterbegin',ico('door',14));
+  $('#ltt_spk').insertAdjacentHTML('afterbegin',ico('speaker',14));
+  buildLayerCard();
+  let html='';
+  SHARED.forEach((gr,gi)=>{
+    html+=`<div class="grp${UI.open[gr.id]?'':' collapsed'}" data-acc="${gr.acc}" id="grp_${gr.id}" style="margin-top:8px">
+      <button type="button" class="grp-h" id="gh_${gr.id}" aria-expanded="${UI.open[gr.id]}" aria-controls="gb_${gr.id}">
+        <i class="grp-n">0${gi+3}</i>${ico(gr.icon,15)}<b>${gr.title}</b>
+        <span class="grp-s" id="gs_${gr.id}"></span><span class="grp-c">${ico('chev',14)}</span>
+      </button>
+      <div class="grp-b" id="gb_${gr.id}" role="region" aria-labelledby="gh_${gr.id}"><div class="grp-bi">${renderItems(gr.items)}</div></div></div>`;
+  });
+  $('#sharedGroups').innerHTML=html;
+  SHARED.forEach(gr=>{
+    $('#gh_'+gr.id).addEventListener('click',()=>{
+      UI.open[gr.id]=!UI.open[gr.id];applyOpen(gr.id);saveUI();syncFoldBtn();sfx.tick();
+    });
+    wireItems(gr.items,false);
+  });
+  syncFoldBtn();
+}
+function applyOpen(id){
+  $('#grp_'+id).classList.toggle('collapsed',!UI.open[id]);
+  $('#gh_'+id).setAttribute('aria-expanded',UI.open[id]);
+}
+function syncFoldBtn(){
+  const anyClosed=SHARED.some(g=>!UI.open[g.id]);
+  const b=$('#foldBtn');
+  b.innerHTML=ico(anyClosed?'unfold':'fold');
+  b.title=anyClosed?'Развернуть общие категории':'Свернуть общие категории';
+}
+$('#foldBtn').addEventListener('click',()=>{
+  const anyClosed=SHARED.some(g=>!UI.open[g.id]);
+  SHARED.forEach(g=>{UI.open[g.id]=anyClosed;applyOpen(g.id);});
+  saveUI();syncFoldBtn();sfx.toggle();
+});
+function syncControls(){
+  const cb=anyCb(S);
+  for(const k in REG){
+    const r=REG[k],v=S[k];
+    if(r.t==='slider'){
+      r.el.value=v;r.el.style.setProperty('--p',((v-r.min)/(r.max-r.min)*100)+'%');
+      if(document.activeElement!==r.num)r.num.value=+v.toFixed(2);
+      if(r.dep)r.wrap.classList.toggle('dim',!r.dep(S));
+      if(k==='doorHoleD'||k==='spkHoleD'){
+        const kind=k==='doorHoleD'?'door':'spk';
+        r.labelEl.textContent=S[kind+'Bolt']!=='custom'?'Ø отв. · ISO 273':(S[kind+'Slots']?'Ширина паза':'Ø отверстия');
+      }
+    }else if(r.t==='toggle'){
+      r.el.checked=!!v;
+      if(r.dep)r.wrap.classList.toggle('dim',!r.dep(S));
+      if(k==='chamfer')r.labelEl.textContent=cb?'Фаска 45° · недоступна с цековкой':'Фаска по контуру 45°';
+    }
+    else if(r.t==='stepper'){
+      r.valEl.textContent=v;
+      if(k==='doorN')r.labelEl.textContent=S.doorSlots?'Кол-во пазов':'Количество';
+      if(k==='spkN')r.labelEl.textContent=S.spkSlots?'Кол-во пазов':'Количество';
+    }
+    else if(r.t==='select'){r.el.value=v;if(r.dep)r.wrap.classList.toggle('dim',!r.dep(S));}
+    else if(r.t==='color'){r.el.value=v;r.hex.textContent=v.toUpperCase();}
+  }
+  SHARED.forEach(g=>{const el=$('#gs_'+g.id);if(el)el.textContent=SHARED_SUM[g.id](S);});
+  $('#lts_door').textContent=`Ø${fmtN(S.doorBCD,0)} · ${layerDesc(S,'door')}`;
+  $('#lts_spk').textContent=`Ø${fmtN(S.spkBCD,0)} · ${layerDesc(S,'spk')}`;
+  const fn=$('#fn_'+UI.layer);if(fn)fn.innerHTML=fastNoteHTML(UI.layer);
+}
+function userEdit(){clearActiveChip();refresh();}
+
+/* ================= REFRESH ================= */
+function refresh(){
+  A=analyze(S);
+  syncControls();
+  if(S.view==='2d'&&!userZoomed)fit2D();
+  render2D();renderSpec();renderChecks();renderTable();
+  document.dispatchEvent(new CustomEvent('ring:state'));
+  scheduleSave();
+}
+window.RingAPI={
+  state:()=>S,mats:MATS,reduced:REDUCED,
+  geomData:n=>({outline:outlinePts(S,n),holes:A.holes.filter(h=>h.valid),
+    cutout:A.cutValid?S.innerD/2:0,thick:S.thick,chamfer:S.chamfer&&!A.anyCb})
+};
+
+/* ================= PRESETS ================= */
+let activeChip=null;
+function clearActiveChip(){if(activeChip){activeChip.removeAttribute('data-active');activeChip=null;}}
+function buildChips(){
+  const row=$('#presetRow');row.innerHTML='';
+  PRESETS.forEach((p,i)=>{
+    const b=document.createElement('button');b.type='button';b.className='chip';
+    b.innerHTML=`<span class="chip-name">${p.name}</span><span class="chip-meta">${p.meta}</span>`;
+    b.addEventListener('click',()=>{
+      tweenTo({...DEFAULTS,...p.p,view:S.view,sound:S.sound,quality:S.quality,sceneBg:S.sceneBg});
+      clearActiveChip();b.dataset.active='1';activeChip=b;
+      toast(`Пресет применён: ${p.name}`,'ok');sfx.preset();
+      if(S.view==='2d')setTimeout(fit2D,340);
+    });
+    row.appendChild(b);
+    if(i===0&&!restored){b.dataset.active='1';activeChip=b;}
+  });
+  const sv=document.createElement('button');sv.type='button';sv.className='chip-save';sv.id='saveChip';
+  sv.innerHTML=`${ico('save',14)} Сохранить вид`;
+  sv.addEventListener('click',()=>openSaveForm(row,sv));
+  row.appendChild(sv);
+  renderSaved(row);
+}
+function getSaved(){
+  try{const a=JSON.parse(localStorage.getItem('ringforge.saved'))||[];
+    return Array.isArray(a)?a.filter(x=>x&&typeof x.name==='string'&&x.p&&typeof x.p==='object'):[];
+  }catch(e){return [];}
+}
+function setSaved(a){try{localStorage.setItem('ringforge.saved',JSON.stringify(a));}catch(e){}}
+function renderSaved(row){
+  row.querySelectorAll('.chip.saved').forEach(n=>n.remove());
+  const sv=$('#saveChip');
+  getSaved().forEach((p,i)=>{
+    const b=document.createElement('button');b.type='button';b.className='chip saved';
+    const od=+p.p.outerD||180,th=+p.p.thick||16;
+    b.innerHTML=`<span class="chip-name"></span><span class="chip-meta">Ø${fmtN(od,0)} · ${fmtN(th,0)} мм</span><span class="chip-x" title="Удалить пресет">✕</span>`;
+    b.querySelector('.chip-name').textContent=p.name;
+    b.addEventListener('click',e=>{
+      if(e.target.classList.contains('chip-x')){
+        const arr=getSaved(),rem=arr.splice(i,1)[0];setSaved(arr);buildChips();sfx.del();
+        toast(`Пресет «${rem.name}» удалён`,'warn',{label:'Отменить',fn:()=>{const a2=getSaved();a2.splice(i,0,rem);setSaved(a2);buildChips();}});
+        return;
+      }
+      tweenTo({...sanitize(p.p),view:S.view,sound:S.sound});
+      clearActiveChip();b.dataset.active='1';activeChip=b;
+      toast(`Пресет применён: ${p.name}`,'ok');sfx.preset();
+      if(S.view==='2d')setTimeout(fit2D,340);
+    });
+    if(sv)row.insertBefore(b,sv);else row.appendChild(b);
+  });
+}
+function openSaveForm(row,sv){
+  const form=document.createElement('div');form.className='save-form';
+  form.innerHTML=`<input type="text" maxlength="26" autocomplete="off" spellcheck="false" placeholder="Название пресета"><button type="button" class="ok">OK</button><button type="button" aria-label="Отмена">✕</button>`;
+  const inp=form.querySelector('input');inp.value=`Мой Ø${Math.round(S.outerD)}`;
+  sv.replaceWith(form);
+  inp.focus();inp.select();
+  const done=ok=>{
+    if(ok){
+      const name=inp.value.trim()||`Мой Ø${Math.round(S.outerD)}`;
+      const arr=getSaved();arr.push({name,p:{...S}});setSaved(arr);
+      toast(`Пресет «${name}» сохранён`,'ok');sfx.save();
+    }
+    buildChips();
+  };
+  form.querySelector('.ok').addEventListener('click',()=>done(true));
+  form.querySelectorAll('button')[1].addEventListener('click',()=>done(false));
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')done(true);if(e.key==='Escape')done(false);});
+}
+
+/* ================= TWEEN / RANDOM / RESET ================= */
+let tweenRaf=0;
+function tweenTo(target,ms=300){
+  cancelAnimationFrame(tweenRaf);
+  const from={...S},keys=Object.keys(target),instant=['doorN','spkN'];
+  keys.forEach(k=>{if(typeof target[k]!=='number'||instant.includes(k))S[k]=target[k];});
+  if(REDUCED){keys.forEach(k=>{S[k]=target[k];});refresh();return;}
+  const t0=performance.now();
+  const step=now=>{
+    const t=Math.min(1,(now-t0)/ms),e=1-Math.pow(1-t,3);
+    keys.forEach(k=>{if(typeof target[k]==='number'&&!instant.includes(k))S[k]=from[k]+(target[k]-from[k])*e;});
+    if(t>=1){keys.forEach(k=>{S[k]=target[k];});refresh();return;}
+    refresh();tweenRaf=requestAnimationFrame(step);
+  };
+  tweenRaf=requestAnimationFrame(step);
+}
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const rnd=(a,b)=>a+Math.random()*(b-a);
+function randomize(){
+  for(let tries=0;tries<6;tries++){
+    const cls=pick([{cut:116,spkB:126},{cut:145,spkB:157},{cut:183,spkB:196}]);
+    const innerD=Math.round(cls.cut+rnd(-3,3));
+    const spkBCD=Math.round(cls.spkB+rnd(-2,3));
+    const outerD=Math.round(spkBCD+rnd(18,32));
+    const doorN=pick([3,3,4,6]);
+    const doorBCD=Math.round(outerD+pick([-14,-8,-2,6,12]));
+    const dBolt=pick(['M4','M5','M5','M6','M8']);
+    const thick=pick([12,15,16,18,20,22]);
+    const dRec=pick(['flush','flush','deep','none']);
+    const sBolt=pick(['custom','custom','M4','M5']);
+    const sRec=sBolt==='custom'?'none':pick(['flush','none']);
+    const t={outerD,innerD,spkBCD,doorN,doorBCD,doorHoleD:BOLTS[dBolt].clear,
+      doorSlots:Math.random()<.35,ears:(doorBCD/2+BOLTS[dBolt].dk/2+3>outerD/2)||Math.random()<.3,
+      doorBolt:dBolt,doorRecess:dRec,doorHeadClear:pick([.4,.5,.6]),
+      slotAngle:Math.round(rnd(10,26)),earMargin:pick([5,6,7]),
+      spkN:pick([3,4,4,6]),spkHoleD:sBolt==='custom'?pick([3.5,4,4.2,4.5]):BOLTS[sBolt].clear,
+      spkRot:pick([0,30,45,90]),spkSlots:Math.random()<.2,spkSlotAngle:Math.round(rnd(10,22)),
+      spkBolt:sBolt,spkRecess:sRec,spkHeadClear:.5,
+      doorRot:Math.round(rnd(0,359)),thick,
+      material:pick(['mdf','mdf','fanera','abs']),chamfer:Math.random()<.7};
+    const test=analyze({...S,...t});
+    if(test.nErr===0||tries===5){
+      tweenTo(t);clearActiveChip();
+      toast('Случайный вариант собран · оба слоя независимы','ok');sfx.preset();
+      if(S.view==='2d')setTimeout(fit2D,340);
+      return;
+    }
+  }
+}
+$('#rndBtn').innerHTML=ico('dice');$('#rstBtn').innerHTML=ico('reset');
+$('#rndBtn').addEventListener('click',randomize);
+$('#rstBtn').addEventListener('click',()=>{
+  tweenTo({...DEFAULTS,view:S.view,sound:S.sound,sceneBg:S.sceneBg});clearActiveChip();
+  toast('Сброшено к стандарту 16.5 см · С1 M5⌴ / С2 своё','ok');sfx.preset();
+  if(S.view==='2d')setTimeout(fit2D,340);
+});
+
+/* ================= EXPORTS ================= */
+function download(blob,name){
+  const u=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),4000);
+}
+const fileBase=()=>`prostavka_D${Math.round(S.outerD)}x${Math.round(S.thick)}_S1-${S.doorBCD}-${S.doorN}x${S.doorBolt!=='custom'?S.doorBolt:S.doorHoleD}_S2-${S.spkBCD}-${S.spkN}x${S.spkBolt!=='custom'?S.spkBolt:S.spkHoleD}`;
+function exportDXF(){
+  const L=[];const push=(...pr)=>{for(let i=0;i<pr.length;i+=2){L.push(String(pr[i]));L.push(String(pr[i+1]));}};
+  const fN=v=>+v.toFixed(3);
+  push(0,'SECTION',2,'HEADER',9,'$ACADVER',1,'AC1009',9,'$INSUNITS',70,4,9,'$MEASUREMENT',70,1,0,'ENDSEC');
+  push(0,'SECTION',2,'TABLES',0,'TABLE',2,'LAYER',70,5);
+  [['CONTOUR',7],['CUTOUT',8],['DOOR',5],['SPEAKER',30],['CBORE',3]].forEach(l=>push(0,'LAYER',2,l[0],70,0,62,l[1],6,'CONTINUOUS'));
+  push(0,'ENDTAB',0,'ENDSEC',0,'SECTION',2,'ENTITIES');
+  const circle=(lay,x,y,r)=>push(0,'CIRCLE',8,lay,10,fN(x),20,fN(y),30,0,40,fN(r));
+  const poly=(lay,pts)=>{push(0,'POLYLINE',8,lay,66,1,70,1,10,0,20,0,30,0);
+    pts.forEach(p=>push(0,'VERTEX',8,lay,10,fN(p[0]),20,fN(p[1]),30,0));push(0,'SEQEND',8,lay);};
+  if(S.ears)poly('CONTOUR',A.oPts);else circle('CONTOUR',0,0,S.outerD/2);
+  if(A.cutValid)circle('CUTOUT',0,0,S.innerD/2);
+  A.holes.forEach(h=>{
+    const lay=h.kind==='door'?'DOOR':'SPEAKER';
+    if(h.type==='circle')circle(lay,h.cx,h.cy,h.r);else poly(lay,h.pts);
+    if(h.cbDepth>0){
+      if(h.type==='circle')circle('CBORE',h.cx,h.cy,h.cbR);else poly('CBORE',h.cbPts);
+    }
+  });
+  push(0,'ENDSEC',0,'EOF');
+  download(new Blob([L.join('\n')+'\n'],{type:'application/dxf'}),fileBase()+'.dxf');
+  toast(A.nWarn||A.nErr?'DXF сохранён — есть замечания геометрии':'DXF сохранён · оба слоя + CBORE','ok');
+  sfx.exp();
+}
+function exportSVG(){
+  const clone=draw.cloneNode(true);
+  clone.querySelector('#hovG').innerHTML='';
+  clone.setAttribute('xmlns','http://www.w3.org/2000/svg');
+  clone.setAttribute('width','1400');clone.setAttribute('height','1400');
+  clone.removeAttribute('class');clone.removeAttribute('role');
+  const src='<?xml version="1.0" encoding="UTF-8"?>\n'+new XMLSerializer().serializeToString(clone);
+  download(new Blob([src],{type:'image/svg+xml'}),fileBase()+'.svg');
+  toast('SVG-чертёж сохранён в текущем виде','ok');sfx.exp();
+}
+$('#expDxf').addEventListener('click',exportDXF);
+$('#expSvg').addEventListener('click',exportSVG);
+$('#expStl').addEventListener('click',()=>{
+  if(!api3d||A.nErr)return;
+  try{const dv=api3d.exportSTL();
+    download(new Blob([dv],{type:'application/octet-stream'}),fileBase()+'.stl');
+    toast('STL сохранён · цековки обоих слоёв · мм','ok');sfx.exp();
+  }catch(e){toast('Не удалось построить STL','err');sfx.err();}
+});
+$('#expPng').addEventListener('click',()=>{
+  if(!api3d)return;
+  try{const url=api3d.png();const a=document.createElement('a');a.href=url;a.download=fileBase()+'.png';a.click();
+    toast('PNG-снимок 3D-сцены сохранён','ok');sfx.exp();
+  }catch(e){toast('Не удалось снять кадр','err');sfx.err();}
+});
+document.querySelectorAll('.exp-btn .ic').forEach(el=>el.innerHTML=ico('dl',16));
+
+/* ================= TOASTS ================= */
+function toast(msg,type='info',action=null){
+  const host=$('#toasts'),t=document.createElement('div');
+  t.className='toast '+type;
+  const sp=document.createElement('span');sp.textContent=msg;t.appendChild(sp);
+  const kill=()=>{t.classList.add('out');setTimeout(()=>t.remove(),280);};
+  if(action){const b=document.createElement('button');b.type='button';b.textContent=action.label;
+    b.addEventListener('click',()=>{action.fn();kill();});t.appendChild(b);}
+  host.appendChild(t);
+  while(host.children.length>3)host.firstChild.remove();
+  setTimeout(kill,action?6000:4200);
+}
+
+/* ================= SOUND ================= */
+let AC=null,master=null;
+function unlockAudio(){
+  if(AC)return;
+  try{AC=new (window.AudioContext||window.webkitAudioContext)();
+    master=AC.createGain();master.gain.value=S.sound?.4:0;master.connect(AC.destination);
+  }catch(e){}
+}
+document.addEventListener('pointerdown',unlockAudio,{once:true});
+document.addEventListener('keydown',unlockAudio,{once:true});
+function tone(freq,dur,type='sine',vol=.14,delay=0,slide=0){
+  if(!AC||!S.sound)return;
+  if(AC.state==='suspended')AC.resume();
+  const t0=AC.currentTime+delay,o=AC.createOscillator(),g=AC.createGain();
+  o.type=type;o.frequency.setValueAtTime(freq,t0);
+  if(slide)o.frequency.exponentialRampToValueAtTime(slide,t0+dur);
+  g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(vol,t0+.006);
+  g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
+  o.connect(g);g.connect(master);o.start(t0);o.stop(t0+dur+.05);
+}
+const sfx={
+  tick:()=>tone(1400,.03,'square',.04),
+  toggle:()=>tone(700,.05,'triangle',.09),
+  preset:()=>{tone(440,.08,'sine',.1);tone(660,.1,'sine',.1,.06);},
+  exp:()=>{tone(523,.1,'sine',.11);tone(784,.14,'sine',.11,.07);},
+  save:()=>{tone(660,.07,'triangle',.1);tone(880,.1,'triangle',.1,.05);},
+  del:()=>tone(380,.1,'triangle',.09,0,220),
+  err:()=>tone(160,.18,'sawtooth',.1)
+};
+const sndBtn=$('#sndBtn');
+function syncSound(){
+  sndBtn.innerHTML=ico(S.sound?'snd':'mute');
+  sndBtn.setAttribute('aria-pressed',S.sound);
+  sndBtn.title=S.sound?'Звук включён — нажмите, чтобы выключить':'Звук выключен — нажмите, чтобы включить';
+  if(master)master.gain.value=S.sound?.4:0;
+}
+sndBtn.addEventListener('click',()=>{S.sound=!S.sound;syncSound();scheduleSave();if(S.sound)sfx.toggle();});
+
+/* ================= VIEW / 3D BRIDGE ================= */
+let api3d=null;
+function setView(v){
+  S.view=v;vpCard.dataset.view=v;
+  $('#tab3d').classList.toggle('on',v==='3d');
+  $('#tab2d').classList.toggle('on',v==='2d');
+  $('#tab3d').setAttribute('aria-selected',v==='3d');
+  $('#tab2d').setAttribute('aria-selected',v==='2d');
+  $('#vpHint').textContent=v==='3d'?'ЛКМ — вращение · колесо — масштаб · ПКМ — панорама':'Перетаскивание — панорама · колесо — масштаб · 2×клик — вписать';
+  if(v==='2d'&&!userZoomed)fit2D();
+  scheduleSave();
+}
+$('#tab3d').addEventListener('click',()=>{setView('3d');sfx.toggle();});
+$('#tab2d').addEventListener('click',()=>{setView('2d');sfx.toggle();});
+$('#failTo2d').addEventListener('click',()=>setView('2d'));
+$('#camReset').innerHTML=ico('cam');$('#zIn').innerHTML=ico('zin');$('#zOut').innerHTML=ico('zout');$('#zFit').innerHTML=ico('fit');
+$('#camReset').addEventListener('click',()=>{if(api3d){api3d.resetCam();sfx.tick();}});
+document.addEventListener('ring:ready3d',e=>{
+  api3d=e.detail;
+  $('#loader3d').classList.add('off');
+  $('#expPng').disabled=false;$('#expPng').title='Снимок 3D-вида';
+  renderChecks();
+});
+document.addEventListener('ring:fail3d',()=>{
+  $('#loader3d').classList.add('off');
+  $('#fail3d').classList.add('show');
+  $('#expPng').disabled=true;$('#expPng').title='3D-модуль недоступен';
+  $('#expStl').disabled=true;$('#expStl').title='3D-модуль недоступен';
+  api3d=null;
+  if(S.view==='3d'){setView('2d');fit2D();}
+  toast('3D недоступно — открыт чертёж. DXF и SVG работают полностью.','warn');
+});
+
+/* ================= INIT ================= */
+buildPanel();buildChips();syncSound();setDrawer(null);
+refresh();fit2D();setView(S.view==='2d'?'2d':'3d');
+if(restored)setTimeout(()=>toast('Параметры восстановлены из прошлой сессии','info',{label:'Сбросить',fn:()=>$('#rstBtn').click()}),700);
+})();
+</script>
+
+<script type="module">
+/* ================================================================
+   RINGFORGE — 3D viewport: stacked slabs form real counterbores
+   for BOTH independent layers; feature edges filtered (no seams).
+   ================================================================ */
+(async()=>{
+const wrap=document.getElementById('wrap3d');
+try{
+  const THREE=await import('three');
+  const {OrbitControls}=await import('three/addons/controls/OrbitControls.js');
+  const {RoomEnvironment}=await import('three/addons/environments/RoomEnvironment.js');
+  const {STLExporter}=await import('three/addons/exporters/STLExporter.js');
+  const API=window.RingAPI;
+  const REDUCED=API.reduced;
+  const TAU=Math.PI*2;
+
+  const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.shadowMap.autoUpdate=false;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.02;
+  wrap.insertBefore(renderer.domElement,wrap.firstChild);
+
+  const BG={
+    light:{bg:0xd8dce1,ground:0xc9cfd6,g1:0x8f9dab,g2:0xc2ccd6,edge:0x2a3644},
+    gray:{bg:0xb9bfc7,ground:0xaab1b9,g1:0x77828e,g2:0xa7b0ba,edge:0x222c38},
+    dark:{bg:0x2e343b,ground:0x262c33,g1:0x4a545e,g2:0x3a424b,edge:0xcfd6dd}
+  };
+  const scene=new THREE.Scene();
+  scene.background=new THREE.Color(BG.light.bg);
+  scene.fog=new THREE.Fog(BG.light.bg,70,160);
+  const camera=new THREE.PerspectiveCamera(38,1,.5,300);
+  camera.position.set(24,17,26);
+
+  const pm=new THREE.PMREMGenerator(renderer);
+  scene.environment=pm.fromScene(new RoomEnvironment(renderer),.04).texture;
+  pm.dispose();
+
+  const key=new THREE.DirectionalLight(0xfff3e4,2.4);
+  key.position.set(28,40,18);key.castShadow=true;
+  key.shadow.camera.left=-28;key.shadow.camera.right=28;
+  key.shadow.camera.top=28;key.shadow.camera.bottom=-28;
+  key.shadow.camera.near=5;key.shadow.camera.far=120;
+  key.shadow.bias=-.0002;key.shadow.normalBias=.05;
+  key.shadow.mapSize.set(1024,1024);
+  scene.add(key,key.target);
+  const fill=new THREE.DirectionalLight(0xe8f0f8,1.0);
+  fill.position.set(-26,14,12);scene.add(fill);
+  const rim=new THREE.DirectionalLight(0xffffff,.7);
+  rim.position.set(-10,22,-28);scene.add(rim);
+  scene.add(new THREE.HemisphereLight(0xf2f5f8,0xb8bec6,.65));
+
+  const ground=new THREE.Mesh(new THREE.CircleGeometry(90,72),
+    new THREE.MeshStandardMaterial({color:BG.light.ground,roughness:1,metalness:0}));
+  ground.rotation.x=-Math.PI/2;ground.position.y=-.01;ground.receiveShadow=true;scene.add(ground);
+  let grid=new THREE.GridHelper(60,60,BG.light.g1,BG.light.g2);
+  grid.position.y=.005;scene.add(grid);
+
+  const texCache={};
+  function makeTex(kindStr){
+    if(texCache[kindStr])return texCache[kindStr];
+    const cv=document.createElement('canvas');cv.width=cv.height=256;
+    const cx=cv.getContext('2d');
+    cx.fillStyle='#ffffff';cx.fillRect(0,0,256,256);
+    if(kindStr==='wood'){
+      for(let i=0;i<2600;i++){cx.fillStyle=`rgba(60,35,10,${.04+Math.random()*.1})`;
+        cx.fillRect(Math.random()*256,Math.random()*256,1+Math.random()*2,1+Math.random()*1.5);}
+      for(let i=0;i<26;i++){cx.strokeStyle=`rgba(90,55,20,${.05+Math.random()*.06})`;cx.lineWidth=.6+Math.random();
+        cx.beginPath();const y=Math.random()*256;cx.moveTo(0,y);
+        cx.bezierCurveTo(80,y+Math.random()*8-4,170,y+Math.random()*8-4,256,y);cx.stroke();}
+    }else if(kindStr==='ply'){
+      for(let y=0;y<256;y+=9){cx.fillStyle=`rgba(120,75,30,${.1+Math.random()*.12})`;cx.fillRect(0,y,256,2.2);}
+      for(let i=0;i<900;i++){cx.fillStyle=`rgba(80,50,20,${.03+Math.random()*.07})`;
+        cx.fillRect(Math.random()*256,Math.random()*256,2+Math.random()*5,1);}
+    }else if(kindStr==='noise'){
+      for(let i=0;i<5200;i++){const v=Math.random()<.5?0:255;
+        cx.fillStyle=`rgba(${v},${v},${v},${.025+Math.random()*.04})`;
+        cx.fillRect(Math.random()*256,Math.random()*256,1,1);}
+    }else{
+      for(let y=0;y<256;y+=1){cx.fillStyle=`rgba(${Math.random()<.5?30:250},${Math.random()<.5?30:250},255,${.02+Math.random()*.05})`;
+        cx.fillRect(0,y,256,1);}
+    }
+    const tx=new THREE.CanvasTexture(cv);
+    tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(1/70,1/70);
+    tx.colorSpace=THREE.SRGBColorSpace;tx.anisotropy=4;
+    texCache[kindStr]=tx;return tx;
+  }
+  const matCache=new Map();
+  function getMat(s){
+    const mk=s.material+'|'+s.tint;
+    if(matCache.has(mk))return matCache.get(mk);
+    const base=API.mats[s.material];
+    const col=new THREE.Color(base.color).multiply(new THREE.Color(s.tint));
+    const m=new THREE.MeshStandardMaterial({color:col,roughness:base.rough,metalness:base.metal,
+      envMapIntensity:base.env,map:makeTex(base.tex)});
+    matCache.set(mk,m);
+    if(matCache.size>24){
+      for(const [k,old] of matCache){if(k!==mk){old.dispose();matCache.delete(k);break;}}
+    }
+    return m;
+  }
+
+  const QP={
+    draft:{pr:.75,seg:40,out:360,shadow:1024},
+    std:{pr:Math.min(window.devicePixelRatio||1,1.5),seg:64,out:720,shadow:1024},
+    high:{pr:Math.min(window.devicePixelRatio||1,2),seg:96,out:1200,shadow:2048}
+  };
+  const edgeMat=new THREE.LineBasicMaterial({color:BG.light.edge,transparent:true,opacity:.55});
+
+  function holePath(h,big){
+    const hp=new THREE.Path();
+    if(h.type==='circle'){hp.absarc(h.cx,h.cy,big?h.cbR:h.r,0,TAU,true);}
+    else{const pts=big?h.cbPts:h.pts;hp.moveTo(pts[0][0],pts[0][1]);
+      for(let i=1;i<pts.length;i++)hp.lineTo(pts[i][0],pts[i][1]);hp.closePath();}
+    return hp;
+  }
+  function buildPart(s,q,forExport,mat){
+    const d=API.geomData(q.out);
+    const group=new THREE.Group();
+    const meshes=[],lines=[];
+    const stepSet=new Set([0,+d.thick.toFixed(3)]);
+    d.holes.forEach(h=>{if(h.cbDepth>0)stepSet.add(+Math.max(.5,d.thick-h.cbDepth).toFixed(3));});
+    const ys=[...stepSet].sort((a,b)=>a-b);
+    const single=ys.length===2;
+    const useBevel=single&&d.chamfer;
+    const bt=useBevel?Math.min(1,d.thick/4):0;
+    const contourKeys=new Set(d.outline.map(p=>p[0].toFixed(1)+','+(-p[1]).toFixed(1)));
+    const isContour=(x,z)=>contourKeys.has(x.toFixed(1)+','+z.toFixed(1));
+    for(let i=0;i<ys.length-1;i++){
+      const y0=ys[i],y1=ys[i+1],depth=y1-y0;
+      if(depth<.05)continue;
+      const shape=new THREE.Shape(d.outline.map(p=>new THREE.Vector2(p[0],p[1])));
+      if(d.cutout>0){const cp=new THREE.Path();cp.absarc(0,0,d.cutout,0,TAU,true);shape.holes.push(cp);}
+      d.holes.forEach(h=>{
+        const big=h.cbDepth>0&&y0>=d.thick-h.cbDepth-1e-3;
+        shape.holes.push(holePath(h,big));
+      });
+      const dep=useBevel?Math.max(depth-2*bt,.5):depth;
+      const off=useBevel?bt:0;
+      const geo=new THREE.ExtrudeGeometry(shape,{depth:dep,steps:1,
+        bevelEnabled:useBevel,bevelThickness:bt,bevelSize:bt,bevelOffset:-bt,bevelSegments:1,curveSegments:q.seg});
+      if(forExport){geo.translate(0,0,y0+off);}
+      else{geo.rotateX(-Math.PI/2);geo.translate(0,y0+off,0);}
+      const mesh=new THREE.Mesh(geo,mat);
+      mesh.castShadow=true;mesh.receiveShadow=true;
+      group.add(mesh);meshes.push(mesh);
+      if(!forExport){
+        const eg=new THREE.EdgesGeometry(geo,25);
+        const pos=eg.attributes.position.array;const kept=[];
+        for(let j=0;j<pos.length;j+=6){
+          const my=(pos[j+1]+pos[j+4])/2;
+          const free=Math.abs(my)<.02||Math.abs(my-d.thick)<.02;
+          const cont=isContour(pos[j],pos[j+2])&&isContour(pos[j+3],pos[j+5]);
+          if(useBevel||free||!cont)kept.push(pos[j],pos[j+1],pos[j+2],pos[j+3],pos[j+4],pos[j+5]);
+        }
+        eg.dispose();
+        if(kept.length){
+          const lg=new THREE.BufferGeometry();
+          lg.setAttribute('position',new THREE.Float32BufferAttribute(kept,3));
+          const ls=new THREE.LineSegments(lg,edgeMat);
+          group.add(ls);lines.push(ls);
+        }
+      }
+    }
+    return {group,meshes,lines};
+  }
+
+  let part=null,partMeshes=[],partLines=[];
+  const controls=new OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true;controls.dampingFactor=.08;
+  controls.minDistance=10;controls.maxDistance=80;
+  controls.maxPolarAngle=1.52;controls.minPolarAngle=.05;
+  controls.target.set(0,1.2,0);controls.update();controls.saveState();
+
+  let lastGK='',lastMK='',qKey='',lastBg='',lost=false,needsApply=true;
+  const geomKey=s=>[s.outerD,s.innerD,s.thick,s.chamfer,s.doorBCD,s.doorN,s.doorHoleD,s.doorRot,
+    s.doorSlots,s.slotAngle,s.ears,s.earMargin,s.doorBolt,s.doorRecess,s.doorHeadClear,
+    s.spkBCD,s.spkN,s.spkHoleD,s.spkRot,s.spkSlots,s.spkSlotAngle,s.spkBolt,s.spkRecess,s.spkHeadClear,s.quality]
+    .map(v=>typeof v==='number'?+v.toFixed(3):v).join('|');
+  function disposePart(){
+    if(!part)return;
+    partMeshes.forEach(m=>m.geometry.dispose());
+    partLines.forEach(l=>l.geometry.dispose());
+    scene.remove(part);part=null;partMeshes=[];partLines=[];
+  }
+  function doApply(){
+    needsApply=false;
+    const s=API.state(),q=QP[s.quality]||QP.std;
+    if(lastBg!==s.sceneBg){
+      lastBg=s.sceneBg;
+      const P=BG[s.sceneBg]||BG.light;
+      scene.background.setHex(P.bg);scene.fog.color.setHex(P.bg);
+      ground.material.color.setHex(P.ground);
+      grid.geometry.dispose();grid.material.dispose();scene.remove(grid);
+      grid=new THREE.GridHelper(60,60,P.g1,P.g2);grid.position.y=.005;scene.add(grid);
+      edgeMat.color.setHex(P.edge);
+      renderer.shadowMap.needsUpdate=true;
+    }
+    grid.visible=s.grid;
+    controls.autoRotate=s.autoRotate&&s.rotSpeed>0&&!REDUCED;
+    controls.autoRotateSpeed=s.rotSpeed*1.6;
+    if(qKey!==s.quality){
+      qKey=s.quality;renderer.setPixelRatio(q.pr);
+      key.shadow.mapSize.set(q.shadow,q.shadow);
+      if(key.shadow.map){key.shadow.map.dispose();key.shadow.map=null;}
+      renderer.shadowMap.needsUpdate=true;resize();
+    }
+    const mk=s.material+'|'+s.tint;
+    let matChanged=false;
+    if(mk!==lastMK){lastMK=mk;matChanged=true;}
+    const mat=getMat(s);
+    const gk=geomKey(s);
+    if(gk!==lastGK){
+      lastGK=gk;
+      disposePart();
+      const built=buildPart(s,q,false,mat);
+      part=built.group;partMeshes=built.meshes;partLines=built.lines;
+      part.scale.setScalar(.1);scene.add(part);
+      renderer.shadowMap.needsUpdate=true;
+    }else if(matChanged){
+      partMeshes.forEach(m=>m.material=mat);
+    }
+    partLines.forEach(l=>l.visible=s.edges);
+  }
+  function resize(){
+    const w=wrap.clientWidth,h=wrap.clientHeight;
+    if(w<2||h<2)return;
+    renderer.setSize(w,h,false);
+    camera.aspect=w/h;camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(wrap);
+  renderer.domElement.addEventListener('webglcontextlost',e=>{
+    e.preventDefault();lost=true;
+    document.dispatchEvent(new CustomEvent('ring:fail3d'));
+  });
+  renderer.domElement.addEventListener('webglcontextrestored',()=>{lost=false;needsApply=true;renderer.shadowMap.needsUpdate=true;});
+  document.addEventListener('ring:state',()=>{needsApply=true;});
+  resize();
+
+  function loop(){
+    requestAnimationFrame(loop);
+    const visible=wrap.clientWidth>1;
+    if(needsApply&&visible&&!lost)doApply();
+    controls.update();
+    if(!lost&&visible)renderer.render(scene,camera);
+  }
+  loop();
+
+  const api={
+    resetCam:()=>{controls.reset();},
+    png:()=>{
+      doApply();
+      const w=wrap.clientWidth,off=w<2;
+      if(off){renderer.setSize(1280,960,false);camera.aspect=1280/960;camera.updateProjectionMatrix();}
+      renderer.render(scene,camera);
+      const url=renderer.domElement.toDataURL('image/png');
+      if(off)resize();
+      return url;
+    },
+    exportSTL:()=>{
+      const s=API.state(),q=QP[s.quality]||QP.std;
+      const built=buildPart(s,q,true,new THREE.MeshBasicMaterial());
+      built.group.updateMatrixWorld(true);
+      const dv=new STLExporter().parse(built.group,{binary:true});
+      built.meshes.forEach(m=>{m.geometry.dispose();m.material.dispose();});
+      return dv;
+    }
+  };
+  document.dispatchEvent(new CustomEvent('ring:ready3d',{detail:api}));
+}catch(err){
+  console.warn('RINGFORGE 3D boot failed:',err);
+  document.dispatchEvent(new CustomEvent('ring:fail3d'));
+}
+})();
+</script>
+</body>
+</html>
